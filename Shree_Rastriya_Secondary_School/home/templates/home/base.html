@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'home/css/base.css' %}">
+    <title>Home Page</title>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="#" class="logo">
+                <img src="{% static 'home/images/clzlogo.png' %}" alt="Logo" class="navbar-logo">
+                SHREE RASTRIYA MAVI
+            </a>
+    
+            <ul class="nav-links">
+                <li><a href="#about">About Us</a></li>
+                <li><a href="#programs">Programs</a></li>
+                <li><a href="#gallery">Gallery</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="{% url 'home:login'%}">Login</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="hero-video">
+            <video autoplay loop muted>
+                <source src="{% static 'home/videos/video.mp4' %}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        <div class="hero-content">
+            <h1>Welcome to SHREE RASTRIYA MAVI</h1>
+            <p>Empowering students with quality education and innovation.</p>
+            <!-- <a href="#about" class="btn">Learn More</a> -->
+        </div>
+    </header>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2>About Us</h2>
+            <p>SHREE RASTRIYA MAVI SECONDARY COLLEGE is a leading government institution providing education from PG to grade 12 and offering DCE & pre-DCE programs.</p>
+        </div>
+    </section>
+
+    <!-- Programs Section -->
+    <section id="programs" class="programs">
+        <div class="container">
+            <h2>Our Programs</h2>
+            <ul>
+                <li>Primary Education (PG to Grade 5)</li>
+                <li>Secondary Education (Grade 6 to Grade 12)</li>
+                <li>Diploma in Civil Engineering (DCE)</li>
+                <li>Pre-DCE Courses</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="gallery">
+        <div class="container">
+            <h2>Gallery</h2>
+            <div class="gallery-grid">
+                <img src="{% static 'home/images/pic.jpg' %}" alt="Gallery Image 1">
+                <img src="{% static 'home/images/gallery2.jpg' %}" alt="Gallery Image 2">
+                <img src="{% static 'home/images/gallery3.jpg' %}" alt="Gallery Image 3">
+                <img src="{% static 'home/images/gallery4.jpg' %}" alt="Gallery Image 4">
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2>Contact Us</h2>
+            <p>Email: info@rastriyamavi.edu.np | Phone: +977-123456789</p>
+            <form method="post" action="#">
+                {% csrf_token %}
+                <input type="text" name="name" placeholder="Your Name" required>
+                <input type="email" name="email" placeholder="Your Email" required>
+                <textarea name="message" placeholder="Your Message" required></textarea>
+                <button type="submit">Send Message</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 SHREE RASTRIYA MAVI. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
