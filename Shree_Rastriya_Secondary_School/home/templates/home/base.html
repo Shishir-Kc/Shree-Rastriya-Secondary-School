@@ -30,7 +30,8 @@
                 {% if user.is_authenticated %}
                 
                  {% if user.is_staff %}
-                     <li><a href="{% url 'admin:index' %}">Admin Panel</a></li>
+                     <li><a href="{% url 'home:admin-settings' %}">Admin settings</a></li>
+                     {% comment %} {% url 'admin:index' %} {% endcomment %}
                  {% endif %}
                 
                 {% else %}
