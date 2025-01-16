@@ -26,3 +26,14 @@ def user_login(request):
 
 def about_us(request):
     return render(request,'home/about.html')
+
+@login_required
+def admin_panel(request):
+    return render(request,"home/admin.html")
+
+def Events_List(request):
+    data = models.Event.objects.all()
+    context = {
+        'events':data
+    }
+    return render(request,'home/event_list.html',context)
