@@ -5,14 +5,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'home/css/base.css' %}">
-    <title>Home Page</title>
+    <title>{% block title %}
+    
+    {% endblock title %}</title>
 </head>
 <body>
 
-    <!-- Navigation Bar -->
+    {% block navbar %}
+    
+    
     <nav class="navbar">
         <div class="container">
-            <a href="#" class="logo">
+            <a href="{% url 'home:home'%}" class="logo">
                 <img src="{% static 'home/images/clzlogo.png' %}" alt="Logo" class="navbar-logo">
                 SHREE RASTRIYA MAVI
             </a>
@@ -22,12 +26,26 @@
                 <li><a href="#programs">Programs</a></li>
                 <li><a href="#gallery">Gallery</a></li>
                 <li><a href="#contact">Contact</a></li>
-                <li><a href="{% url 'home:login'%}">Login</a></li>
+
+                {% if user.is_authenticated %}
+                
+                 {% if user.is_staff %}
+                     <li><a href="{% url 'admin:index' %}">Admin Panel</a></li>
+                 {% endif %}
+                
+                {% else %}
+                 <li><a href="{% url 'home:login' %}">Login</a></li>
+               {% endif %}
+            
+            
             </ul>
         </div>
     </nav>
+    {% endblock navbar %}
 
-    <!-- Hero Section -->
+    {% block video %}
+    
+
     <header class="hero">
         <div class="hero-video">
             <video autoplay loop muted>
@@ -36,34 +54,64 @@
             </video>
         </div>
         <div class="hero-content">
-            <h1>Welcome to SHREE RASTRIYA MAVI</h1>
-            <p>Empowering students with quality education and innovation.</p>
+            <h1> {% block h1 %}
+            
+            {% endblock h1 %}</h1>
+            <p>{% block Page %}
+            
+            {% endblock Page %}</p>
             <!-- <a href="#about" class="btn">Learn More</a> -->
         </div>
     </header>
-
-    <!-- About Section -->
-    <section id="about" class="about">
-        <div class="container">
-            <h2>About Us</h2>
-            <p>SHREE RASTRIYA MAVI SECONDARY COLLEGE is a leading government institution providing education from PG to grade 12 and offering DCE & pre-DCE programs.</p>
+    {% endblock video %}
+    
+   {% block about %}
+   
+   <section id="about" class="about">
+       <div class="container">
+           <h2>About Us</h2>
+           <p>SHREE RASTRIYA MAVI SECONDARY COLLEGE is a leading government institution providing education from PG to grade 12 and offering DCE & pre-DCE programs.</p>
         </div>
     </section>
+    {% endblock about %}
 
-    <!-- Programs Section -->
-    <section id="programs" class="programs">
-        <div class="container">
-            <h2>Our Programs</h2>
-            <ul>
-                <li>Primary Education (PG to Grade 5)</li>
-                <li>Secondary Education (Grade 6 to Grade 12)</li>
-                <li>Diploma in Civil Engineering (DCE)</li>
-                <li>Pre-DCE Courses</li>
-            </ul>
+   {% block event %}
+   
+   <section id="upcoming-events" class="upcoming-events">
+       <div class="container">
+           <h2>Upcoming Events</h2>
+           {% if events%}
+           {% for event in events %}
+                    <div class="events-list">
+                        <div class="event">
+                            <h3>{{event.Title}}</h3>
+                            <p>Date: {{event.date}} </p>
+                            <p>Time: {{event.Time}}</p>
+                            <p>Location: {{event.Location}}</p>
+                         <p>Description: {{event.Description}}</p>
+                        </div>
+                        
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="events-list">
+                <div class="event">
+                    <h3> Null </h3>
+                    <p>Date: Null </p>
+                    <p>Time: Null</p>
+                    <p>Location: Null </p>
+                    <p>Description: Null</p>
+                </div>
+                
+            </div>
+            {% endif%}
         </div>
     </section>
+    
+    {% endblock event %} 
 
-    <!-- Gallery Section -->
+    {% block gallery %}
+    
     <section id="gallery" class="gallery">
         <div class="container">
             <h2>Gallery</h2>
@@ -75,28 +123,34 @@
             </div>
         </div>
     </section>
+    {% endblock gallery %}
 
-    <!-- Contact Section -->
-    <section id="contact" class="contact">
-        <div class="container">
-            <h2>Contact Us</h2>
-            <p>Email: info@rastriyamavi.edu.np | Phone: +977-123456789</p>
-            <form method="post" action="#">
-                {% csrf_token %}
-                <input type="text" name="name" placeholder="Your Name" required>
-                <input type="email" name="email" placeholder="Your Email" required>
-                <textarea name="message" placeholder="Your Message" required></textarea>
-                <button type="submit">Send Message</button>
+   {% block contact %}
+   
+   <section id="contact" class="contact">
+       <div class="container">
+           <h2>Contact Us</h2>
+           <p>Email: info@rastriyamavi.edu.np | Phone: +977-123456789</p>
+           <form method="post" action="#">
+               {% csrf_token %}
+               <input type="text" name="name" placeholder="Your Name" required>
+               <input type="email" name="email" placeholder="Your Email" required>
+               <textarea name="message" placeholder="Your Message" required></textarea>
+               <button type="submit">Send Message</button>
             </form>
         </div>
     </section>
+    
+    {% endblock contact %}
 
-    <!-- Footer -->
+    {% block footer %}
+    
     <footer>
         <div class="container">
             <p>&copy; 2025 SHREE RASTRIYA MAVI. All Rights Reserved.</p>
         </div>
     </footer>
-
+    
+ {% endblock footer %}
 </body>
 </html>
