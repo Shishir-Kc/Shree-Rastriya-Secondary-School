@@ -6,7 +6,7 @@
 }
 body {
     font-family: Arial, sans-serif;
-    background-color: rgb(233, 240, 247);
+    background-color: rgb(255, 255, 255);
     color: #333;
     line-height: 1.6;
     }
@@ -21,7 +21,7 @@ body {
 
 
 .navbar {
-    background-color:  rgb(233, 240, 247); /* Navy Blue */
+    background-color:  rgb(255, 255, 255); 
     padding: 1rem 2rem;
     position: sticky;
     top: 0;
@@ -40,7 +40,7 @@ body {
 }
 
 .navbar .logo {
-    color: #6960be;
+    color: #003366;
     font-size: 1.5rem;
     font-weight: bold;
     border-radius: 50%;
@@ -130,16 +130,14 @@ body {
 
 .about,
 .programs,
-.gallery,
-.contact {
+.gallery{
      padding: 40px 20px;
      text-align: center;
 }
 
 .about h2,
 .programs h2,
-.gallery h2,
-.contact h2 {
+.gallery h2{
     font-size: 2em;
     margin-bottom: 20px;
     color: rgb(24, 119, 242);
@@ -165,33 +163,60 @@ body {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     }
 
-.contact form {
-    max-width: 500px;
-    margin: 0 auto;
-    text-align: left;
-}
-
-.contact form input,
-.contact form textarea {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1em;
+    .upcoming-events, .recent-notices {
+        padding: 40px 20px;
+        background-color: #f9f9f9;
+        margin-top: 20px;
     }
-
-.contact form input[type="submit"] {
-    background-color: rgb(24, 119, 242);
-     color: #fff;
-     border: none;
-     cursor: pointer;
-     transition: background-color 0.3s;
-}
-.contact form input[type="submit"]:hover {
-    background-color: rgb(255, 220, 88);
-}
-
+    
+    .upcoming-events h2, .recent-notices h2 {
+        font-size: 2em;
+        color: #003366;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    
+    .events-list, .notices-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+    }
+    
+    .event, .notice {
+        background-color: #ffffff;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .event h3, .notice h3 {
+        font-size: 1.5em;
+        margin-bottom: 10px;
+        color: #333;
+    }
+    
+    .event p, .notice p {
+        font-size: 1.1em;
+        color: #555;
+    }
+    
+    .event p:first-child, .notice p:first-child {
+        font-weight: bold;
+    }
+    
+    /* Hover Effect for Events and Notices */
+    .event:hover, .notice:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        background-color: #f0f8ff;
+    }
+    
+    .event:hover h3, .notice:hover h3 {
+        color: #003366;
+    }
+    
 footer {
      background-color: #333;
      color: #fff;
