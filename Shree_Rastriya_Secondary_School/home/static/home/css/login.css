@@ -29,8 +29,8 @@ h2 {
     position: absolute;
     top: 20px;
     left: 20px;
-    width: 80px;  /* Width of the circle */
-    height: 80px;  /* Height of the circle */
+    width: 150px;  /* Width of the circle */
+    height: 150px;  /* Height of the circle */
     border-radius: 50%;  /* This makes it round */
     overflow: hidden;  /* Hides anything outside the circle */
     border: 2px solid #000; /* Optional: Adds a border around the circle */
