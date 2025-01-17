@@ -7,7 +7,29 @@ body {
     color: #333;
 }
 
-/* Header Styles */
+.navbar {
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+}
+.navbar a {
+    color: #fff;
+    text-decoration: none;
+    margin: 0 15px;
+}
+.navbar a:hover {
+    text-decoration: underline;
+}
+.container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
 header {
     background-color: #007bff;
     color: #fff;
@@ -21,65 +43,81 @@ header h1 {
     font-size: 2.5em;
 }
 
-/* Events Container */
 .events-container {
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 20px;
+    margin: 10px 0;
 }
 
-/* Event List Styles */
 .events-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    list-style-type: none;
+    padding: 0;
 }
 
 .event-item {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* Aligns title and buttons on opposite ends */
     align-items: center;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    padding: 10px 20px;
+    padding: 8px; /* Reduced padding to make the box smaller */
+    border: 1px solid #ccc;
     border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-bottom: 8px; /* Reduced margin */
+    background: #f9f9f9;
+    max-width: 500px; /* Set a maximum width for the event box */
+    margin-left: auto;
+    margin-right: auto; /* Centers the box */
 }
 
-.event-item:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+.event-title {
+    font-size: 16px; /* Smaller font size */
+    font-weight: bold;
+    flex: 1; /* Makes the title take up the remaining space */
+    word-wrap: break-word;
+    text-align: left;
 }
 
-/* Button Styles */
 .event-buttons {
     display: flex;
-    gap: 10px;
+    gap: 8px; /* Reduced gap between buttons */
 }
 
-.event-buttons button {
-    padding: 5px 10px;
-    font-size: 14px;
-    color: #fff;
+.update-btn {
+    padding: 5px 8px; /* Smaller button padding */
     border: none;
-    border-radius: 5px;
+    background-color: #007BFF;
+    color: white;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    border-radius: 4px;
+    font-size: 13px; /* Smaller font size */
 }
 
-.event-buttons .update-btn {
-    background-color: #28a745;
+.delete-btn{
+    display: inline-block;
+    padding: 10px 15px;
+    color: #fff;
+    background-color: #ff0000;
+    text-decoration: none;
+    border-radius: 4px;
+}
+.add-btn{
+    display: inline-block;
+    padding: 10px 15px;
+    color: #fff;
+    background-color:green;
+    text-decoration: none;
+    border-radius: 4px;
 }
 
-.event-buttons .update-btn:hover {
-    background-color: #218838;
+.btn {
+    display: inline-block;
+    padding: 10px 15px;
+    color: #fff;
+    background-color: #007BFF;
+    text-decoration: none;
+    border-radius: 4px;
+}
+.btn:hover {
+    background-color: #0056b3;
 }
 
-.event-buttons .delete-btn {
-    background-color: #dc3545;
-}
-
-.event-buttons .delete-btn:hover {
-    background-color: #c82333;
+.delete-btn:hover {
+    background-color: red;
 }
