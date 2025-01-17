@@ -1,0 +1,34 @@
+<html>
+    <head>
+        <title> Fail Safe </title>
+    </head>
+<body>
+
+<h1> fail safe is on ! </h1>
+<h2> ALL USERS </h2>
+<table border>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.email |default:" Not Given ! " }}</td>
+            <td class="actions">
+               
+                <a href="{% url "home:safe" user.id %}" onclick="return confirm('Are you sure you want to delete this user?');">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</body>
+</html>
+
