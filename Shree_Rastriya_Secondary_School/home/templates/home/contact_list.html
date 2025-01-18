@@ -1,0 +1,51 @@
+{% extends "home/navbar.html" %}
+{% block title %}
+    Contacted Us
+{% endblock title %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacted People</title>
+    <link rel="stylesheet" href="{% static 'home/css/contact_list.css' %}">
+</head>
+<body>
+    <div class="gap"></div>
+    <div class="layout">
+        <!-- Left Column: List of Contacts -->
+        <div class="container">
+            {% if contacts %}
+                {% for contact in contacts %}
+                    <div class="card">
+                        <p class="contact-name">{{ contact.name }}</p>
+                        <a href="{% url 'home:contact-detail' contact.id %}" class="view-btn">View</a>
+                        <a href="{% url 'home:delete-contact' contact.id %}" class="delete-btn">Delete</a>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No contacts available.</p>
+            {% endif %}
+        </div>
+
+        <!-- Right Column: Contact Details -->
+        <div class="details-container">
+            <h2>Contact Details</h2>
+            {% if contact %}
+            <div class="details">
+                <p><strong>Name:</strong> <span>{{contact.name}}</span></p>
+                <p><strong>Email:</strong> <span>{{contact.email}}</span></p>
+                <p><strong>Phone:</strong> <span>{{contact.number}}</span></p>
+                <p><strong>Message:</strong> <span>{{contact.message}}</span></p>
+            </div>
+            {% else %}
+                <p>Select a contact to see details.</p>
+            {% endif %}
+        </div>
+    </div>
+
+</body>
+</html>
+{% endblock content %}

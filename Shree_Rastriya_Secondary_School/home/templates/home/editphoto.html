@@ -1,0 +1,161 @@
+{% load static %}
+
+<html>
+    <head>
+        <title>Editing = > {{photo.name}}</title>
+    </head>
+    <body>
+        <div class="navbar">
+            <h2>Admin Panel - Welcome, {{ user.username |title}}</h2>
+            <div>
+                <a href="{% url 'home:home' %}">Home</a>
+                <a href="{% url 'home:events' %}">Events</a>
+                <a href="{% url "home:staff-manage" %}"> Staff </a>
+                <a href="#">Notices</a>
+                <a href="{% url "home:logout" %}">Logout</a>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="image-section">
+                <img src="{{ photo.image.url }}" alt="Uploaded Photo" class="image">
+            </div>
+
+            <div class="form-section">
+
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="name">Title</label>
+                        <input type="text" id="name" name="name"  value="{{photo.name}}" placeholder="{{photo.name}}"required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="image">Image</label>
+                        <input type="file" id="image" name="image" accept="image/*" required>
+                    </div>
+
+                    <button type="submit">Upload</button>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>
+
+<style>
+    /* Basic Reset */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f5f5f5;
+        padding: 20px;
+    }
+
+    .navbar {
+        background-color: #333;
+        color: #fff;
+        padding: 10px;
+        text-align: center;
+    }
+    .navbar a {
+        color: #fff;
+        text-decoration: none;
+        margin: 0 15px;
+    }
+    .navbar a:hover {
+        text-decoration: underline;
+
+    }
+
+    .container {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 30px;
+    }
+
+    .image-section {
+        flex: 1;
+        max-width: 50%;
+    }
+    .gap {
+        margin-top: 100px; /* Adjusts the gap */
+    }
+    .image {
+        max-width: 300px; /* Limit the width */
+        max-height: 300px; /* Limit the height */
+        width: auto; /* Ensure aspect ratio is maintained */
+        height: auto; /* Ensure aspect ratio is maintained */
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-section {
+        flex: 1;
+        max-width: 40%;
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        color: #2980b9;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 16px;
+        margin-bottom: 8px;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 8px;
+        font-size: 14px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+
+    button {
+        padding: 10px 15px;
+        background-color: #2980b9;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        width: 100%;
+    }
+
+    button:hover {
+        background-color: #3498db;
+    }
+
+    /* Responsive Design */
+    @media screen and (max-width: 768px) {
+        .container {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .image-section,
+        .form-section {
+            max-width: 100%;
+        }
+
+        h1 {
+            font-size: 22px;
+        }
+    }
+</style>

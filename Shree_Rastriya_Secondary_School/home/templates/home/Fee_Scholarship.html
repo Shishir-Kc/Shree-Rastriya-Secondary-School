@@ -1,0 +1,151 @@
+{% extends "home/navbar.html" %}
+{% block title %}
+    Education
+{% endblock title %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        .gap {
+            margin-top: 15%;
+        }
+
+        section {
+            margin: 2rem auto;
+            padding: 1rem;
+            width: 90%;
+            max-width: 800px;
+            background: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        h1, h2 {
+            color: rgb(76, 139, 175);
+        }
+
+        .scholarship {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fefefe;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .scholarship:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .scholarship:hover ~ .scholarship {
+            transform: scale(1.02);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .scholarship h2 {
+            margin-top: 0;
+        }
+
+        .scholarship p {
+            margin: 0.5rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+            background: #fff;
+        }
+
+        table th, table td {
+            padding: 1rem;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: rgb(76, 147, 175);
+            color: white;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .no-data {
+            text-align: center;
+            font-style: italic;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <div class='gap'>
+    </div>
+
+    
+    <section>
+        <h2>Available Scholarships</h2>
+        {% if Scholars %}
+        {% for Scholar in Scholars %}
+        <article class="scholarship">
+            <h2>{{ Scholar.title }}</h2>
+            <p><strong>Eligibility:</strong> {{ Scholar.eligibility }}</p>
+            <p><strong>Details:</strong> {{ Scholar.details }}</p>
+            <p><strong>Deadline:</strong> {{ Scholar.deadline }}</p>
+        </article>
+        {% endfor %}
+        {% else %}
+        <p class="no-data">No scholarships available at the moment.</p>
+        {% endif %}
+    </section>
+
+    <section>
+        <h2>Fee Structure</h2>
+        {% if Fees %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Faculty</th>
+                    <th>Admission Fee</th>
+                    <th>Yearly Charges</th>
+                    <th>Tuition Fee</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for fee in Fees %}
+                <tr>
+                    <td>{{ fee.faculty }}</td>
+                    <td>Rs.{{ fee.admission_fee }}</td>
+                    <td>Rs.{{ fee.yearly_charges }}</td>
+                    <td>Rs.{{ fee.tuition_fee }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="no-data">Fee details are not available at the moment.</p>
+        {% endif %}
+    </section>
+</body>
+</html>
+
+{% endblock content %}

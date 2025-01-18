@@ -1,0 +1,97 @@
+{% extends "home/navbar.html" %}
+{% block content %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Information Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            color: #333;
+        }
+        .section {
+            margin: 30px 0;
+        }
+        .scholarship, .fee-structure {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background-color: #f9f9f9;
+        }
+        .scholarship h3, .fee-structure h3 {
+            margin: 0 0 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Information Page</h1>
+
+        <!-- Scholarships Section -->
+        <div class="section">
+            <h2>Available Scholarships</h2>
+            {% if education %}
+                {% for scholarship in education %}
+                    <div class="scholarship">
+                        <h3>{{ scholarship.scholarship}}</h3>
+                        <p>{{ scholarship.description }}</p>
+                        <p><strong>Eligibility:</strong> {{ scholarship.eligibility_criteria }}</p>
+                        <p><strong>Deadline:</strong> {{ scholarship.application_deadline }}</p>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No scholarships are currently available.</p>
+            {% endif %}
+        </div>
+
+        <!-- Fee Structure Section -->
+        <div class="section">
+            <h2>Admission Fee Structure</h2>
+            {% if education %}
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th style="border: 1px solid #ddd; padding: 8px;">Faculty</th>
+                            <th style="border: 1px solid #ddd; padding: 8px;">Tuition Fee</th>
+                            <th style="border: 1px solid #ddd; padding: 8px;">Admission Fee</th>
+                            <th style="border: 1px solid #ddd; padding: 8px;">Yearly Charges</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for fee in education %}
+                            <tr>
+                                <td style="border: 1px solid #ddd; padding: 8px;">{{ fee.faculty }}</td>
+                                <td style="border: 1px solid #ddd; padding: 8px;">Rs.{{ fee.Tuition_Fee }}</td>
+                                <td style="border: 1px solid #ddd; padding: 8px;">Rs.{{ fee.Admission_Fee }}</td>
+                                <td style="border: 1px solid #ddd; padding: 8px;">Rs.{{ fee.Year_Charge|default:"N/A" }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No fee structures are currently available.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
+{% endblock content %}

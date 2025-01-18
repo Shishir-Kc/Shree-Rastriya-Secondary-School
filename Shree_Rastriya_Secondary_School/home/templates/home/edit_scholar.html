@@ -1,0 +1,148 @@
+
+<div class="navbar">
+    <h2>Admin Panel - Welcome, {{ user.username |title}}</h2>
+    <div>
+        <a href="{% url 'home:home' %}">Home</a>
+        <a href="{% url 'home:events' %}">Events</a>
+        <a href="{% url "home:staff-manage" %}"> Staff </a>
+        <a href="{% url "home:add-notice" %}">Notices</a>
+        <a href="{% url "home:logout" %}">Logout</a>
+    </div>
+</div>
+  <div class="container">
+    <!-- Left column: List of Scholarships -->
+    <div class="left-column">
+      <h3>Scholarships</h3>
+      <ul class="scholarship-list">
+        {% for fee in fees %}
+          <li class="scholarship-item" onmouseover="this.style.cursor='pointer'" onclick="window.location.href='{% url 'scholarship_fee_edit' fee.pk %}'">
+            {{ fee.scholarship_name }}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- Right column: Add/Edit Form -->
+    <div class="right-column">
+      <h3>{% if form.instance.pk %}Edit{% else %}Add{% endif %} Scholarship Fee</h3>
+      <form method="post">
+        {% csrf_token %}
+
+        <!-- Custom form fields -->
+        <div class="form-group">
+          <label for="title">Scholarship Name</label>
+          <input type="text" id="title" name="title"  required>
+        </div>
+
+        <div class="form-group">
+          <label for="description">description</label>
+          <input type="text" id="description" name="decoration"  required>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea id="description" name="description" > </textarea>
+        </div>
+
+        <button type="submit">Save</button>
+      </form>
+    </div>
+  </div>
+
+  <style>
+    .container {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .left-column {
+      width: 40%;
+      background-color: #f4f4f4;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .right-column {
+      width: 55%;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .scholarship-list {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .scholarship-item {
+      padding: 10px;
+      margin: 5px 0;
+      background-color: #e0e0e0;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .scholarship-item:hover {
+      background-color: #ddd;
+    }
+
+    .scholarship-item:active {
+      background-color: #ccc;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      font-weight: bold;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+    }
+
+    form button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    form button:hover {
+      background-color: #45a049;
+    }
+    .navbar {
+        background-color: #333;
+        color: #fff;
+        padding: 10px;
+        text-align: center;
+    }
+    .navbar a {
+        color: #fff;
+        text-decoration: none;
+        margin: 0 15px;
+    }
+    .navbar a:hover {
+        text-decoration: underline;
+
+    }
+  </style>
+

@@ -1,0 +1,257 @@
+{% extends "home/navbar.html" %}
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View and Update Notice</title>
+    <link rel="stylesheet" href="{% static 'home/css/notice_update_page.css' %}">
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .gap {
+            margin-top: 15%;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            padding: 20px;
+        }
+
+        /* Container for the entire layout */
+        .container {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            margin: 0 auto;
+            max-width: 1200px;
+        }
+
+        /* Left side: Notice details */
+        .notice-details {
+            flex: 1;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* Image styling */
+        .notice-image-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .notice-image {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            cursor: pointer;
+        }
+
+        .notice-title {
+            font-size: 20px;
+            color: #3b5998;
+            margin-bottom: 10px;
+        }
+
+        .notice-description {
+            font-size: 14px;
+            color: #555;
+            text-align: justify;
+        }
+
+        /* Right side: Update form */
+        .update-form {
+            flex: 1;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .update-form h2 {
+            color: #3b5998;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .form-group textarea {
+            resize: none;
+        }
+
+        .update-btn {
+            display: inline-block;
+            padding: 10px 15px;
+            text-align: center;
+            color: white;
+            background-color: #3b5998;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .update-btn:hover {
+            background-color: #2d4373;
+        }
+
+        /* Back Button Styling */
+        .back-button {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            padding: 10px 20px;
+            background-color: #3b5998;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .back-button:hover {
+            background-color: #2d4373;
+        }
+
+        /* Lightbox styling */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .delete-btn {
+            display: inline-block;
+            padding: 10px 15px;
+            text-align: center;
+            color: white;
+            background-color: #e74c3c; /* Red color */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 20px;
+            text-decoration: none;
+        }
+        
+        .delete-btn:hover {
+            background-color: #c0392b; /* Darker red */
+        }
+        
+
+        .lightbox img {
+            max-width: 60%; /* Adjusted width for better size */
+            max-height: 80%; /* Adjusted height for better proportions */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+            border-radius: 8px;
+            border: 2px solid white; /* Subtle border for a clean look */
+            transition: transform 0.2s ease; /* Smooth zoom animation */
+        }
+
+        .lightbox img:hover {
+            transform: scale(1.05); /* Slight zoom on hover */
+        }
+
+        .lightbox:target {
+            display: flex;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="gap"></div>
+    <div class="container">
+        <!-- Left side: Notice details -->
+        <div class="notice-details">
+            <!-- Image container for square shape and lightbox trigger -->
+            <div class="notice-image-container">
+                <a href="#lightbox">
+                    <img src="{{ notice.notice_image.url }}" alt="Notice Image" class="notice-image">
+                </a>
+            </div>
+            <div class="notice-content">
+                <h2 class="notice-title">{{ notice.title }}</h2>
+                <p class="notice-description">{{ notice.description }}</p>
+            </div>
+        </div>
+
+        <!-- Right side: Update notice form (Only visible if the user is logged in and an admin) -->
+        {% if user.is_authenticated and user.is_staff %}
+        <div class="update-form">
+            <h2>Update Notice</h2>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="title">Title</label>
+                    <input type="text" id="title" name="title" value="{{ notice.title }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" rows="5" required>{{ notice.description }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="image">Image</label>
+                    <input type="file" id="image" name="notice_image" >
+                </div>
+                <button type="submit" class="update-btn">Update</button>
+        
+                <!-- Delete Button -->
+                <a href="{% url 'home:notice-delete' notice.id %}" class="delete-btn"> Delete </a
+                </form>
+            </form>
+        </div>
+        
+        {% endif %}
+    </div>
+
+    <!-- Lightbox again for image display -->
+    <div id="lightbox" class="lightbox">
+        <!-- Back button -->
+        <a href="" class="back-button">Back</a>
+        <img src="{{ notice.notice_image.url }}" alt="Magnified Notice Image">
+    </div>
+</body>
+
+</html>
+
+{% endblock content %}

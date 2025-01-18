@@ -5,48 +5,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'home/css/base.css' %}">
-    <title>{% block title %}
-    
-    {% endblock title %}</title>
+    <title>{% block title %}Default Title{% endblock title %}</title>
 </head>
 <body>
-
     {% block navbar %}
-    
-    
     <nav class="navbar">
         <div class="container">
-            <a href="{% url 'home:home'%}" class="logo">
+            <a href="{% url 'home:home' %}" class="logo">
                 <img src="{% static 'home/images/clzlogo.png' %}" alt="Logo" class="navbar-logo">
                 SHREE RASTRIYA MAVI
             </a>
-    
             <ul class="nav-links">
-                <li><a href="#about">About Us</a></li>
-                <li><a href="#programs">Programs</a></li>
-                <li><a href="#gallery">Gallery</a></li>
-                <li><a href="#contact">Contact</a></li>
-
+                <li><a href="{% url 'home:about_us' %}">About Us</a></li>
+                <li><a href="{% url "home:gallery" %}">Gallery</a></li>
+                <li><a href="{% url "home:notice" %}">Notice</a></li>
+               
                 {% if user.is_authenticated %}
-                
-                 {% if user.is_staff %}
-                     <li><a href="{% url 'home:admin-settings' %}">Admin settings</a></li>
-                     {% comment %} {% url 'admin:index' %} {% endcomment %}
-                 {% endif %}
+                    {% if user.is_staff %}
+                        <li><a href="{% url 'home:admin-settings' %}">Admin Settings</a></li>
+                        <li><a href="{% url 'home:contact-list' %}"> Contact-List </a></li>
+                    {% endif %}
+                {% else %}
+                    <li><a href="{% url "home:contact" %}">Contact</a></li>
+                    <li><a href="{% url 'home:login' %}">Login</a></li>
+                {% endif %}
+                {% if user.is_authenticated %}
+                   <li><a href="{% url 'home:logout' %}">Log-out</a></li>
                 
                 {% else %}
-                 <li><a href="{% url 'home:login' %}">Login</a></li>
-               {% endif %}
-            
-            
+                
+                {% endif %}
             </ul>
         </div>
     </nav>
     {% endblock navbar %}
 
     {% block video %}
-    
-
     <header class="hero">
         <div class="hero-video">
             <video autoplay loop muted>
@@ -55,104 +49,88 @@
             </video>
         </div>
         <div class="hero-content">
-            <h1> {% block h1 %}
-            
-            {% endblock h1 %}</h1>
-            <p>{% block Page %}
-            
-            {% endblock Page %}</p>
-            <!-- <a href="#about" class="btn">Learn More</a> -->
+            <h1>{% block h1 %}Welcome{% endblock h1 %}</h1>
+            <p>{% block page %}Welcome to Shree RASTRIYA MAVI .{% endblock page %}</p>
         </div>
     </header>
     {% endblock video %}
-    
-   {% block about %}
-   
-   <section id="about" class="about">
-       <div class="container">
-           <h2>About Us</h2>
-           <p>SHREE RASTRIYA MAVI SECONDARY COLLEGE is a leading government institution providing education from PG to grade 12 and offering DCE & pre-DCE programs.</p>
-        </div>
-    </section>
-    {% endblock about %}
 
-   {% block event %}
-   
-   <section id="upcoming-events" class="upcoming-events">
-       <div class="container">
-           <h2>Upcoming Events</h2>
-           {% if events%}
-           {% for event in events %}
-                    <div class="events-list">
-                        <div class="event">
-                            <h3>{{event.Title}}</h3>
-                            <p>uploaded At : {{event.uploaded_date}} </p>
-                            <p> date : {{event.date}}
-                            <p>Time: {{event.Time}}</p>
-                            <p>Location: {{event.Location}}</p>
-                         <p>Description: {{event.Description}}</p>
-                        </div>
-                        
+
+    {% block event %}
+    <section id="upcoming-events" class="upcoming-events">
+        <div class="container">
+            <h2>Upcoming Events</h2>
+            {% if events %}
+                {% for event in events %}
+                    <div class="event">
+                        <h3>{{ event.Title }}</h3>
+                        <p>Uploaded At: {{ event.uploaded_date }}</p>
+                        <p>Date: {{ event.date }}</p>
+                        <p>Time: {{ event.Time }}</p>
+                        <p>Location: {{ event.Location }}</p>
+                        <p>Description: {{ event.Description }}</p>
                     </div>
-                    {% endfor %}
-                    {% else %}
-                    <div class="events-list">
+                {% endfor %}
+            {% else %}
                 <div class="event">
-                    <h3> Null </h3>
-                    <p>Date: Null </p>
-                    <p>Time: Null</p>
-                    <p>Location: Null </p>
-                    <p>Description: Null</p>
+                    <h3>No Upcoming Events</h3>
                 </div>
-                
-            </div>
-            {% endif%}
+            {% endif %}
         </div>
     </section>
-    
-    {% endblock event %} 
+    {% endblock event %}
 
     {% block gallery %}
-    
     <section id="gallery" class="gallery">
         <div class="container">
             <h2>Gallery</h2>
             <div class="gallery-grid">
-                <img src="{% static 'home/images/pic.jpg' %}" alt="Gallery Image 1">
-                <img src="{% static 'home/images/gallery2.jpg' %}" alt="Gallery Image 2">
-                <img src="{% static 'home/images/gallery3.jpg' %}" alt="Gallery Image 3">
-                <img src="{% static 'home/images/gallery4.jpg' %}" alt="Gallery Image 4">
+                {% for image in images %}
+                    <div class="gallery-item">
+                        <img src="{{ image.image.url }}" alt="Gallery Image">
+                    </div>
+                {% endfor %}
             </div>
         </div>
+        
+        <style>
+            .gallery-grid {
+                display: grid;
+                grid-template-columns: repeat(5, 1fr); /* Creates 5 equal-width columns */
+                gap: 20px; /* Adds space between the images */
+            }
+        
+            .gallery-item img {
+                width: 100%; /* Makes the image take up the full width of its container */
+                height: auto; /* Maintains the aspect ratio */
+                border-radius: 8px; /* Optional: adds rounded corners to images */
+            }
+        </style>
     </section>
     {% endblock gallery %}
 
-   {% block contact %}
-   
-   <section id="contact" class="contact">
-       <div class="container">
-           <h2>Contact Us</h2>
-           <p>Email: info@rastriyamavi.edu.np | Phone: +977-123456789</p>
-           <form method="post" action="#">
-               {% csrf_token %}
-               <input type="text" name="name" placeholder="Your Name" required>
-               <input type="email" name="email" placeholder="Your Email" required>
-               <textarea name="message" placeholder="Your Message" required></textarea>
-               <button type="submit">Send Message</button>
+    {% block contact %}
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2>Contact Us</h2>
+            <p>Email: info@rastriyamavi.edu.np | Phone: +977-123456789</p>
+            <form method="post" action="#">
+                {% csrf_token %}
+                <input type="text" name="name" placeholder="Your Name" required>
+                <input type="email" name="email" placeholder="Your Email" required>
+                <textarea name="message" placeholder="Your Message" required></textarea>
+                <button type="submit">Send Message</button>
             </form>
         </div>
     </section>
-    
     {% endblock contact %}
 
     {% block footer %}
-    
     <footer>
         <div class="container">
-            <p>&copy; 2025 SHREE RASTRIYA MAVI. All Rights Reserved.</p>
+            <p>&copy; 2025 MrKc. All Rights Reserved.</p>
         </div>
     </footer>
-    
- {% endblock footer %}
+    {% endblock footer %}
 </body>
 </html>

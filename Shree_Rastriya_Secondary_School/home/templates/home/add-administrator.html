@@ -1,0 +1,207 @@
+{% extends "home/navbar.html" %}
+{% block content %}
+{% block title %}
+
+{% endblock title %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            width: 90%;
+            max-width: 1200px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-container {
+            width: 48%;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            color: #333;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .form-container {
+            width: 48%;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-container h3 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-container input, .form-container select {
+            padding: 10px;
+            font-size: 16px;
+            margin: 10px 0;
+            width: 100%;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .form-container button {
+            background-color: #2980b9;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            font-size: 16px;
+            border-radius: 5px;
+            width: 100%;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .form-container button:hover {
+            background-color: #1c5988;
+            transform: scale(1.05);
+        }
+
+        .table-container h3 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Flexbox for the buttons in the same row */
+        .action-buttons {
+            display: flex;
+            justify-content: space-around;
+            gap: 10px; /* Space between the buttons */
+        }
+
+        .view-btn, .delete-btn {
+            padding: 10px 15px;
+            font-size: 14px;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .view-btn {
+            background-color: #2980b9;
+        }
+
+        .view-btn:hover {
+            background-color: #1c5988;
+            transform: scale(1.05);
+        }
+
+        .delete-btn {
+            background-color: #e74c3c;
+        }
+
+        .delete-btn:hover {
+            background-color: #c0392b;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        
+        <!-- Table Container -->
+        <div class="table-container">
+            <h3>Administrator Table</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Administrator Name</th>
+                        <th>Phone Number</th>
+                        <th>Role</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Loop through the users -->
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.name }}</td>
+                        <td>{{ user.contact }}</td>
+                        <td>{{ user.Administrator_Role }}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="{% url "home:detail-administrator" user.id %}" class="view-btn">Edit</a>
+                                <a href="{% url "home:delete-administrator" user.id %}" class="delete-btn">Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Form Container -->
+        <div class="form-container">
+            <h3>Add/Update Administrator</h3>
+            <form method="POST" action="">
+                {% csrf_token %}
+                <input type="text" name="name" placeholder="{{admin.name | default:"Administrator Name"}}" value="{{admin.name}}" required><br>
+                <input type="text" name="number" placeholder="{{admin.contact | default:"Phone Number"}}" value="{{admin.contact}}"required><br>
+                <select name="role" required>
+                    <option value="College Co-ordinator">College Co-ordinator</option>
+                    <option value="Principal">Principal</option>
+                    <option value="Vice-Principal">Vice-Principal</option>
+                    {% comment %} <option value="Developer">Developer</option> {% endcomment %}
+                </select><br>
+                <button type="submit">Save</button>
+            </form>
+        </div>
+    </div>
+
+</body>
+
+</html>
+{% endblock %}

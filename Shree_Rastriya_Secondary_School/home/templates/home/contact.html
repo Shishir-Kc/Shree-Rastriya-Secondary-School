@@ -1,0 +1,58 @@
+{% extends "home/navbar.html" %}
+<!DOCTYPE html>
+{% block title %}
+    contact
+{% endblock title %}
+{% load static %}
+{% block content %}
+
+<html lang="en">
+    <div class="gap">
+    </div>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Contact Us</title>
+        <link rel="stylesheet" href="{% static 'home/css/contact.css' %}">
+    </head>
+    <body>
+        <div class="contact-page">
+            
+         
+      
+
+        <main>
+            <div class="container">
+                <div class="contact-info">
+                    <h3>Get in Touch</h3>
+                    <p><strong>Address:</strong> Aapgachi,Itahari-1,Sunsari</p>
+                    <p><strong>Email:</strong> rastriyatecsschool@gmail.com</p>
+                    <p><strong>Phone:</strong> 025-475766 </p>
+                </div>
+                
+                <div class="contact-form">
+                    <h3>Send Us a Message</h3>
+                    <form method="post" action="{% url 'home:contact' %}">
+                        {% csrf_token %}
+                        <label for="name">Your Name:</label>
+                        <input type="text" id="name" name="name" placeholder="Enter your name" required>
+                        
+                        <label for="email">Your Email:</label>
+                        <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                        
+                        <label for="contact">Contact Number:</label>
+                        <input type="text" id="contact" name="number" placeholder="Your Contact Number" required>
+                        
+                        <label for="message">Message:</label>
+                        <textarea id="message" name="message" rows="5" placeholder="Write your message" required></textarea>
+
+                        <button type="submit" class="submit-btn">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
+
+{% endblock content %}

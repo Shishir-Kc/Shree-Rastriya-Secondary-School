@@ -1,0 +1,109 @@
+{% extends "home/navbar.html" %}
+<!DOCTYPE html>
+{% block content %}
+{% load static %}
+<html lang="en">
+    {% block title %}
+        Teachers ! 
+    {% endblock title %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profiles</title>
+    <style>
+        .gap {
+            margin-top: 150px; /* Adjusts the gap */
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;  /* Remove default padding */
+        }
+        .profile-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);  /* Create 4 equal-width columns */
+            gap: 30px;  /* Add spacing between the profile cards */
+            justify-items: center;  /* Centers the items inside the grid */
+            width: 100%;  /* Ensure the container takes up the full width */
+            padding: 0 20px;  /* Add padding on the sides */
+            box-sizing: border-box; /* Include padding in the element's total width */
+        }
+        .profile-card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            width: 250px;  /* Width of each profile card */
+            padding: 10px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;  /* Smooth transition */
+        }
+        .profile-card:hover {
+            transform: scale(1.05);  /* Scale up the profile card */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);  /* Enhance the shadow on hover */
+        }
+        .profile-card img {
+            width: 100%;
+            height: auto;
+            border-radius: 50%;
+            margin-bottom: 15px;
+        }
+        .profile-card h3 {
+            font-size: 20px;
+            color: #333;
+        }
+        .profile-card p {
+            font-size: 16px;
+            color: #666;
+        }
+
+        /* Make the layout responsive for smaller screens */
+        @media (max-width: 1024px) {
+            .profile-container {
+                grid-template-columns: repeat(3, 1fr); /* 3 columns for medium screens */
+            }
+        }
+
+        @media (max-width: 768px) {
+            .profile-container {
+                grid-template-columns: repeat(2, 1fr); /* 2 columns for small screens */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .profile-container {
+                grid-template-columns: 1fr; /* 1 column for mobile screens */
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class ="gap"> 
+    </div>
+
+    <h1 style="text-align:center;"> Our Teachers </h1>
+    <div class ="gap"> 
+    </div>
+
+    <div class="profile-container">
+     
+        {% for teacher in teachers %}
+            <div class="profile-card">
+                {% if teacher.teacher_image %}
+                    <img src="{{ teacher.teacher_image.url }}" alt="{{ teacher.name }}'s image">
+                {% else %}
+                    <img src="{% static 'home/images/default.jpg' %}" alt="Default Image">
+                {% endif %}
+                <h3>{{ teacher.name }}</h3>
+                <p>Subject: {{ teacher.subject }}</p>
+                <p>Contact: {{ teacher.contact }}</p>
+            </div>
+        {% endfor %}
+    </div>
+    
+</body>
+</html>
+{% endblock %}

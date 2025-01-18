@@ -1,0 +1,104 @@
+{% extends "home/navbar.html" %}
+<!DOCTYPE html>
+{% block content %}
+<html lang="en">
+
+<head>
+    {% block title %}
+        User Table
+    {% endblock title %}
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Table</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .gap {
+            margin-top: 150px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .table-container {
+            max-width: 90%;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            color: #333;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .checkbox {
+            transform: scale(1.2); /* Increase checkbox size */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="gap"></div>
+
+    <h1>Our Administrators</h1>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Phone Number</th>
+                    <th>Administrator Role</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Loop through the users -->
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.name }}</td>
+                    <td>{{ user.contact }}</td>
+                    <td>
+                        {% comment %} <input type="checkbox" class="checkbox" disabled {% if user.is_admin %}checked{% endif %}> {% endcomment %}
+                        {{user.Administrator_Role}}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>
+{% endblock %}

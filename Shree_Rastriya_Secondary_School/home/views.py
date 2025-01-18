@@ -6,10 +6,13 @@ from django.contrib.auth.decorators import login_required , permission_required
 
 
 
+
 def home(request):
     data = models.Event.objects.all().order_by('-uploaded_date')[:2]
+    image = models.Gallery.objects.all().order_by('-date')[:5]
     context = {
-        'events':data
+        'events':data,
+        'images':image
     }
     return render(request,'home/home.html',context)
 
@@ -130,3 +133,299 @@ def fail_safe(request,user_id):
     data.delete()
     return redirect('home:login')
     
+def teacher_manage(request):
+    data = models.Teacher.objects.all()
+    context = {
+        'teachers':data
+    }
+    return render (request,'home/teacher_manage.html',context)
+
+def Administrator(request):
+    data = models.Administrator.objects.all()
+    context = {
+        'users':data
+    }
+    return render(request,'home/Administrator.html',context)
+
+
+
+
+
+@login_required
+def manage_teacher(request):
+    if request.method == "POST":
+        name = request.POST.get('name')
+        subject = request.POST.get('subject')
+        profile = request.FILES.get('image')
+        contact = request.POST.get('number')
+
+        data = models.Teacher(user=request.user,name=name,contact=contact,subject=subject,teacher_image=profile)
+        data.save()
+        return redirect('home:teacher-manage')
+    else:
+     data = models.Teacher.objects.all()
+     context = { 
+         'teachers':data
+     }
+     return render(request,'home/teacher.html',context) 
+
+@login_required
+def delete_teacher(request,teacher_id):
+    data = models.Teacher.objects.get(id=teacher_id)
+    data.delete()
+    return redirect("home:teacher-manage")
+
+@login_required
+def Edit_teacher(request,teacher_id):
+    if request.method  == "POST":
+        data = models.Teacher.objects.get(id=teacher_id)
+        name = request.POST.get('name')
+        subject = request.POST.get('subject')
+        profile = request.FILES.get('image')
+        contact = request.POST.get('number')
+        user = request.user
+        data.user = request.user
+        data.name = name
+        data.contact = contact
+        data.subject = subject
+        data.teacher_image=profile
+        data.save()
+        return redirect('home:teacher-manage')
+    else:
+        data = models.Teacher.objects.get(id=teacher_id)
+        context = {
+            'teacher':data
+        }
+        return render(request,'home/edit_teacher.html',context)
+    
+
+def Gallery(request):
+    image = models.Gallery.objects.all()
+    context = {
+        'photos':image
+    }
+    return render(request,'home/gallery.html',context)
+
+@login_required
+def list_gallery(request):
+    data = models.Gallery.objects.all()
+    context = { 
+        'names':data
+    }
+    return render(request,'home/list_gallery.html',context)
+
+
+@login_required
+def add_gallery(request):
+    if request.method == "POST":
+        title = request.POST.get('title')
+        image = request.FILES.get('image')
+        user = request.user
+        data = models.Gallery(user=user,name=title,image=image)
+        data.save()
+        return redirect('home:list-gallery')
+    else:
+        return redirect('home:list-gallery')
+    
+
+@login_required
+def Edit_photo(request,photo_id):
+    if request.method == "POST":
+        mod = models.Gallery.objects.get(id=photo_id)
+        user = request.user
+        title = request.POST.get('name')
+        image = request.FILES.get('image')
+        mod.user = user
+        mod.name=title
+        mod.image=image
+        mod.save()
+        return redirect('home:list-gallery')
+    else:
+        data = models.Gallery.objects.get(id=photo_id)
+        context = {
+            'photo':data
+        }
+
+        return render(request,'home/editphoto.html',context)
+        
+@login_required
+def Del_Photo(request,photo_id):
+    mod = models.Gallery.objects.get(id=photo_id)
+    mod.delete()
+    return redirect('home:list-gallery')
+
+def Contact(request):
+    if request.method == "POST":
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        number = request.POST.get('number')
+        message = request.POST.get('message')
+        db = models.Contact(name=name,email=email,number=number,message=message)
+        db.save()
+        return redirect('home:home')
+        
+    else:
+
+     return render (request,'home/contact.html')
+@login_required
+def contact_list(request,):
+    data = models.Contact.objects.all()
+    context ={
+        'contacts':data
+    }
+    return render(request,'home/contact_list.html',context)
+
+@login_required
+def contact_detail(request,contact_id):
+    data = models.Contact.objects.get(id=contact_id)
+    data_2 = models.Contact.objects.all()
+    context = {
+        'contact':data,
+        'contacts':data_2
+    }
+    return render(request,'home/contact_list.html',context)
+
+@login_required
+def Delete_contact(request,contact_id):
+    mod = models.Contact.objects.get(id=contact_id)
+    mod.delete()
+    return redirect('home:contact-list')
+
+
+@login_required
+def add_Administrator(request):
+    if request.method == "POST":
+        name = request.POST.get('name')
+        number = request.POST.get('number')
+        role = request.POST.get('role')
+        dat = models.Administrator(name=name,contact=number,Administrator_Role=role)
+        dat.save()
+        return redirect('home:add-administrator')
+   
+
+    data = models.Administrator.objects.all()
+    context = {
+        'users':data
+    }
+    return render(request,'home/add-administrator.html',context)
+
+@login_required
+def Detail_administrator(request,administrator_id):
+    if request.method == "POST":
+        dat = models.Administrator.objects.get(id=administrator_id)
+        name = request.POST.get('name')
+        number = request.POST.get('number')
+        role = request.POST.get('role')
+        dat.name = name
+        dat.contact = number
+        dat.Administrator_Role=role
+        dat.save()
+        return redirect('home:add-administrator')
+
+    data = models.Administrator.objects.get(id=administrator_id)
+    data_2 = models.Administrator.objects.all()
+    context = {
+        'admin':data,
+        'users':data_2
+    }
+    return render(request,'home/add-administrator.html',context)
+
+@login_required
+def Delete_administrator(request,admin_id):
+    dat = models.Administrator.objects.get(id=admin_id)
+    dat.delete()
+    return redirect("home:add-administrator")
+
+
+def Notice(request):
+    data = models.Notice.objects.all()
+    context= {
+        "notices":data
+    }
+    return render (request,'home/notice.html',context)
+
+
+def Notice_id(request,notice_id):
+    if request.method == 'POST':
+        db = models.Notice.objects.get(id=notice_id)
+        title = request.POST.get('title')
+        des = request.POST.get('description')
+        image = request.FILES.get('notice_image')
+        db.user = request.user
+        db.title = title
+        db.description = des
+        if image is None:
+           db.notice_image = db.notice_image
+        else:
+         db.notice_image = image
+
+        db.save()
+        return redirect("home:notice")
+    else:
+
+
+     data = models.Notice.objects.get(id=notice_id)
+     context = {
+         'notice':data
+     }
+     return render(request,'home/notice-view.html',context)
+    
+
+@login_required
+def Add_Notice(request):
+        if request.method == 'POST':
+         user = request.user
+         title = request.POST.get('title')
+         description = request.POST.get('description')
+        
+       
+         if 'notice_image' in request.FILES:
+            image = request.FILES['notice_image']
+         else:
+            image = None
+        
+        
+         notice = models.Notice(user=user,title=title, description=description, notice_image=image)
+        
+         notice.save()
+        
+         return redirect('home:notice')  # Redirect to the page where notices are displayed
+    
+        return render(request, 'home/addnotice.html')
+
+@login_required
+def notice_delete(request,notice_id):
+    data = models.Notice.objects.get(id=notice_id)
+    data.delete()
+    return redirect('home:notice')
+
+def Scholar_FeeStructure(request):
+    Scholar = models.Scholarship.objects.all()
+    Fee = models.FeeStructure.objects.all()
+    context = {
+        'Scholars':Scholar,
+        'Fees':Fee
+    }
+    return render (request,'home/Fee_Scholarship.html',context)
+
+
+# @login_required
+# def edit_Scholar(request,scholar_id):
+#     if request.method == 'POST':
+#         title = request.POST.get('name')
+#         detail = request.POST.get('detail')
+#         el = request.POST.get('el')
+#         deadline = request.POST.get()
+
+    #         title = models.CharField(max_length=255)
+    # details = models.TextField()
+    # eligibility = models.TextField()
+    # deadline = models.DateField()
+    # uploaded = models.DateTimeField(auto_now_add=True)
+    
+    # else:
+    #  data = models.Scholarship.objects.all()
+    #  context = {
+
+    #  }
+    #  return render(request,'home/edit_scholar.html',context)

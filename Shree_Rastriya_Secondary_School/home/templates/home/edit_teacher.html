@@ -1,0 +1,152 @@
+{% load static %}
+<html>
+    <head>
+        <title>Editing - {{ teacher.name }}</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+                margin: 0;
+                padding: 0;
+            }
+            .navbar {
+                background-color: #333;
+                color: #fff;
+                padding: 10px;
+                text-align: center;
+            }
+            .navbar a {
+                color: #fff;
+                text-decoration: none;
+                margin: 0 15px;
+            }
+            .navbar a:hover {
+                text-decoration: underline;
+            }
+            .container {
+                display: flex;
+                justify-content: space-between;
+                margin: 20px;
+                padding: 20px;
+                background: #fff;
+                border-radius: 8px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+            .profile-left {
+                flex: 1;
+                padding: 20px;
+                text-align: center;
+                background: #f9f9f9;
+                border-radius: 8px;
+                margin-right: 20px;
+            }
+            .profile-left img {
+                width: 200px;
+                height: 200px;
+                border-radius: 50%;
+                margin-bottom: 20px;
+            }
+            .profile-left h3 {
+                font-size: 22px;
+                margin: 10px 0;
+            }
+            .profile-left p {
+                font-size: 16px;
+                color: #666;
+            }
+            .profile-right {
+                flex: 2;
+                padding: 20px;
+                background: #f9f9f9;
+                border-radius: 8px;
+            }
+            .profile-right form label {
+                font-size: 16px;
+                margin: 10px 0;
+                display: block;
+            }
+            .profile-right form input[type="text"],
+            .profile-right form input[type="file"] {
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 15px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                font-size: 16px;
+            }
+            .btn {
+                display: inline-block;
+                padding: 10px 15px;
+                color: #fff;
+                background-color: #007BFF;
+                text-decoration: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 16px;
+            }
+            .btn:hover {
+                background-color: #0056b3;
+            }
+
+            @media (max-width: 768px) {
+                .container {
+                    flex-direction: column;
+                    align-items: center;
+                }
+                .profile-left {
+                    margin-right: 0;
+                    margin-bottom: 20px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+
+        <div class="navbar">
+            <h2>Admin Panel - Welcome, {{ user.username | title }}</h2>
+            <div>
+                <a href="{% url 'home:home' %}">Home</a>
+                <a href="{% url 'home:events' %}">Events</a>
+                <a href="{% url 'home:staff-manage' %}">Staff</a>
+                <a href="#">Notices</a>
+                <a href="{% url 'home:logout' %}">Logout</a>
+            </div>
+        </div>
+
+        <div class="container">
+            <!-- Left Section: Profile Info -->
+            <div class="profile-left">
+                {% if teacher.teacher_image %}
+                    <img src="{{ teacher.teacher_image.url }}" alt="{{ teacher.name }}'s image">
+                {% else %}
+                    <img src="{% static 'home/images/default.jpg' %}" alt="Default Image">
+                {% endif %}
+                <h3>{{ teacher.name }}</h3>
+                <p>Subject: {{ teacher.subject }}</p>
+                <p>Contact: {{ teacher.contact }}</p>
+            </div>
+
+            <!-- Right Section: Form to Edit Details -->
+            <div class="profile-right">
+                <h2>Edit Teacher Profile</h2>
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" value="{{ teacher.name }}" required>
+
+                    <label for="subject">Subject:</label>
+                    <input type="text" id="subject" name="subject" value="{{ teacher.subject }}" required>
+
+                    <label for="contact">Contact:</label>
+                    <input type="text" id="contact" name="number" value="{{ teacher.contact }}" required>
+
+                    <label for="teacher_image">Profile Image:</label>
+                    <input type="file" id="teacher_image" name="image">
+
+                    <button type="submit" class="btn">Save Changes</button>
+                </form>
+            </div>
+        </div>
+
+    </body>
+</html>

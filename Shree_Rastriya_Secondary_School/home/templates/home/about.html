@@ -1,68 +1,242 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    {% load static %}
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us</title>
-    <link rel="stylesheet" href="{% static 'home/css/about.css'%}">
-</head>
-<body>
-    <header class="header">
-        <div class="container">
-            <div class="logo">
-                <img src="images/logo.png" alt="School Logo" class="logo-img">
-            </div>
-            <h1 class="school-name">Shree Rastriya Mavi Secondary School</h1>
-        </div>
-    </header>
+{% extends "home/navbar.html" %}
+{% load static %}
+{% block title %}
+    About us ! 
+{% endblock title %}
+{% block content %}
+<!-- Inline CSS for About Us Page -->
+<style>
 
-    <section class="about-section">
-        <div class="container">
-            <h2>About Us</h2>
-            <p>
-                Established with a vision to provide quality education to all, Shree Rastriya Mavi Secondary School has been a beacon of learning and excellence in our community. Our institution caters to students from Pre-Primary to Grade 12, offering a nurturing environment that promotes academic, cultural, and personal growth.
-            </p>
-            <p>
-                With a dedicated team of highly qualified educators and state-of-the-art facilities, we strive to foster a love for learning while preparing students for the challenges of the future. We believe in holistic development, ensuring our students excel academically, socially, and ethically.
-            </p>
-        </div>
-    </section>
+body{
+    background-color: white;
+}
+.header-section {
+    position: relative;
+    text-align: center;  /* Center text horizontally */
+    color: white;        /* Set the text color to white */
+}
 
-    <section class="mission-vision-section">
-        <div class="container">
-            <div class="mission">
-                <h3>Our Mission</h3>
-                <p>
-                    To empower students with knowledge, skills, and values, enabling them to contribute positively to society and achieve their fullest potential.
-                </p>
-            </div>
-            <div class="vision">
-                <h3>Our Vision</h3>
-                <p>
-                    To be a leading institution that inspires a lifelong love of learning and cultivates responsible global citizens.
-                </p>
-            </div>
-        </div>
-    </section>
+.header-image {
+    width: 100%;         /* Make the image fill the remaining width */
+    height: 60vh;        /* Set the image height to 50% of the viewport height */
+    object-fit: cover;   /* Ensure the image fills the container without distortion */
+}
 
-    <section class="values-section">
-        <div class="container">
-            <h3>Our Core Values</h3>
-            <ul>
-                <li>Integrity and honesty in all endeavors</li>
-                <li>Respect for diversity and inclusivity</li>
-                <li>Commitment to academic excellence</li>
-                <li>Fostering creativity and innovation</li>
-                <li>Encouraging teamwork and collaboration</li>
-            </ul>
-        </div>
-    </section>
+.header-section h2 {
+    position: absolute;
+    top: 50%;            /* Position the text vertically at the center of the image */
+    left: 50%;
+    transform: translate(-50%, -50%);  /* Center the text horizontally and vertically */
+    font-size: 36px;     /* Adjust font size for the heading */
+    font-weight: bold;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);  /* Add shadow for better contrast */
+}
 
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2025 Shree Rastriya Mavi Secondary School. All rights reserved.</p>
+
+/* Hover Divs Section */
+.hover-divs {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    margin-bottom: 40px; /* Adds a gap after the hover divs */
+}
+
+.hover-div {
+    width: 30%;
+    height: 200px;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.hover-div h3 {
+    font-size: 24px;
+    color: #003366;
+}
+
+.hover-div:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Gap Section */
+.gap {
+    margin-top: 100px; /* Adjusts the gap */
+}
+.about-us-content {
+    margin-top: 20px;
+}
+
+.info-section {
+    display: flex;
+    justify-content: space-around;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.info-box {
+    width: 30%;
+    text-align: center;
+    padding: 20px;
+    background-color: #f1f1f1;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, transform 0.3s ease;  /* Add transition for smooth hover effect */
+}
+
+.info-box h1 {
+    font-size: 24px;
+    color: #003366;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.info-box:hover {
+    background-color: #0000ff;  /* Change background color on hover */
+    transform: scale(1.05);  /* Slightly increase size on hover */
+}
+
+.info-box:hover h3 {
+    color: #fff;  /* Change text color when hovering over the box */
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    background-color: #003366;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #8fff5b;
+}
+
+.image-description-section {
+    display: flex;
+    align-items: center;
+    margin-top: 40px;
+}
+
+.image-container {
+    flex: 1;
+    max-width: 500px; /* Adjust the max width to fit your design */
+}
+
+.image-container img {
+    width: 100%;
+    height: auto; /* Let the height adjust based on the image's aspect ratio */
+    max-height: 450px; /* Set a maximum height */
+    object-fit: cover;
+    border-radius: 8px;
+  
+    
+}
+
+.description-container {
+    flex: 1;
+    padding-left: 20px;
+}
+
+.description-container h1 {
+    font-size: 30px;
+
+    color: #003366;
+    font-weight: 600;
+}
+
+.description-container p {
+    font-size: 18px;
+    color: #555;
+}
+
+.image-text-container {
+    display: flex;
+    align-items: center; /* Vertically center the items */
+    justify-content: flex-end; /* Move the image to the right */
+}
+
+.text-container h2{
+    margin-right: 9%; /* Reduce the margin to make the text closer to the image */
+    font-size: 30px;
+  
+    color: #003366;
+    font-weight: 600;
+}
+
+.image-container {
+
+    margin-left: 0; /* Remove any space before the image */
+}
+
+.image-container img {
+    width: 100%; /* Ensure the image fills the container */
+    height: auto; /* Maintain aspect ratio */
+    max-width: 400px; /* Control the size of the image */
+    border-radius: 8px; /* Optional, rounded corners */
+}
+
+
+</style>
+<div class="gap"></div>
+<div class="about-us-content">
+    <div class="info-section">
+        <div class="info-box">
+            <h3>Teacher</h3>
+            <a href="{% url "home:teacher" %}" class="btn">Go to Teacher Section</a>
         </div>
-    </footer>
-</body>
-</html>
+        <div class="info-box">
+            <h3>Education</h3>
+            <a href="{% url "home:edu" %}" class="btn">Go to Education Section</a>
+        </div>
+        <div class="info-box">
+            <h3>Administration</h3>
+            <a href="{% url "home:ah" %}" class="btn">Go to Administration Section</a>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Small Gap -->
+<div class="gap"></div>
+
+<!-- Image and Description Section -->
+<div class="image-description-section">
+    <div class="image-container">
+        <img src="{% static 'home/images/clzlogo.png' %}" alt="Teacher and Education" class="image">
+    </div>
+    <div class="description-container">
+        <h1>Introducing Shree Rastriya Secondary School</h1> <br>
+        <p>Shree Rastriya Secondary School, Established In 2013 B.S. By A Group Of Qualified And Dedicated Professionals, Is One Of The Leading Institutions In The Eastern Part Of Nepal. 
+
+The College Has Its Own  Building With A Remarkable Compound Of around Ten Katthas. it has  Table Tennis Courts Inside Its Own Premises and a huge ground where our students can play almost every game ! .Established In 2013 B.S. By A Group Of Qualified And Dedicated Professionals, Is One Of The Leading Governmnet Institutions In The Eastern Part Of Nepal. 
+
+    </div>
+</div>
+
+<div class="image-text-container">
+    <div class="text-container">
+        <h2> Why Shree Rastriya Secondary School ? </h2> <br> 
+        <ul> 
+            <li> Well-equipped building and ideal classrooms </li>
+            <li> Peaceful academic environment  </li>
+            <li> Well Trained Teachers </li>
+            <li> diverse scholarship schemes and awards </li>
+        </ul>    
+    </div>
+    <div class="image-container">
+        <img src="{% static 'home/images/tet.png' %}" alt="Description Image" class="image">
+    </div>
+</div>
+
+
+{% endblock %}

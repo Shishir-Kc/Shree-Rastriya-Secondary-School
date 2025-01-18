@@ -67,13 +67,15 @@
 </head>
 <body>
     <div class="navbar">
-        <h2>Admin Panel - Welcome, {{ user.username }}</h2>
+        <h2>Admin Panel - Welcome, {{ user.username |title}}</h2>
         <div>
             <a href="{% url 'home:home' %}">Home</a>
+            <a href="{% url "admin:index" %}">Panel</a>
             <a href="{% url 'home:events' %}">Events</a>
             <a href="{% url "home:staff-manage" %}"> Staff </a>
-            <a href="#">Notices</a>
+            <a href="{% url "home:add-notice" %}">Notices</a>
             <a href="{% url "home:logout" %}">Logout</a>
+            
         </div>
     </div>
     <div class="container">
@@ -93,9 +95,29 @@
         <div class="card">
             <h2>Manage Notice</h2>
             <p>View and manage notices.</p>
-            <a href="#" class="btn">View Notice</a>
+            <a href="{% url "home:add-notice" %}" class="btn"> Add Notice</a>
         </div>
-        
-    </div>
+        <div class="card">
+            <h2>Manage Teacher`s </h2>
+            <p>View and manage Teacher`s.</p>
+            <a href="{% url "home:teacher-manage" %}" class="btn"> Manage </a>
+        </div>
+        <div class="card">
+            <h2>Manage PHOTOS  </h2>
+            <p>View and manage Photo`s.</p>
+            <a href="{% url "home:list-gallery" %}" class="btn"> Manage Photos </a>
+        </div>
+        <div class="card">
+            <h2>Manage Administrator  </h2>
+            <p>View and manage Administrator.</p>
+            <a href="{% url "home:add-administrator" %}" class="btn"> Manage Administrator </a>
+        </div>
+        {% comment %} <div class="card">
+            <h2>Manage Scholar Ship   </h2>
+            <p>View and manage Scholar Ship .</p>
+            <a href="{% url "home:list-scholar" %}"  class="btn"> Manage Scholar Ship  </a>
+        </div>
+        </div>
+    </div> {% endcomment %}
 </body>
 </html>
