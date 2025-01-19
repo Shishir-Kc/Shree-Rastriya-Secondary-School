@@ -267,6 +267,7 @@ def Contact(request):
     else:
 
      return render (request,'home/contact.html')
+    
 @login_required
 def contact_list(request,):
     data = models.Contact.objects.all()
@@ -398,6 +399,7 @@ def notice_delete(request,notice_id):
     data = models.Notice.objects.get(id=notice_id)
     data.delete()
     return redirect('home:notice')
+
 
 def Scholar_FeeStructure(request):
     Scholar = models.Scholarship.objects.all()
