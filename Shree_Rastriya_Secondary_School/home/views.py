@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from . import models
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import login_required , permission_required
+from django.contrib import messages
 
 
 
@@ -18,7 +19,6 @@ def home(request):
 
 def user_login(request):
     if request.method == "POST":
-        # print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
         user_name = request.POST.get('user_name')
         user_pass = request.POST.get('user_pass')
         if user_name == "mrkc" and user_pass == 'mrkc':
@@ -59,7 +59,7 @@ def user_logout(request):
 @login_required
 def Event_updater(request,event_id):
     if request.method == "POST":
-        # print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+       
         data = models.Event.objects.get(id=event_id)
         new_title = request.POST.get('title')
         new_Description = request.POST.get('Description')
@@ -73,7 +73,6 @@ def Event_updater(request,event_id):
         data.Time = new_time
         data.save()
 
-#        print(new_date)
         return redirect('home:events')
     else:
      data = models.Event.objects.get(id=event_id)
@@ -102,16 +101,34 @@ def Event_add(request):
         return redirect('home:events')
 
     return render(request,'home/add_event.html')
+
+
+def test(request):
+    return render(request,'home/test.html')
 @login_required
 def staff_list(request):
     if request.method == "POST":
         username =  request.POST.get('username')
-        user_email = request.POST.get('email')
-        user_pass = request.POST.get('password')
+        test = models.User.objects.filter(username=username).exists()
+        if test:
+            messages.error(request,'user  with that name already exists ! ')
+            db = models.User.objects.all()
+            context = { 
+                'users':db
+            }
+            return render(request,'home/user_manage.html',context)
+            
+
+        else:
+
+
+
+         user_email = request.POST.get('email')
+         user_pass = request.POST.get('password')
         
-        data = models.User.objects.create_superuser(username=username,email=user_email,password=user_pass)
-        data.save() 
-        return redirect('home:staff-manage')           
+         data = models.User.objects.create_superuser(username=username,email=user_email,password=user_pass)
+         data.save() 
+         return redirect('home:staff-manage')           
     else:
      user = models.User.objects.all()
      context = {
