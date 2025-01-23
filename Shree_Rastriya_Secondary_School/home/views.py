@@ -4,6 +4,7 @@ from . import models
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import login_required , permission_required
 from django.contrib import messages
+from django.contrib.auth.models import Group , User
 
 
 
@@ -105,6 +106,8 @@ def Event_add(request):
 
 def test(request):
     return render(request,'home/test.html')
+
+
 @login_required
 def staff_list(request):
     if request.method == "POST":
@@ -448,3 +451,144 @@ def Scholar_FeeStructure(request):
 
     #  }
     #  return render(request,'home/edit_scholar.html',context)
+
+
+
+
+
+# Test Section for student Model !
+ 
+
+
+def student_profile(request,std_id):
+    if std_id :
+        student_profile = models.Student_info.objects.get(id = std_id)
+        # student_class = models.Classes.objects.get(id = std_id)
+        context= {
+         'student-profile':student_profile,
+        #  'student-class':student_class
+     }
+        return render(request,'home/std_detail.html',context)
+    
+
+
+# TEST
+
+# def student_profile(request,std_id):
+#     std_group = Group.objects.filter(name="Student").first()
+#     if std_group:
+#         std = User.objects.filter(groups=std_group)
+#         std_profile = models.Student_info.objects.get(id=std_id)  
+#         # .filter(student_name__in = std)
+#         context = {
+#             'student-profile':std_profile,
+#         }
+#         return render(request,'home/std_detail.html',context)
+    
+
+
+
+#test for listing student name in a group  
+
+@login_required
+def list_students_in_group(request):
+    student_group = Group.objects.filter(name="Student").first()
+    if student_group:
+        students_in_group = User.objects.filter(groups=student_group)
+        student_profiles = models.Student_info.objects.filter(std_name__in=students_in_group)
+        context = {
+            'student_profiles': student_profiles
+        }
+    else:
+        context = {'error': 'No students found in the "student" group.'}
+
+    return render(request, 'home/student.html', context)
+
+
+
+
+
+def student_list(request):
+    students_with_details = models.StudentInfo.objects.filter(
+        user__groups__name="Student"
+    ).select_related(
+        'enrollment__enrolled_class'
+    ).prefetch_related(
+        'enrollment__enrolled_class__subjects'
+    )
+    return render(request, 'home/std_detail.html', {'students': students_with_details})
+
+
+
+
+
+def upload_notes(request):
+ 
+    if not request.user.groups.filter(name="Teacher").exists():
+        return redirect('home:std-list') 
+    
+    if request.method == "POST":
+        subject_id = request.POST.get('subject')
+        class_id = request.POST.get('class')
+        title = request.POST.get('title')
+        content = request.POST.get('content')
+
+        if not subject_id or not class_id or not title or not content:
+            return render(request, 'home/upload.html', {
+                'error': 'All fields are required.',
+                'subjects': models.Subject.objects.all(),
+                'classes': models.Class.objects.all()
+            })
+
+  
+        try:
+            selected_subject = models.Subject.objects.get(id=subject_id)
+            selected_class = models.Class.objects.get(id=class_id)
+        except (models.Subject.DoesNotExist, models.Class.DoesNotExist):
+            return render(request, 'Home/upload.html', {
+                'error': 'Invalid subject or class selected.',
+                'subjects': models.Subject.objects.all(),
+                'classes': models.Class.objects.all()
+            })
+
+        if not selected_class.subjects.filter(id=selected_subject.id).exists():
+            return render(request, 'home/upload.html', {
+                'error': 'The selected subject is not available for the selected class.',
+                'subjects': models.Subject.objects.all(),
+                'classes': models.Class.objects.all()
+            })
+
+        # Save the note
+        models.Notes.objects.create(
+            teacher=request.user,
+            subject=selected_subject,
+            classs=selected_class,
+            title=title,
+            content=content
+        )
+
+        return redirect('home:upload')  
+
+    return render(request, 'home/upload.html', {
+        'subjects': models.Subject.objects.all(),
+        'classes': models.Class.objects.all()
+    })
+
+
+
+
+def student_dashboard(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    try:
+        student = models.StudentInfo.objects.get(user=request.user)
+        student_class = student.student_class
+        notes = models.Notes.objects.filter(classs=student_class)
+    except models.StudentInfo.DoesNotExist:
+        notes = []
+
+    return render(request, 'home/dashboard_std.html', {
+        'username': request.user.username,
+        'notes': notes
+    })
