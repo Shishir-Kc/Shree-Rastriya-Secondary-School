@@ -558,7 +558,7 @@ def upload_notes(request):
                 'classes': models.Class.objects.all()
             })
 
-        # Save the note
+        # ah save :)
         models.Notes.objects.create(
             teacher=request.user,
             subject=selected_subject,
