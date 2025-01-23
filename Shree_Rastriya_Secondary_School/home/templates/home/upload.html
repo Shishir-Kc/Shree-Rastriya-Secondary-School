@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Notes</title>
+</head>
+<body>
+    <h1>Upload Notes</h1>
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        <label for="title">Title:</label><br>
+        <input type="text" id="title" name="title" required><br><br>
+
+        <label for="content">Content:</label><br>
+        <textarea id="content" name="content" required></textarea><br><br>
+
+        <label for="class">Class:</label><br>
+        <select id="class" name="class" required>
+            <option value="">Select Class</option>
+            {% for class in classes %}
+                <option value="{{ class.id }}">{{ class.grade }} - {{ class.section }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <label for="subject">Subject:</label><br>
+        
+        <select id="subject" name="subject" required>
+            <option value="">Select Subject</option>
+            {% for subject in subjects %}
+                <option value="{{ subject.id }}">{{ subject.name }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <button type="submit">Upload</button>
+    </form>
+</body>
+</html>
