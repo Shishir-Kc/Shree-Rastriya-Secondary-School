@@ -8,3 +8,10 @@ admin.site.register(models.Administrator)
 admin.site.register(models.Scholarship)
 admin.site.register(models.FeeStructure)
 
+
+# student
+ 
+admin.site.register(models.Classes)
+admin.site.register(models.Student_info)
+admin.site.register(models.Subjects)
+admin.site.register(models.Students)
