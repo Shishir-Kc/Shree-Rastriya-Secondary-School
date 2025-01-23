@@ -44,4 +44,9 @@ urlpatterns = [
     # path('Shree-Rastriya-Secondary-School/Education/admin/<int:scholar_id>/',views.edit_Scholar,name='edit-scholar'),
     path('Shree-Rastriya-Secondary-School/Notice/<int:notice_id>/delete/',views.notice_delete,name='notice-delete'),
     path('test/',views.test,name='test'),
+    path('std/<int:std_id>/',views.student_profile,name="profile"),
+    path('std/',views.student_list,name="std-list"),
+    path('upload/',views.upload_notes,name='upload'),
+     path('dashboard/', views.student_dashboard, name='student_dashboard'),
+
 ]   
