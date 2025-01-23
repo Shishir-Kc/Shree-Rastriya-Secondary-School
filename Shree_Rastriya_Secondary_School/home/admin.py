@@ -11,7 +11,13 @@ admin.site.register(models.FeeStructure)
 
 # student
  
-admin.site.register(models.Classes)
-admin.site.register(models.Student_info)
-admin.site.register(models.Subjects)
-admin.site.register(models.Students)
+admin.site.register(models.Class)
+admin.site.register(models.StudentInfo)
+admin.site.register(models.Subject)
+admin.site.register(models.Enrollment)
+
+
+
+#for Teacher 
+
+admin.site.register(models.Notes)
