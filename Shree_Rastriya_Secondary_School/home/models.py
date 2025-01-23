@@ -89,38 +89,79 @@ class Contact(models.Model):
         return self.name
     
 
-    
-class Student_info(models.Model):
-    student_name = models.ForeignKey(User,on_delete=models.CASCADE)
-    contact = models.IntegerField()
-    student_profile_pic= models.ImageField(upload_to='student_profile',blank=True)
+# Test code are Below ! 
+
+
+class Subject(models.Model):
+    name = models.CharField(max_length=50, verbose_name="Subject Name")
+    is_specialized = models.BooleanField(default=False, verbose_name="Is Specialized Subject?")
+
+    class Meta:
+        verbose_name = "Subject"
+        verbose_name_plural = "Subjects"
 
     def __str__(self):
-     return self.student_name.username
-    
-
-class Subjects(models.Model):
-    subject = models.CharField(max_length=20)
-    sub_subject = models.CharField(max_length=30)
+        return self.name
 
 
-    def __str__(self):
-        return self.subject
+class Class(models.Model):
+    GRADE_CHOICES = [(i, f"Grade {i}") for i in range(1, 13)]  
+    grade = models.PositiveIntegerField(choices=GRADE_CHOICES, verbose_name="Grade/Class")
+    section = models.CharField(max_length=30, verbose_name="Section")
+    subjects = models.ManyToManyField(Subject, verbose_name="Subjects")
 
-class Classes(models.Model):
-    classs = models.IntegerField()
-    classs_section = models.CharField(max_length=30)
-    subjects = models.ForeignKey(Subjects,on_delete=models.CASCADE)
-    
-    def __str__(self):
-        return f" {self.classs}  Section = >  { self.classs_section} " 
+    class Meta:
+        verbose_name = "Class"
+        verbose_name_plural = "Classes"
+        unique_together = ('grade', 'section')
 
-
-
-class Students(models.Model):
-    classs = models.OneToOneField(Classes,on_delete=models.CASCADE)
-    student_profile = models.OneToOneField(Student_info,on_delete=models.CASCADE)
+    def get_subjects(self):
+     
+        if self.grade <= 10:
+            return self.subjects.filter(is_specialized=False)
+        return self.subjects.filter(is_specialized=True)
 
     def __str__(self):
-        return f" {self.student_profile.student_name.username}  class = > {self.classs.classs} Section = > {self.classs.classs} "
+        return f"Grade {self.grade} - Section {self.section}"
+
+
+
+class StudentInfo(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Associated User")
+    first_name = models.CharField(max_length=20, verbose_name="First Name")
+    last_name = models.CharField(max_length=20, verbose_name="Last Name")
+    contact_number = models.CharField(max_length=15, verbose_name="Contact Number")
+    profile_picture = models.ImageField(upload_to='student_profiles/', blank=True, verbose_name="Profile Picture")
+    student_class = models.ForeignKey(Class, on_delete=models.CASCADE,default=1)
+    class Meta:
+        verbose_name = "Student Info"
+        verbose_name_plural = "Student Infos"
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
     
+
+
+class Enrollment(models.Model):
+    student = models.OneToOneField(StudentInfo, on_delete=models.CASCADE, verbose_name="Student")
+    enrolled_class = models.ForeignKey(Class, on_delete=models.CASCADE, verbose_name="Enrolled Class")
+
+    class Meta:
+        verbose_name = "Enrollment"
+        verbose_name_plural = "Enrollments"
+
+    def __str__(self):
+        return f"{self.student.first_name} {self.student.last_name} in {self.enrolled_class}"
+
+
+
+class Notes(models.Model):
+    teacher = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'groups__name': "Teacher"})
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    classs = models.ForeignKey(Class, on_delete=models.CASCADE)
+    title = models.CharField(max_length=100)
+    content = models.TextField()
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.title} - {self.classs} - {self.subject}"
