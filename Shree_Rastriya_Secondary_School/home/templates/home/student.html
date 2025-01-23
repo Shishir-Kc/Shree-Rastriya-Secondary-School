@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students in Group</title>
+</head>
+<body>
+
+{% if student_profiles %}
+    <h1>Students in the "student" Group</h1>
+    <ul>
+        {% for profile in student_profiles %}
+        <table border ="1"> 
+            <tr>
+                <th> Name </th>
+                <th> Action </th>
+            </tr>
+            <tr>
+                <td> 
+                    {{ profile.student_name.username }}
+                </td>
+                <td>
+                    <a href="{% url "home:profile" profile.id%}"> view Profile </a>
+                </td>
+            </tr>
+        </table>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>{{ error }}</p>
+{% endif %}
+
+</body>
+</html>
