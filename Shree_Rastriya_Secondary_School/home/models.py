@@ -88,21 +88,39 @@ class Contact(models.Model):
     def __str__(self):
         return self.name
     
+
+    
 class Student_info(models.Model):
     student_name = models.ForeignKey(User,on_delete=models.CASCADE)
     contact = models.IntegerField()
     student_profile_pic= models.ImageField(upload_to='student_profile',blank=True)
+
+    def __str__(self):
+     return self.student_name.username
     
 
 class Subjects(models.Model):
-    pass
+    subject = models.CharField(max_length=20)
+    sub_subject = models.CharField(max_length=30)
 
+
+    def __str__(self):
+        return self.subject
 
 class Classes(models.Model):
+    classs = models.IntegerField()
+    classs_section = models.CharField(max_length=30)
     subjects = models.ForeignKey(Subjects,on_delete=models.CASCADE)
     
+    def __str__(self):
+        return f" {self.classs}  Section = >  { self.classs_section} " 
+
 
 
 class Students(models.Model):
     classs = models.OneToOneField(Classes,on_delete=models.CASCADE)
-    subjects = models.ForeignKey(Subjects,on_delete=models.CASCADE)
+    student_profile = models.OneToOneField(Student_info,on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f" {self.student_profile.student_name.username}  class = > {self.classs.classs} Section = > {self.classs.classs} "
+    
