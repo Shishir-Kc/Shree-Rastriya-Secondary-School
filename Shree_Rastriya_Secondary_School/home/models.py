@@ -88,3 +88,21 @@ class Contact(models.Model):
     def __str__(self):
         return self.name
     
+class Student_info(models.Model):
+    student_name = models.ForeignKey(User,on_delete=models.CASCADE)
+    contact = models.IntegerField()
+    student_profile_pic= models.ImageField(upload_to='student_profile',blank=True)
+    
+
+class Subjects(models.Model):
+    pass
+
+
+class Classes(models.Model):
+    subjects = models.ForeignKey(Subjects,on_delete=models.CASCADE)
+    
+
+
+class Students(models.Model):
+    classs = models.OneToOneField(Classes,on_delete=models.CASCADE)
+    subjects = models.ForeignKey(Subjects,on_delete=models.CASCADE)
