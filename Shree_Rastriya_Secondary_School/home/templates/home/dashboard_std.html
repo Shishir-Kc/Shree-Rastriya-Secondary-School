@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .note {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .note h3 {
+            margin: 0 0 10px 0;
+        }
+        .note p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome, {{ username }}</h1>
+
+    <h2>Uploaded Notes</h2>
+    {% if notes %}
+        {% for note in notes %}
+            <div class="note">
+                <h3>{{ note.title }}</h3>
+                <p><strong>Class:</strong> {{ note.classs.grade }} - {{ note.classs.section }}</p>
+                <p><strong>Subject:</strong> {{ note.subject.name }}</p>
+                <p><strong>Content:</strong> {{ note.content }}</p>
+                <p><small><strong>Uploaded by:</strong> {{ note.teacher.username }}</small></p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No notes uploaded yet.</p>
+    {% endif %}
+</body>
+</html>
