@@ -532,6 +532,7 @@ def upload_notes(request):
         class_id = request.POST.get('class')
         title = request.POST.get('title')
         content = request.POST.get('content')
+        pdf = request.FILES.get('pdf')
 
         if not subject_id or not class_id or not title or not content:
             return render(request, 'home/upload.html', {
@@ -564,7 +565,8 @@ def upload_notes(request):
             subject=selected_subject,
             classs=selected_class,
             title=title,
-            content=content
+            content=content,
+            pdf_file = pdf
         )
 
         return redirect('home:upload')  
@@ -579,16 +581,22 @@ def upload_notes(request):
 
 def student_dashboard(request):
     if not request.user.is_authenticated:
-        return redirect('login')
+        return redirect('home:login')
 
     try:
         student = models.StudentInfo.objects.get(user=request.user)
         student_class = student.student_class
-        notes = models.Notes.objects.filter(classs=student_class)
+        print(f"Student: {student}, Class: {student_class}")  
+
+        notes = models.Notes.objects.filter(classs=student_class).order_by('-uploaded_at')
+        print(f"Notes for Class {student_class}: {notes}")  
+
     except models.StudentInfo.DoesNotExist:
+        print("StudentInfo does not exist for the user.") 
         notes = []
 
     return render(request, 'home/dashboard_std.html', {
         'username': request.user.username,
-        'notes': notes
+        'notes': notes,
+        'std':student
     })

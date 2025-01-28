@@ -131,7 +131,7 @@ class StudentInfo(models.Model):
     first_name = models.CharField(max_length=20, verbose_name="First Name")
     last_name = models.CharField(max_length=20, verbose_name="Last Name")
     contact_number = models.CharField(max_length=15, verbose_name="Contact Number")
-    profile_picture = models.ImageField(upload_to='student_profiles/', blank=True, verbose_name="Profile Picture")
+    profile_picture = models.ImageField(upload_to='student_profiles', blank=True, verbose_name="Profile Picture")
     student_class = models.ForeignKey(Class, on_delete=models.CASCADE,default=1)
     class Meta:
         verbose_name = "Student Info"
@@ -162,6 +162,8 @@ class Notes(models.Model):
     title = models.CharField(max_length=100)
     content = models.TextField()
     uploaded_at = models.DateTimeField(auto_now_add=True)
+    pdf_file = models.FileField(upload_to='notes_pdfs', null=True, blank=True)
+
 
     def __str__(self):
         return f"{self.title} - {self.classs} - {self.subject}"

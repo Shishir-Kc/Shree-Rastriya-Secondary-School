@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Profile</title>
+    <link href="https://unpkg.com/lucide@latest" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .profile-card {
+            background-color: #2a2a2a;
+            border-radius: 10px;
+            padding: 20px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .profile-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #4a4a4a;
+            margin-right: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .profile-email {
+            font-size: 1em;
+            color: #cccccc;
+            margin-bottom: 10px;
+        }
+
+        .courses {
+            margin-top: 20px;
+        }
+
+        .course {
+            background-color: #333333;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .navbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #333333;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            z-index: 1000;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-item {
+            color: #ffffff;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover {
+            background-color: #444444;
+            transform: translateY(-3px);
+        }
+
+        .nav-item svg {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover svg {
+            transform: scale(1.1);
+        }
+
+        .nav-item span {
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-logo">
+                    <i data-lucide="user"></i>
+                </div>
+                <div class="profile-info">
+                    <div class="profile-name">John Doe</div>
+                    <div class="profile-email">john.doe@example.com</div>
+                </div>
+            </div>
+            <div class="courses">
+                <h2>Enrolled Courses</h2>
+                <div class="course">Introduction to Computer Science</div>
+                <div class="course">Data Structures</div>
+                <div class="course">Algorithms</div>
+                <div class="course">Web Development</div>
+            </div>
+        </div>
+    </div>
+    
+    <nav class="navbar">
+        <a href="#" class="nav-item">
+            <i data-lucide="home"></i>
+            <span>Home</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <i data-lucide="user"></i>
+            <span>Profile</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i data-lucide="settings"></i>
+            <span>Settings</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i data-lucide="book"></i>
+            <span>Books</span>
+        </a>
+        <a href="#" class="nav-item">
+            <i data-lucide="users"></i> <!-- New people icon -->
+            <span>Teacher</span>
+        </a>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
+</create_file>
