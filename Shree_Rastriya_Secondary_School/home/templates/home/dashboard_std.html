@@ -1,332 +1,30 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Dashboard</title>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #1a1a1a;
-            color: #ffffff;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        .container {
-            display: flex;
-            flex-direction: row;
-            height: 100vh;
-            align-items: flex-start;
-            padding-bottom: 70px;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-            }
-            
-        @media (max-width: 768px) {
-                .main-content {
-                    margin-bottom: 120px; /* Increased margin to account for navbar */
-                }
-                .navbar {
-                    transform: translateY(0); /* Reset transform for mobile view */
-                }
-            }
-            .sidebar {
-                width: auto !important;
-                margin: 10px !important;
-            }
-
-            .main-content {
-                margin: 10px !important;
-            }
-
-            .notes-section {
-                width: 95% !important;
-            }
-        }
-
-        .main-content {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            background-color: #2a2a2a;
-            border-radius: 20px;
-            margin: 20px;
-            height: calc(10vh - 110px);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 70px;
-         
-            padding-bottom: 80px; /* Adjust this value as needed */
-        
-
-        }
-
-        .sidebar {
-            width: 300px;
-            height: calc(100vh - 110px);
-            background-color: #2a2a2a;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            border-radius: 20px;
-            margin: 20px;
-            overflow: hidden;
-        }
-
-        .people-list {
-            flex: 1;
-            overflow-y: auto;
-            margin-bottom: 10px;
-        }
-
-        .teacher {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-            padding: 10px;
-            border-radius: 10px;
-            transition: background-color 0.3s;
-        }
-
-        .teacher:hover {
-            background-color: #3a3a3a;
-        }
-
-        .teacher-logo {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: #4a4a4a;
-            margin-right: 10px;
-            flex-shrink: 0;
-        }
-
-        .teacher-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .teacher-name {
-            font-weight: bold;
-            margin-bottom: 5px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .teacher-email {
-            font-size: 0.9em;
-            color: #cccccc;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .chat-button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            flex-shrink: 0;
-            transition: all 0.3s ease;
-        }
-
-        .chat-button:hover {
-            background-color: #45a049;
-            transform: translateY(-2px);
-        }
-
-        .navbar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: #333333;
-            display: flex;
-            justify-content: space-around;
-            padding: 12px 0;
-            z-index: 1000;
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
-            border-radius: 20px 20px 0 0; /* Smooth corner */
-            transform: translateY(5px); /* Slightly raised effect */
-        }
-
-.nav-item {
-    color: #ffffff;
-    text-decoration: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 8px 16px;
-    border-radius: 12px; /* More rounded items */
-    transition: all 0.3s ease;
-}
-
-.nav-item:hover {
-    background-color: #444444;
-    transform: translateY(-3px); /* Slight lift on hover */
-}
-
-.nav-item svg {
-    width: 24px;
-    height: 24px;
-    margin-bottom: 4px;
-    transition: all 0.3s ease;
-}
-
-.nav-item:hover svg {
-    transform: scale(1.1);
-}
-
-.nav-item span {
-    font-size: 12px;
-    transition: all 0.3s ease;
-}
-.notes-container {
-    width: 100%;
-    overflow-y: auto;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 50px; /* Adjusted margin to leave space for the navbar */
-}
-
-
-
-        .notes-section {
-            background-color: #333333;
-            border-radius: 15px;
-            padding: 20px;
-            width: 80%;
-            max-width: 600px;
-            margin: 0 auto;
-            transition: all 0.3s ease;
-        }
-
-        .notes-section:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .notes-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .teacher-logo {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: #4a4a4a;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-right: 15px;
-            transition: all 0.3s ease;
-        }
-
-        .teacher-info {
-            flex: 1;
-        }
-
-        .teacher-name {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .teacher-email, .subject, .class-info {
-            font-size: 0.9em;
-            color: #cccccc;
-            margin-bottom: 3px;
-        }
-
-        .notes-content {
-            background-color: #4a4a4a;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 15px;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .download-button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            width: 100%;
-        }
-
-        .download-button:hover {
-            background-color: #45a049;
-            transform: translateY(-2px);
-        }
-
-        .download-button svg {
-            margin-right: 8px;
-        }
-
-     
-        
-        @media (max-width: 768px) {
-            .sidebar, .people-list {
-                display: none; /* Hide sidebar and people list on mobile view */
-            }
-        }
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #2a2a2a;
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background-color: #4a4a4a;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background-color: #5a5a5a;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'home/css/dashboard.css' %}">
 </head>
 <body>
     <div class="container">
-            <div class="main-content" style="margin-bottom: 70px;"> <!-- Adjusted margin for navbar -->
-            <h1>Welcome  {{std.user.username|title}} </h1>
-            
-           {% for note in notes %} 
-           <div class="notes-container" style="height: calc(100vh - 250px); overflow-y: visible;">
+        <div class="main-content">
+            <h1>Welcome {{std.user.username|title}}</h1>
+            <h2>Notes count: {{ notes|length }}</h2>
+
+            <div class="notes-container">
+                {% for note in notes %}
                 <div class="notes-section">
                     <div class="notes-header">
                         <div class="teacher-logo">
                             <i data-lucide="user"></i>
                         </div>
                         <div class="teacher-info">
-                            <div class="teacher-name">{{note.teacher.username}} </div>
-                            <div class="teacher-email">john.smith@university.edu</div>
-                            <div class="subject"> {{note.subject}}</div>
+                            <div class="teacher-name">{{note.teacher.username}}</div>
+                            <div class="teacher-email">{{note.teacher.email}}</div>
+                            <div class="subject">{{note.subject}}</div>
                             <div class="class-info">{{note.classs}}</div>
                         </div>
                     </div>
@@ -335,24 +33,22 @@
                         <p>Please review these notes and complete the assigned homework by next week.</p>
                     </div>
                     <button class="download-button">
-                        <i data-lucide="download"></i>
-                        Download Notes
+                        <i data-lucide="download"></i> <strong>Download</strong>
                     </button>
                 </div>
-
+                {% endfor %}
             </div>
-            {% endfor %} 
         </div>
 
         {% comment %} side bar  {% endcomment %}
-            <div class="sidebar" style="height: calc(100vh - 110px); overflow-y: auto;">
+        <div class="sidebar" style="height: calc(100vh - 110px); overflow-y: auto;">
             <h2>Teachers</h2>
             <div class="people-list">
                 <div class="teacher">
                     <div class="teacher-logo"></div>
                     <div class="teacher-info">
                         <div class="teacher-name">John Doe</div>
-                        <div class="teacher-email">john@example.com</div>
+                        <div class="teacher-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8ee4e1e6e0ceebf6efe3fee2eba0ede1e3">[email&#160;protected]</a></div>
                     </div>
                     <button class="chat-button">Chat</button>
                 </div>
@@ -360,7 +56,7 @@
                     <div class="teacher-logo"></div>
                     <div class="teacher-info">
                         <div class="teacher-name">Jane Smith</div>
-                        <div class="teacher-email">jane@example.com</div>
+                        <div class="teacher-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7a101b141f3a1f021b170a161f54191517">[email&#160;protected]</a></div>
                     </div>
                     <button class="chat-button">Chat</button>
                 </div>
@@ -368,7 +64,7 @@
                     <div class="teacher-logo"></div>
                     <div class="teacher-info">
                         <div class="teacher-name">Bob Johnson</div>
-                        <div class="teacher-email">bob@example.com</div>
+                        <div class="teacher-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="492b262b092c31282439252c672a2624">[email&#160;protected]</a></div>
                     </div>
                     <button class="chat-button">Chat</button>
                 </div>
@@ -376,7 +72,7 @@
                     <div class="teacher-logo"></div>
                     <div class="teacher-info">
                         <div class="teacher-name">Alice Williams</div>
-                        <div class="teacher-email">alice@example.com</div>
+                        <div class="teacher-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c9a8a5a0aaac89acb1a8a4b9a5ace7aaa6a4">[email&#160;protected]</a></div>
                     </div>
                     <button class="chat-button">Chat</button>
                 </div>
@@ -384,7 +80,7 @@
                     <div class="teacher-logo"></div>
                     <div class="teacher-info">
                         <div class="teacher-name">Charlie Brown</div>
-                        <div class="teacher-email">charlie@example.com</div>
+                        <div class="teacher-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fb98939a8997929ebb9e839a968b979ed5989496">[email&#160;protected]</a></div>
                     </div>
                     <button class="chat-button">Chat</button>
                 </div>
@@ -392,7 +88,7 @@
                     <div class="teacher-logo"></div>
                     <div class="teacher-info">
                         <div class="teacher-name">Diana Prince</div>
-                        <div class="teacher-email">diana@example.com</div>
+                        <div class="teacher-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c2a6aba3aca382a7baa3afb2aea7eca1adaf">[email&#160;protected]</a></div>
                     </div>
                     <button class="chat-button">Chat</button>
                 </div>
@@ -400,7 +96,7 @@
                     <div class="teacher-logo"></div>
                     <div class="teacher-info">
                         <div class="teacher-name">Ethan Hunt</div>
-                        <div class="teacher-email">ethan@example.com</div>
+                        <div class="teacher-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="385d4c505956785d40595548545d165b5755">[email&#160;protected]</a></div>
                     </div>
                     <button class="chat-button">Chat</button>
                 </div>
@@ -410,7 +106,7 @@
     
     <nav class="navbar">
         <a href="teacher.html" class="nav-item">
-            <i data-lucide="users"></i> <!-- New people icon -->
+            <i data-lucide="users"></i>
             <span>Teacher</span>
         </a>
         <a href="setting.html" class="nav-item">
@@ -429,8 +125,9 @@
             <i data-lucide="user"></i>
             <span>Profile</span>
         </a>
-    <script>
-        lucide.createIcons();
-    </script>
+    </nav>
+    
+    <script src="{% static 'home/js/dashboard.js' %}"></script>
 </body>
 </html>
+
