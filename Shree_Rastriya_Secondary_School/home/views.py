@@ -5,7 +5,9 @@ from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import login_required , permission_required
 from django.contrib import messages
 from django.contrib.auth.models import Group , User
+import logging
 
+logger = logging.getLogger(__name__)
 
 
 
@@ -410,7 +412,7 @@ def Add_Notice(request):
         
          notice.save()
         
-         return redirect('home:notice')  # Redirect to the page where notices are displayed
+         return redirect('home:notice')  
     
         return render(request, 'home/addnotice.html')
 
@@ -523,60 +525,41 @@ def student_list(request):
 
 
 def upload_notes(request):
- 
-    if not request.user.groups.filter(name="Teacher").exists():
-        return redirect('home:std-list') 
-    
-    if request.method == "POST":
-        subject_id = request.POST.get('subject')
-        class_id = request.POST.get('class')
-        title = request.POST.get('title')
-        content = request.POST.get('content')
-        pdf = request.FILES.get('pdf')
-
-        if not subject_id or not class_id or not title or not content:
-            return render(request, 'home/upload.html', {
-                'error': 'All fields are required.',
-                'subjects': models.Subject.objects.all(),
-                'classes': models.Class.objects.all()
-            })
-
-  
-        try:
-            selected_subject = models.Subject.objects.get(id=subject_id)
-            selected_class = models.Class.objects.get(id=class_id)
-        except (models.Subject.DoesNotExist, models.Class.DoesNotExist):
-            return render(request, 'Home/upload.html', {
-                'error': 'Invalid subject or class selected.',
-                'subjects': models.Subject.objects.all(),
-                'classes': models.Class.objects.all()
-            })
-
-        if not selected_class.subjects.filter(id=selected_subject.id).exists():
-            return render(request, 'home/upload.html', {
-                'error': 'The selected subject is not available for the selected class.',
-                'subjects': models.Subject.objects.all(),
-                'classes': models.Class.objects.all()
-            })
-
-        # ah save :)
-        models.Notes.objects.create(
-            teacher=request.user,
-            subject=selected_subject,
-            classs=selected_class,
-            title=title,
-            content=content,
-            pdf_file = pdf
-        )
-
-        return redirect('home:upload')  
-
-    return render(request, 'home/upload.html', {
-        'subjects': models.Subject.objects.all(),
-        'classes': models.Class.objects.all()
-    })
+    user = request.user
+    if user.is_authenticated: 
+     if user.groups.filter(name="Teacher").exists():
+      if request.method == 'POST':
+          teacher = user
+          subject_str = request.POST.get('subject') 
+          subject = models.Subject.objects.get(id=subject_str)  
+          Class_str = request.POST.get('class')
+          Class = models.Class.objects.get(id=Class_str)
+          title = request.POST.get('title')
+          content = request.POST.get('content')
+          pdf= request.FILES.get('pdf')
+          db = models.Notes(teacher=user,title=title, content=content, pdf_file=pdf,classs=Class,subject=subject)
+          db.save()
+          return redirect('home:upload')
 
 
+
+
+     
+      else:
+         teacher = models.Teacher.objects.get(user=request.user)
+         Classes = teacher.classs.all()
+         subjects = teacher.subject.all()
+         context = {
+             'classes':Classes,
+             'subjects':subjects,
+         }
+
+         return render(request, 'home/upload.html',context)
+     else:
+        logger.warning(f"User {user.username} tried to access upload without being a Teacher.")
+        return redirect('home:home')
+    else:
+        return redirect('home:login')
 
 
 def student_dashboard(request):
@@ -589,6 +572,7 @@ def student_dashboard(request):
         print(f"Student: {student}, Class: {student_class}")  
 
         notes = models.Notes.objects.filter(classs=student_class).order_by('-uploaded_at')
+        teacher = models.Teacher.objects.filter(classs=student_class)
         print(f"Notes for Class {student_class}: {notes}")  
 
     except models.StudentInfo.DoesNotExist:
@@ -598,5 +582,30 @@ def student_dashboard(request):
     return render(request, 'home/dashboard_std.html', {
         'username': request.user.username,
         'notes': notes,
-        'std':student
+        'std':student,
+        'teachers': teacher
     })
+
+
+
+def teacher_list(request):
+    std_class = models.StudentInfo.objects.get(user=request.user)
+    Class = std_class.student_class
+    teacher = models.Teacher.objects.filter(classs=Class)
+    context = {
+        'teachers':teacher
+    }
+    
+    return render(request, 'home/teacher_list.html',context)
+
+
+
+
+def teacher_chat(request, teacher_id):
+    teacher = models.Teacher.objects.get(id=teacher_id)
+    context = {
+        'teacher': teacher,
+    }
+    return render(request, 'home/teacher_chat.html',context)
+
+
