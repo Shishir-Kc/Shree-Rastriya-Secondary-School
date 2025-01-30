@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Notes</title>
+    <title>Upload Notes = > {{user}}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -140,8 +140,9 @@
             <label for="subject">Subject:</label>
             <select id="subject" name="subject" required>
                 <option value="">Select Subject</option>
+            
                 {% for subject in subjects %}
-                    <option value="{{ subject.id }}">{{ subject.name }}</option>
+                    <option value="{{ subject.id }}">{{subject}}</option>
                 {% endfor %}
             </select>
 
@@ -174,7 +175,7 @@
             } else {
                 document.body.style.backgroundColor = '#f4f4f4';
                 document.body.style.color = '#333';
-                document.querySelector('header').style.backgroundColor = '#42a5f5'; /* Deep blue color */
+                document.querySelector('header').style.backgroundColor = '#42a5f5'; 
                 document.querySelector('.container').style.backgroundColor = '#fff';
                 document.querySelector('.theme-toggle-btn').textContent = 'Switch to Dark Mode';
             }
