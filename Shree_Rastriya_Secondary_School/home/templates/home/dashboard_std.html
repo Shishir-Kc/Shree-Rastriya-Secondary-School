@@ -1,18 +1,35 @@
 <!DOCTYPE html>
+{% extends "home/std_dashboard.html" %}
 {% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard</title>
+    {% block title %} Welcome {{user |title }} ! {% endblock title %}
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="{% static 'home/css/dashboard.css' %}">
+  {% block link %}  
+  
+  <link rel="stylesheet" href="{% static 'home/css/dashboard.css' %}">
+  {% endblock link %}
 </head>
 <body>
+
+    {% block css %}
+    {% endblock css %}
+    
+   {% block context %} 
     <div class="container">
         <div class="main-content">
-            <h1>Welcome {{std.user.username|title}}</h1>
-            <h2>Notes count: {{ notes|length }}</h2>
+            {% comment %} <h1>Welcome {{std.user.username|title}}</h1>
+              {% endcomment %}
+              <h1 style="font-size: 2.5rem; color:rgb(108, 131, 155); font-weight: bold; text-align: center; margin-top: 20px;">
+                Welcome, {{ std.user.username|title }}!
+            </h1>
+            <p style="text-align: center; font-size: 1.2rem; color: #7f8c8d; margin-top: 10px;">
+                We’re thrilled to have you here. Explore and make the most of your experience.
+            </p>
+            
+              {% comment %} <h2>Notes count: {{ notes|length }}</h2> {% endcomment %}
 
             <div class="notes-container">
                 {% for note in notes %}
@@ -43,91 +60,37 @@
         {% comment %} side bar  {% endcomment %}
         <div class="sidebar" style="height: calc(100vh - 110px); overflow-y: auto;">
             <h2>Teachers</h2>
+          {% if teachers %}   
+            {% for teacher in teachers  %}  
             <div class="people-list">
                 <div class="teacher">
                     <div class="teacher-logo"></div>
                     <div class="teacher-info">
-                        <div class="teacher-name">John Doe</div>
-                        <div class="teacher-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8ee4e1e6e0ceebf6efe3fee2eba0ede1e3">[email&#160;protected]</a></div>
+                        <div class="teacher-name"> {{teacher.name}}</div>
+                        <div class="teacher-email">{{teacher.email}}</div>
                     </div>
-                    <button class="chat-button">Chat</button>
+                    <a href="">
+                     <button class="chat-button">Chat</button>
+                    </a>
+                    
                 </div>
-                <div class="teacher">
-                    <div class="teacher-logo"></div>
-                    <div class="teacher-info">
-                        <div class="teacher-name">Jane Smith</div>
-                        <div class="teacher-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7a101b141f3a1f021b170a161f54191517">[email&#160;protected]</a></div>
-                    </div>
-                    <button class="chat-button">Chat</button>
-                </div>
-                <div class="teacher">
-                    <div class="teacher-logo"></div>
-                    <div class="teacher-info">
-                        <div class="teacher-name">Bob Johnson</div>
-                        <div class="teacher-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="492b262b092c31282439252c672a2624">[email&#160;protected]</a></div>
-                    </div>
-                    <button class="chat-button">Chat</button>
-                </div>
-                <div class="teacher">
-                    <div class="teacher-logo"></div>
-                    <div class="teacher-info">
-                        <div class="teacher-name">Alice Williams</div>
-                        <div class="teacher-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c9a8a5a0aaac89acb1a8a4b9a5ace7aaa6a4">[email&#160;protected]</a></div>
-                    </div>
-                    <button class="chat-button">Chat</button>
-                </div>
-                <div class="teacher">
-                    <div class="teacher-logo"></div>
-                    <div class="teacher-info">
-                        <div class="teacher-name">Charlie Brown</div>
-                        <div class="teacher-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fb98939a8997929ebb9e839a968b979ed5989496">[email&#160;protected]</a></div>
-                    </div>
-                    <button class="chat-button">Chat</button>
-                </div>
-                <div class="teacher">
-                    <div class="teacher-logo"></div>
-                    <div class="teacher-info">
-                        <div class="teacher-name">Diana Prince</div>
-                        <div class="teacher-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c2a6aba3aca382a7baa3afb2aea7eca1adaf">[email&#160;protected]</a></div>
-                    </div>
-                    <button class="chat-button">Chat</button>
-                </div>
-                <div class="teacher">
-                    <div class="teacher-logo"></div>
-                    <div class="teacher-info">
-                        <div class="teacher-name">Ethan Hunt</div>
-                        <div class="teacher-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="385d4c505956785d40595548545d165b5755">[email&#160;protected]</a></div>
-                    </div>
-                    <button class="chat-button">Chat</button>
-                </div>
-            </div>
+                {% endfor %}
+        
+            {% else %}
+            
+                 <p>No teachers found. for class {{std.student_class.grade}}  | Section {{std.student_class.section}}  </p>
+
+                    <h5> If you are a student and are unable to find a teacher please contact the administrator .  </h5>
+        {% endif %}
+
         </div>
     </div>
+
+
+    {% endblock context %} 
     
-    <nav class="navbar">
-        <a href="teacher.html" class="nav-item">
-            <i data-lucide="users"></i>
-            <span>Teacher</span>
-        </a>
-        <a href="setting.html" class="nav-item">
-            <i data-lucide="settings"></i>
-            <span>Settings</span>
-        </a>
-        <a href="#" class="nav-item">
-            <i data-lucide="home"></i>
-            <span>Home</span>
-        </a>
-        <a href="books.html" class="nav-item">
-            <i data-lucide="book"></i>
-            <span>Books</span>
-        </a>
-        <a href="profile.html" class="nav-item">
-            <i data-lucide="user"></i>
-            <span>Profile</span>
-        </a>
-    </nav>
     
-    <script src="{% static 'home/js/dashboard.js' %}"></script>
+    {% comment %} <script src="{% static 'home/js/dashboard.js' %}"></script> {% endcomment %}
 </body>
 </html>
 
