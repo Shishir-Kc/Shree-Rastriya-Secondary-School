@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.utils.timezone import now
+
 
 class Notice(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -29,16 +29,6 @@ class Event(models.Model):
     def __str__(self):
         return self.Title
 
-
-class Teacher(models.Model):
-    user = models.ForeignKey(User,on_delete=models.DO_NOTHING)
-    name = models.CharField(max_length=20)
-    contact = models.IntegerField()
-    subject = models.TextField()
-    teacher_image = models.ImageField(upload_to='teacher_image',blank=True)
-
-    def __str__(self):
-        return self.name
 
 
 class Administrator(models.Model):
@@ -126,6 +116,20 @@ class Class(models.Model):
 
 
 
+class Teacher(models.Model):
+    user = models.ForeignKey(User,on_delete=models.DO_NOTHING)
+    name = models.CharField(max_length=20)
+    contact = models.IntegerField()
+    subject = models.ManyToManyField(Subject)
+    classs = models.ManyToManyField(Class)
+    email = models.EmailField(("Email Address"), max_length=254,  default="user@gmail.com" )
+  
+    teacher_image = models.ImageField(upload_to='teacher_image',blank=True)
+
+    def __str__(self):
+        return self.name
+
+
 class StudentInfo(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Associated User")
     first_name = models.CharField(max_length=20, verbose_name="First Name")
@@ -167,3 +171,4 @@ class Notes(models.Model):
 
     def __str__(self):
         return f"{self.title} - {self.classs} - {self.subject}"
+    
