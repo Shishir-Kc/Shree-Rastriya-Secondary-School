@@ -47,6 +47,8 @@ urlpatterns = [
     path('std/<int:std_id>/',views.student_profile,name="profile"),
     path('std/',views.student_list,name="std-list"),
     path('upload/',views.upload_notes,name='upload'),
-     path('dashboard/', views.student_dashboard, name='student_dashboard'),
+    path('dashboard/', views.student_dashboard, name='student_dashboard'),
+    path('teacher/',views.teacher_list, name='teacher-list'),
+    path('teacher/chat/<int:teacher_id>/',views.teacher_chat, name='teacher-chat'),
 
 ]   
