@@ -137,6 +137,8 @@ class StudentInfo(models.Model):
     contact_number = models.CharField(max_length=15, verbose_name="Contact Number")
     profile_picture = models.ImageField(upload_to='student_profiles', blank=True, verbose_name="Profile Picture")
     student_class = models.ForeignKey(Class, on_delete=models.CASCADE,default=1)
+    email = models.CharField(max_length=50, verbose_name="Email" , default="Student@gmail.com")
+    student_roll_number = models.CharField(max_length=20,verbose_name='Roll Number',default='N/A')
     class Meta:
         verbose_name = "Student Info"
         verbose_name_plural = "Student Infos"
@@ -160,7 +162,8 @@ class Enrollment(models.Model):
 
 
 class Notes(models.Model):
-    teacher = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'groups__name': "Teacher"})
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE,default=1)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     classs = models.ForeignKey(Class, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
@@ -172,3 +175,31 @@ class Notes(models.Model):
     def __str__(self):
         return f"{self.title} - {self.classs} - {self.subject}"
     
+    
+
+class Message(models.Model):
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sender")
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name="receiver")
+    message = models.TextField()
+    sent_at = models.DateTimeField(auto_now_add=True)
+
+    # class Meta:
+        # verbose_name = "Message"
+        # verbose_name_plural = "Messages"
+        # ordering = ['-sent_at']
+        # unique_together = ('sender','receiver')
+
+    def __str__(self):
+        return f"{self.sender} - {self.receiver}"
+    
+
+class Books(models.Model):
+    title = models.CharField(max_length=100,default='untitled')
+    Class = models.ForeignKey(Class,on_delete=models.CASCADE ,related_name="books")
+    book_Subject = models.ForeignKey(Subject,on_delete=models.CASCADE,related_name="book_Subject") 
+    book_image = models.ImageField(upload_to='book_image',blank=True)
+
+    class Meta:
+        verbose_name = ('book')
+    def __str__(self):
+        return f"{self.book_Subject} - {self.Class}"
