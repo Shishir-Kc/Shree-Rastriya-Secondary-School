@@ -1,96 +1,116 @@
-<!DOCTYPE html>
-{% extends "home/std_dashboard.html" %}
+{% extends "home/std_dashboard_navbar.html" %}
 {% load static %}
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {% block title %} Welcome {{user |title }} ! {% endblock title %}
-    <script src="https://unpkg.com/lucide@latest"></script>
-  {% block link %}  
-  
+
+{% block title %}Welcome {{ user|title }}!{% endblock title %}
+
+{% block link %}
   <link rel="stylesheet" href="{% static 'home/css/dashboard.css' %}">
-  {% endblock link %}
-</head>
-<body>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    .teacher-logo {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 2px solid #ccc;
+      background-color: #f1f1f1;
+      font-size: 24px;
+      color: #555;
+    }
+    .teacher-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+  </style>
+{% endblock link %}
 
-    {% block css %}
-    {% endblock css %}
-    
-   {% block context %} 
-    <div class="container">
-        <div class="main-content">
-            {% comment %} <h1>Welcome {{std.user.username|title}}</h1>
-              {% endcomment %}
-              <h1 style="font-size: 2.5rem; color:rgb(108, 131, 155); font-weight: bold; text-align: center; margin-top: 20px;">
-                Welcome, {{ std.user.username|title }}!
-            </h1>
-            <p style="text-align: center; font-size: 1.2rem; color: #7f8c8d; margin-top: 10px;">
-                We’re thrilled to have you here. Explore and make the most of your experience.
-            </p>
-            
-              {% comment %} <h2>Notes count: {{ notes|length }}</h2> {% endcomment %}
-
-            <div class="notes-container">
-                {% for note in notes %}
-                <div class="notes-section">
-                    <div class="notes-header">
-                        <div class="teacher-logo">
-                            <i data-lucide="user"></i>
-                        </div>
-                        <div class="teacher-info">
-                            <div class="teacher-name">{{note.teacher.username}}</div>
-                            <div class="teacher-email">{{note.teacher.email}}</div>
-                            <div class="subject">{{note.subject}}</div>
-                            <div class="class-info">{{note.classs}}</div>
-                        </div>
-                    </div>
-                    <div class="notes-content">
-                        <p>{{note.content}}</p>
-                        <p>Please review these notes and complete the assigned homework by next week.</p>
-                    </div>
-                    <button class="download-button">
-                        <i data-lucide="download"></i> <strong>Download</strong>
-                    </button>
+{% block context %}
+  <div class="container">
+    <div class="main-content">
+      <h1 style="font-size: 2.5rem; color:rgb(108, 131, 155); font-weight: bold; text-align: center; margin-top: 20px;">
+        Welcome, {{ std.user.username|title }}!
+      </h1>
+      <p style="text-align: center; font-size: 1.2rem; color: #7f8c8d; margin-top: 10px;">
+        We’re thrilled to have you here. Explore and make the most of your experience.
+      </p>
+      <div class="notes-container">
+        {% if notes %} 
+        {% for note in notes %}
+        <div class="notes-section">
+            <div class="notes-header">
+                <div class="teacher-logo"> 
+                    {% if note.teacher.teacher_image %}
+                        <img src="{{ note.teacher.teacher_image.url }}" alt="Teacher Image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    {% else %}
+                        <i class="fas fa-user-tie" style="display: flex;"></i>
+                    {% endif %}
                 </div>
-                {% endfor %}
+                
+                <div class="teacher-info">
+                    <div class="teacher-name"> <strong> Name : </strong>{{ note.teacher.name }}</div>
+                    <div class="teacher-email"> <strong> Email : </strong>{{ note.teacher.email }}</div>
+                    <div class="subject"><strong> Subject : </strong>{{ note.subject }}</div>
+                    <div class="class-info"> <strong> Class : </strong>{{ note.classs.grade }} | Section : {{note.classs.section}}</div>
+                </div>
             </div>
+            <div class="notes-content">
+                <p> {{note.title}} </p>
+                <p>{{ note.content }}</p>
+                <p>Please review these notes and complete the assigned homework by next week.</p>
+            </div>
+            {% if note.pdf_file %} 
+              <a href="{{note.pdf_file.url}}" style="text-decoration: none;" download>
+              <button class="download-button">
+                  <i class="fa fa-download"></i> <strong>Download</strong>
+              </button>
+             </a>
+              {% else %}
+                <h1> Note is Not Available at the Moment ! </h1>
+             {% endif %}
+
         </div>
-
-        {% comment %} side bar  {% endcomment %}
-        <div class="sidebar" style="height: calc(100vh - 110px); overflow-y: auto;">
-            <h2>Teachers</h2>
-          {% if teachers %}   
-            {% for teacher in teachers  %}  
-            <div class="people-list">
-                <div class="teacher">
-                    <div class="teacher-logo"></div>
-                    <div class="teacher-info">
-                        <div class="teacher-name"> {{teacher.name}}</div>
-                        <div class="teacher-email">{{teacher.email}}</div>
-                    </div>
-                    <a href="">
-                     <button class="chat-button">Chat</button>
-                    </a>
-                    
-                </div>
-                {% endfor %}
-        
-            {% else %}
-            
-                 <p>No teachers found. for class {{std.student_class.grade}}  | Section {{std.student_class.section}}  </p>
-
-                    <h5> If you are a student and are unable to find a teacher please contact the administrator .  </h5>
+        {% endfor %}
+        {% else %}
+         <div class="notes-content">
+           <p>No Notes has been uploaded ! </p>
+        </div>
         {% endif %}
-
-        </div>
+      
+    </div>
+    
     </div>
 
-
-    {% endblock context %} 
-    
-    
-    {% comment %} <script src="{% static 'home/js/dashboard.js' %}"></script> {% endcomment %}
-</body>
-</html>
-
+    <div class="sidebar" style="height: calc(100vh - 110px); overflow-y: auto;">
+      <h2>Teachers</h2>
+      {% if teachers %}
+        <div class="people-list">
+          {% for teacher in teachers %}
+          <div class="teacher">
+            <div class="teacher-logo">
+              {% if teacher.teacher_image %}
+                <img src="{{ teacher.teacher_image.url }}" alt="Teacher Image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+              {% endif %}
+              <i class="fas fa-user-tie" style="{% if teacher.teacher_image %}display: none;{% endif %}"></i>
+            </div>
+            <div class="teacher-info">
+              <div class="teacher-name">{{ teacher.name }}</div>
+              <div class="teacher-email">{{ teacher.email }}</div>
+            </div>
+            <a href="{% url "home:teacher-chat" teacher.id %}">
+              <button class="chat-button">Chat</button>
+            </a>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p>No teachers found for class {{ std.student_class.grade }} | Section {{ std.student_class.section }}</p>
+        <h5>If you are a student and are unable to find a teacher, please contact the administrator.</h5>
+      {% endif %}
+    </div>
+  </div>
+{% endblock context %}
