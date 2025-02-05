@@ -6,6 +6,7 @@ app_name="home"
 
 urlpatterns = [  
     path('', views.home, name='home'),
+    path('accounts/login/',views.user_login,name="login"),
     path('Shree-Rastriya-Secondary-School/login/',views.user_login,name="login"),
     path('about-us/',views.about_us,name="about_us"),
     path('Shree-Rastriya-Secondary-School/admin',views.admin_panel,name="admin-settings"),
@@ -42,13 +43,21 @@ urlpatterns = [
     path('Shree-Rastriya-Secondary-School/Education/',views.Scholar_FeeStructure,name='edu'),
     # path('Shree-Rastriya-Secondary-School/Education/admin/',views.edit_Scholar,name='list-scholar'),
     # path('Shree-Rastriya-Secondary-School/Education/admin/<int:scholar_id>/',views.edit_Scholar,name='edit-scholar'),
+
+
+    #  ~ ~ below here are the test urls ! ~ ~ ~ 
     path('Shree-Rastriya-Secondary-School/Notice/<int:notice_id>/delete/',views.notice_delete,name='notice-delete'),
+   # ~ ~ ~ remove this path after testing ~ ~ ~ 
     path('test/',views.test,name='test'),
+   #
     path('std/<int:std_id>/',views.student_profile,name="profile"),
     path('std/',views.student_list,name="std-list"),
     path('upload/',views.upload_notes,name='upload'),
     path('dashboard/', views.student_dashboard, name='student_dashboard'),
     path('teacher/',views.teacher_list, name='teacher-list'),
     path('teacher/chat/<int:teacher_id>/',views.teacher_chat, name='teacher-chat'),
-
-]   
+    path('settings/',views.student_settings, name='student_settings'),
+    path('books/',views.Student_Books,name='student_books'),
+    path('student/',views.student_profile,name='student_profile'),
+ 
+]  
