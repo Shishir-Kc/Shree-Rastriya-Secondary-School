@@ -15,9 +15,17 @@ admin.site.register(models.Class)
 admin.site.register(models.StudentInfo)
 admin.site.register(models.Subject)
 admin.site.register(models.Enrollment)
+admin.site.register(models.Books)
 
 
 
 #for Teacher 
 
 admin.site.register(models.Notes)
+
+
+#Message 
+
+admin.site.register(models.Message)
+
+
