@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% extends "home/std_dashboard.html" %}
+{% extends "home/std_dashboard_navbar.html" %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -143,9 +143,10 @@
 
     {% block context %} 
     <div class="container">
-        <div class="search-bar">
+        {% comment %} search bar !  {% endcomment %}
+        {% comment %} <div class="search-bar">
             <input type="text" id="searchInput" placeholder="Search for a teacher...">
-        </div>
+        </div> {% endcomment %}
         <div class="teacher-list" id="teacherList">
             <h2>Teachers</h2>
             {% if teachers %}  
@@ -153,7 +154,7 @@
              <div class="teacher">
                 <div style="display: flex; align-items: center;">
                     <i class="fas fa-chalkboard-teacher teacher-icon"></i> <!-- Teacher icon -->
-                    <span><strong>{{teacher.name}}</strong></span>
+                    <span><strong>{{teacher.name}} id => {{teacher.id}}</strong></span>
                 </div>
                 <a href="{% url "home:teacher-chat" teacher.id%}">
                     <button class="chat-button">Chat</button>
