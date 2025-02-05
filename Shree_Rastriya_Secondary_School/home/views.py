@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.contrib.auth.models import Group , User
 import logging
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -107,7 +108,19 @@ def Event_add(request):
 
 
 def test(request):
-    return render(request,'home/test.html')
+    user = request.user
+    student = models.StudentInfo.objects.get(user=user)
+    student_class = student.student_class
+    teacher = models.Teacher.objects.filter(classs=student_class)
+    note = models.Notes.objects.filter(classs=student_class)
+    
+    context = {
+        'notes':note,
+        'teachers':teacher
+
+    }
+
+    return render(request,'home/dashboard_test.html',context)
 
 
 @login_required
@@ -526,10 +539,11 @@ def student_list(request):
 
 def upload_notes(request):
     user = request.user
+    print(user)
     if user.is_authenticated: 
      if user.groups.filter(name="Teacher").exists():
       if request.method == 'POST':
-          teacher = user
+          teacher = models.Teacher.objects.get(user=user)
           subject_str = request.POST.get('subject') 
           subject = models.Subject.objects.get(id=subject_str)  
           Class_str = request.POST.get('class')
@@ -537,10 +551,14 @@ def upload_notes(request):
           title = request.POST.get('title')
           content = request.POST.get('content')
           pdf= request.FILES.get('pdf')
-          db = models.Notes(teacher=user,title=title, content=content, pdf_file=pdf,classs=Class,subject=subject)
+          if pdf is None:
+            pdf = None
+
+          db = models.Notes(user=user,teacher=teacher,title=title, content=content, pdf_file=pdf,classs=Class,subject=subject)
           db.save()
           return redirect('home:upload')
-
+          
+           
 
 
 
@@ -562,9 +580,17 @@ def upload_notes(request):
         return redirect('home:login')
 
 
+
+# ~ ~ ~ ~  below here are the code for sudent dashboard ~ ~ ~ ~
+
 def student_dashboard(request):
     if not request.user.is_authenticated:
         return redirect('home:login')
+
+    student = None
+    student_class = None
+    notes = []
+    teacher = []
 
     try:
         student = models.StudentInfo.objects.get(user=request.user)
@@ -577,18 +603,17 @@ def student_dashboard(request):
 
     except models.StudentInfo.DoesNotExist:
         print("StudentInfo does not exist for the user.") 
-        notes = []
 
     return render(request, 'home/dashboard_std.html', {
         'username': request.user.username,
         'notes': notes,
-        'std':student,
+        'std': student,
         'teachers': teacher
     })
 
 
-
 def teacher_list(request):
+    
     std_class = models.StudentInfo.objects.get(user=request.user)
     Class = std_class.student_class
     teacher = models.Teacher.objects.filter(classs=Class)
@@ -602,10 +627,69 @@ def teacher_list(request):
 
 
 def teacher_chat(request, teacher_id):
-    teacher = models.Teacher.objects.get(id=teacher_id)
-    context = {
+    if request.method  == "POST":
+        print(" @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@2")
+        print("send ! ")
+        message = request.POST.get('message')
+        chat = models.Message(sender=request.user,receiver=teacher_id,message=message)
+        chat.save()
+        chat = models.Message.objects.get(sender=request.user,receiver=teacher_id)
+        context = {
+            'messages':chat
+        }
+        return redirect('home:teacher-chat',context)
+    else:
+     print(" @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@2")
+     teacher = models.Teacher.objects.get(id=teacher_id)
+     context = {
         'teacher': teacher,
+     }
+     return render(request, 'home/teacher_chat.html',context)
+
+
+#  ~ ~ ~ This code is not comformed To be implemented ~ ~ ~ 
+@login_required
+def student_settings(request):
+    
+    if not request.user.is_authenticated:
+        return redirect('home:login')
+    else:
+        if Group.objects.filter(user=request.user):
+             if request.method == "POST":
+                new_first_name = request.POST.get('first_name')
+                
+             else:
+              db = models.StudentInfo.objects.get(user=request.user)
+              context = {
+              'student':db
+             }
+             return render(request, 'home/student_settings.html',context)
+        else:
+             logging.warning(f"User {request.user.username} tried to access student settings without being a student.")
+             return redirect('home:home')
+        
+
+
+
+def Student_Books(request):
+    user = request.user
+    student_profile = models.StudentInfo.objects.get(user=user)
+    Class = student_profile.student_class
+    db = models.Books.objects.filter(Class=Class)
+    context = {
+        'books':db
     }
-    return render(request, 'home/teacher_chat.html',context)
+    return render(request, 'home/student_books.html',context)
 
+@login_required
+def student_profile(request):
+    user = request.user
+    if Group.objects.filter(user=request.user):
 
+     db = models.StudentInfo.objects.get(user=request.user)
+     context = {
+         'student':db
+     }
+     return render(request, 'home/student_profile.html',context)
+    else:
+        return redirect('home:logout')
