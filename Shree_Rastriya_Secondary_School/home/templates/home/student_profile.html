@@ -1,174 +1,292 @@
 <!DOCTYPE html>
+{% extends "home/std_dashboard_navbar.html" %}
+{% load static %}
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Profile</title>
-    <link href="https://unpkg.com/lucide@latest" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #1a1a1a;
-            color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% block title %}Welcome {{ user|title }}!{% endblock title %}
+  {% block css %}
+  <style>
+    /* Global Reset & Base Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Roboto', sans-serif;
+      line-height: 1.6;
+      color: #e0e0e0;
+      background-color: #121212;
+    }
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+    
+    /* Banner Section */
+    .banner {
+      position: relative;
+      height: 350px;
+      overflow: hidden;
+    }
+    .banner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.7);
+      transition: transform 0.3s ease;
+    }
+    .banner:hover img {
+      transform: scale(1.05);
+    }
+    
+    /* Profile Section */
+    .profile {
+      max-width: 1000px;
+      margin: -100px auto 20px;
+      padding: 30px;
+      background-color: rgba(42, 42, 42, 0.8);
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      transition: transform 0.3s ease;
+    }
+    .profile:hover {
+      transform: translateY(-5px);
+    }
+    .profile-pic-container {
+      position: relative;
+      width: 180px;
+      height: 180px;
+      margin: 0 auto 20px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 5px solid #4a4a4a;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease;
+    }
+    .profile-pic-container:hover {
+      transform: scale(1.05) rotate(5deg);
+    }
+    .profile-pic-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: filter 0.3s ease;
+    }
+    .profile-pic-container:hover img {
+      filter: brightness(1.2);
+    }
+    .contact-info {
+      margin-top: 20px;
+      font-size: 1.1rem;
+      color: #cccccc;
+    }
+    .contact-info p {
+      margin: 10px 0;
+      transition: transform 0.2s ease;
+    }
+    .contact-info p:hover {
+      transform: translateX(5px);
+    }
+    
+    /* Achievements Section */
+    .achievements {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 30px;
+      background-color: rgba(42, 42, 42, 0.8);
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    .achievements h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2.5rem;
+      color: #ffffff;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    .achievement-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+    }
+    .card {
+      background: linear-gradient(145deg, #2a2a2a, #3a3a3a);
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-10px) rotate(2deg);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    }
+    .card h3 {
+      margin-bottom: 15px;
+      font-size: 1.5rem;
+      color: #ffffff;
+      border-bottom: 2px solid #4a4a4a;
+      padding-bottom: 10px;
+    }
+    .card p {
+      font-size: 1rem;
+      color: #cccccc;
+      line-height: 1.6;
+    }
+    
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      .profile {
+        margin-top: -50px;
+        padding: 20px;
+      }
+      .profile-pic-container {
+        width: 150px;
+        height: 150px;
+      }
+      .contact-info {
+        font-size: 1rem;
+      }
+      .achievements {
+        padding: 20px;
+      }
+      .achievements h2 {
+        font-size: 2rem;
+      }
+    }
+    
 
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-        }
+    /* Animation Keyframes */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-        .profile-card {
-            background-color: #2a2a2a;
-            border-radius: 10px;
-            padding: 20px;
-            width: 100%;
-            max-width: 600px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .profile-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .profile-logo {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: #4a4a4a;
-            margin-right: 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .profile-info {
-            flex: 1;
-        }
-
-        .profile-name {
-            font-size: 1.5em;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .profile-email {
-            font-size: 1em;
-            color: #cccccc;
-            margin-bottom: 10px;
-        }
-
-        .courses {
-            margin-top: 20px;
-        }
-
-        .course {
-            background-color: #333333;
-            border-radius: 5px;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
-        .navbar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: #333333;
-            display: flex;
-            justify-content: space-around;
-            padding: 12px 0;
-            z-index: 1000;
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .nav-item {
-            color: #ffffff;
-            text-decoration: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 8px 16px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .nav-item:hover {
-            background-color: #444444;
-            transform: translateY(-3px);
-        }
-
-        .nav-item svg {
-            width: 24px;
-            height: 24px;
-            margin-bottom: 4px;
-            transition: all 0.3s ease;
-        }
-
-        .nav-item:hover svg {
-            transform: scale(1.1);
-        }
-
-        .nav-item span {
-            font-size: 12px;
-            transition: all 0.3s ease;
-        }
-    </style>
+    /* Apply animations */
+    .profile, .achievements {
+      animation: fadeIn 0.8s ease-out forwards;
+    }
+    .achievement-cards .card {
+      opacity: 0;
+      animation: fadeIn 0.8s ease-out forwards;
+    }
+    .achievement-cards .card:nth-child(1) { animation-delay: 0.2s; }
+    .achievement-cards .card:nth-child(2) { animation-delay: 0.4s; }
+    .achievement-cards .card:nth-child(3) { animation-delay: 0.6s; }
+  </style>
+  {% endblock css %}
 </head>
 <body>
-    <div class="container">
-        <div class="profile-card">
-            <div class="profile-header">
-                <div class="profile-logo">
-                    <i data-lucide="user"></i>
-                </div>
-                <div class="profile-info">
-                    <div class="profile-name">John Doe</div>
-                    <div class="profile-email">john.doe@example.com</div>
-                </div>
-            </div>
-            <div class="courses">
-                <h2>Enrolled Courses</h2>
-                <div class="course">Introduction to Computer Science</div>
-                <div class="course">Data Structures</div>
-                <div class="course">Algorithms</div>
-                <div class="course">Web Development</div>
-            </div>
+  {% block context %}
+  <!-- Banner Section -->
+  <header class="banner">
+    <img src="{% static 'home/images/banner.png' %}" alt="Banner Image">
+  </header>
+
+  <!-- Profile Section -->
+  <section class="profile">
+    <div class="profile-pic-container">
+      {% if student.profile_picture %} 
+        <img src="{{student.profile_picture.url}}" alt="Profile Picture">
+      {% else %}
+        <div class="icon-container">
+          <i class="fas fa-user"></i>
         </div>
+      {% endif %}
     </div>
+    <style>
+    .profile-pic-container .icon-container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #2a2a2a;
+    }
     
-    <nav class="navbar">
-        <a href="#" class="nav-item">
-            <i data-lucide="home"></i>
-            <span>Home</span>
-        </a>
-        <a href="profile.html" class="nav-item">
-            <i data-lucide="user"></i>
-            <span>Profile</span>
-        </a>
-        <a href="#" class="nav-item">
-            <i data-lucide="settings"></i>
-            <span>Settings</span>
-        </a>
-        <a href="#" class="nav-item">
-            <i data-lucide="book"></i>
-            <span>Books</span>
-        </a>
-        <a href="#" class="nav-item">
-            <i data-lucide="users"></i> <!-- New people icon -->
-            <span>Teacher</span>
-        </a>
-    <script>
-        lucide.createIcons();
-    </script>
+    .profile-pic-container .icon-container i {
+      font-size: 5rem;
+      color: #4a4a4a;
+    }
+    </style>
+    
+    
+    <div class="contact-info">
+      <p><strong>Name:</strong> {{student.first_name |title}} {{student.last_name}}</p>
+      <p><strong>Grade:</strong> {{student.student_class.grade}}</p>
+      <p><strong>Section:</strong> {{student.student_class.section}}</p>
+      <p><strong>Roll No:</strong> {{student.student_roll_number}}</p>
+      <p><strong>Email:</strong> {{student.email}}</p>
+      <p><strong>Contact:</strong> {{student.contact_number}}</p>
+    </div>
+  </section>
+
+  <!-- Achievements Section -->
+  {% if achivemtnt %}  
+  <section class="achievements">
+    <h2>Achievements</h2>
+    <div class="achievement-cards">
+      <div class="card">
+        <h3>Honor Roll</h3>
+        <p>Awarded for academic excellence throughout the school year.</p>
+      </div>
+      <!-- Add more achievement cards here if needed -->
+    </div>
+  </section>
+  {% else %}
+  <section class="achievements">
+    <h2>Achievements</h2>
+    <div class="achievement-cards">
+      <div class="card">
+        <h3>Future Star</h3>
+        <p>Your journey to greatness starts here! Take part in extra activities to earn achievements and showcase your talents.</p>
+      </div>
+      <div class="card">
+        <h3>Opportunities Await</h3>
+        <p>Explore clubs, competitions, and volunteer work to build your skills and make a difference.</p>
+      </div>
+      <div class="card">
+        <h3>Set Your Goals</h3>
+        <p>Dream big and work hard. Your next achievement is just around the corner!</p>
+      </div>
+    </div>
+  </section>
+  {% endif %}
+      
+  {% endblock context %}
+
+  <script>
+    // Add smooth scrolling
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+
+    // Add parallax effect to banner
+    window.addEventListener('scroll', function() {
+      const banner = document.querySelector('.banner img');
+      const scrollPosition = window.pageYOffset;
+      banner.style.transform = `translateY(${scrollPosition * 0.5}px)`;
+    });
+
+    // Add hover effect to achievement cards
+    const cards = document.querySelectorAll('.card');
+    cards.forEach(card => {
+      card.addEventListener('mouseenter', () => {
+        card.style.backgroundColor = '#3a3a3a';
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.backgroundColor = '';
+      });
+    });
+  </script>
 </body>
 </html>
-</create_file>
+
