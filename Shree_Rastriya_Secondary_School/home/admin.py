@@ -14,7 +14,7 @@ admin.site.register(models.FeeStructure)
 admin.site.register(models.Class)
 admin.site.register(models.StudentInfo)
 admin.site.register(models.Subject)
-admin.site.register(models.Enrollment)
+# admin.site.register(models.Enrollment)
 admin.site.register(models.Books)
 
 
@@ -22,7 +22,7 @@ admin.site.register(models.Books)
 #for Teacher 
 
 admin.site.register(models.Notes)
-
+admin.site.register(models.Head_teacher)
 
 #Message 
 
