@@ -1,0 +1,6 @@
+{% for note in notes %}
+    <h1> teacher name = > {{note.teacher.username}} </h1>
+    <h2> teacher Email = > {{note.teacher.email|default:"N/A"}} </h2>
+       
+
+{% endfor %}

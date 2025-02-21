@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-
 class Notice(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
@@ -114,15 +113,14 @@ class Class(models.Model):
     def __str__(self):
         return f"Grade {self.grade} - Section {self.section}"
 
-
-
 class Teacher(models.Model):
     user = models.ForeignKey(User,on_delete=models.DO_NOTHING)
     name = models.CharField(max_length=20)
     contact = models.IntegerField()
     subject = models.ManyToManyField(Subject)
     classs = models.ManyToManyField(Class)
-    email = models.EmailField(("Email Address"), max_length=254,  default="user@gmail.com" )
+    email = models.EmailField(("Email Address"), max_length=254,  default="Teacher@gmail.com" )
+    
   
     teacher_image = models.ImageField(upload_to='teacher_image',blank=True)
 
@@ -130,7 +128,21 @@ class Teacher(models.Model):
         return self.name
 
 
+class Head_teacher(models.Model):
+    Class = models.OneToOneField(Class,on_delete=models.CASCADE,verbose_name='Class')
+    Teacher = models.OneToOneField(Teacher, on_delete=models.CASCADE,verbose_name='Teacher')    
+
+    class Meta:
+        verbose_name = "Teacher"
+        verbose_name_plural = "Class_Teacher"
+    def __str__(self):
+            return f"Teacher => {self.Teacher.name} Class Teacher of Grade = > {self.Class.grade} Section = > {self.Class.section}"
+
 class StudentInfo(models.Model):
+    student_Gender = [
+        ('Male', 'Male'),
+        ('Female', 'Female'),
+    ]
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Associated User")
     first_name = models.CharField(max_length=20, verbose_name="First Name")
     last_name = models.CharField(max_length=20, verbose_name="Last Name")
@@ -139,6 +151,8 @@ class StudentInfo(models.Model):
     student_class = models.ForeignKey(Class, on_delete=models.CASCADE,default=1)
     email = models.CharField(max_length=50, verbose_name="Email" , default="Student@gmail.com")
     student_roll_number = models.CharField(max_length=20,verbose_name='Roll Number',default='N/A')
+    student_id = models.CharField(max_length=20,verbose_name='Student ID',default='N/A')
+    student_gender = models.CharField(max_length=7, choices=student_Gender, verbose_name='Gender',default='Null')
     class Meta:
         verbose_name = "Student Info"
         verbose_name_plural = "Student Infos"
@@ -147,17 +161,19 @@ class StudentInfo(models.Model):
         return f"{self.first_name} {self.last_name}"
     
 
+#  It is Temporary Fix ! dont Really know why i made this Class ! hehe : ) 
 
-class Enrollment(models.Model):
-    student = models.OneToOneField(StudentInfo, on_delete=models.CASCADE, verbose_name="Student")
-    enrolled_class = models.ForeignKey(Class, on_delete=models.CASCADE, verbose_name="Enrolled Class")
 
-    class Meta:
-        verbose_name = "Enrollment"
-        verbose_name_plural = "Enrollments"
+# class Enrollment(models.Model):
+#     student = models.OneToOneField(StudentInfo, on_delete=models.CASCADE, verbose_name="Student")
+#     enrolled_class = models.ForeignKey(Class, on_delete=models.CASCADE, verbose_name="Enrolled Class")
 
-    def __str__(self):
-        return f"{self.student.first_name} {self.student.last_name} in {self.enrolled_class}"
+#     class Meta:
+#         verbose_name = "Enrollment"
+#         verbose_name_plural = "Enrollments"
+
+#     def __str__(self):
+#         return f"{self.student.first_name} {self.student.last_name} in {self.enrolled_class}"
 
 
 

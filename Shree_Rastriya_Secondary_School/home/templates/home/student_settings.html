@@ -1,0 +1,170 @@
+{% extends "home/std_dashboard_navbar.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Settings</title>
+    <link href="https://unpkg.com/lucide@latest" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    {% block css %}
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        h2 {
+            text-align: center;
+            color: #ffffff;
+            margin-bottom: 20px;
+        }
+
+        .settings-card {
+            background-color: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .settings-card h3 {
+            color: #ffffff;
+            margin-bottom: 20px;
+        }
+
+        .settings-item {
+            margin-bottom: 15px;
+            width: 100%;
+        }
+
+        .settings-item label {
+            color: #bbb;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .settings-item input,
+        .settings-item select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #444444;
+            background-color: #333333;
+            color: white;
+        }
+
+        .settings-item button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .settings-item button:hover {
+            background-color: #45a049;
+        }
+
+        /* Profile picture upload container */
+        .profile-pic-upload {
+            margin-top: 20px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .profile-pic-upload input[type="file"] {
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #333333;
+            color: white;
+            border: 1px solid #444444;
+            margin-bottom: 10px;
+        }
+
+        .profile-pic-upload button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .profile-pic-upload button:hover {
+            background-color: #0056b3;
+        }
+
+        @media (max-width: 768px) {
+            .settings-card {
+                width: 90%;  /* Ensure it takes most of the screen */
+                max-width: 400px;  /* Prevent it from getting too large */
+                margin: auto;  /* Centers it horizontally */
+            }
+        }
+
+            .settings-item {
+                width: auto;
+                margin-bottom: 15px;
+            }
+        }
+
+        /* Desktop view: profile pic on the right */
+        @media (min-width: 769px) {
+            .settings-card {
+                display: flex;
+                flex-direction: row;
+                align-items: flex-start;
+                justify-content: space-between;
+            }
+
+            .settings-card .profile-pic-container {
+                margin-left: 20px;
+            }
+
+            .settings-item {
+                width: 48%;
+            }
+        }
+    </style>
+    {% endblock css %} 
+</head>
+<body>
+    {% block context %} 
+    <div class="container">
+        <h2>Student Settings</h2>
+
+        <div class="settings-item">
+            <label for="studentName"> Settings will be added Soon ! 
+            <i class="fa-regular fa-bell-slash"></i>            
+        </label>
+
+    </div>
+
+    {% endblock context %}
+</body>
+</html>
+
+

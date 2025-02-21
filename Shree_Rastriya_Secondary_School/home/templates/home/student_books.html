@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+{% extends "home/std_dashboard_navbar.html" %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% block title %} 
+        Books ! 
+    {% endblock title %}
+    <link href="https://unpkg.com/lucide@latest" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    {% block css %}    
+    <style>
+        
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Arial', sans-serif;
+        background-color: #1a1a1a;
+        color: #ffffff;
+        min-height: 100vh;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    h2 {
+        text-align: center;
+        font-size: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .book-list-container {
+        background-color: #2a2a2a;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+
+    /* Custom scrollbar styles */
+    .book-list-container::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .book-list-container::-webkit-scrollbar-track {
+        background: #2a2a2a;
+        border-radius: 4px;
+    }
+
+    .book-list-container::-webkit-scrollbar-thumb {
+        background: #4a4a4a;
+        border-radius: 4px;
+    }
+
+    .book-list-container::-webkit-scrollbar-thumb:hover {
+        background: #555555;
+    }
+
+    /* Firefox scrollbar styles */
+    .book-list-container {
+        scrollbar-width: thin;
+        scrollbar-color: #4a4a4a #2a2a2a;
+    }
+
+    .book-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+    }
+
+    .book-item {
+        background-color: #333333;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .book-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .book-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .book-info {
+        padding: 1rem;
+    }
+
+    .book-title {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.25rem;
+        color: #ffffff;
+    }
+
+    .book-details {
+        color: #999;
+        margin: 0.25rem 0;
+        font-size: 0.9rem;
+    }
+
+    .view-notes-button {
+        width: 100%;
+        padding: 0.75rem;
+        margin-top: 1rem;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: background-color 0.3s ease;
+        text-decoration: none;
+    }
+
+    .view-notes-button:hover {
+        background-color: #45a049;
+    }
+
+    /* Responsive design */
+    @media (max-width: 1024px) {
+        .book-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 640px) {
+        .book-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .container {
+            padding: 1rem;
+        }
+    }
+    </style>
+    {% endblock css %}
+</head>
+{% block context %} 
+<body>
+    
+<div class="container">
+    <h2>Subjects List</h2>
+    <div class="book-list-container">
+        <div class="book-grid">
+            {% if books %}
+                {% for book in books %}
+                <div class="book-item">
+                    {% if book.book_image %}
+                        <img src="{{ book.book_image.url }}" alt="{{ book.title }}" class="book-image">
+                    {% else %}
+                        <img src="" alt="{{ book.title }}" class="book-image">
+                    {% endif %}
+                    <div class="book-info">
+                        <h4 class="book-title">{{ book.title }}</h4>
+                        <p class="book-details">{{ book.Class }}</p>
+                        <p class="book-details">Subject: {{ book.book_Subject }}</p>
+                        <a href="" class="view-notes-button">
+                            <i data-lucide="book-open"></i>
+                            View All Notes
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-books-message">
+                    <p>No books available. Please contact the administrator if you believe this is an error.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+</body>
+{% endblock context %}
+</html>
+
