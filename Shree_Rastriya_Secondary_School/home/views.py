@@ -6,6 +6,8 @@ from django.contrib.auth.decorators import login_required , permission_required
 from django.contrib import messages
 from django.contrib.auth.models import Group , User
 import logging
+import random
+
 
 
 logger = logging.getLogger(__name__)
@@ -583,6 +585,16 @@ def upload_notes(request):
 
 # ~ ~ ~ ~  below here are the code for sudent dashboard ~ ~ ~ ~
 
+def student_id():
+    lenght = 10
+    student_id = " "
+    for i in range(0, lenght):
+        id = random.randint(0, lenght)
+        id = str(id)
+        student_id = student_id + id
+        return student_id
+
+
 def student_dashboard(request):
     if not request.user.is_authenticated:
         return redirect('home:login')
@@ -693,3 +705,94 @@ def student_profile(request):
      return render(request, 'home/student_profile.html',context)
     else:
         return redirect('home:logout')
+    
+
+
+
+
+
+
+
+
+#  ~ ~  ~ below here are the codes for Teacher Only ! ~ ~ ~
+
+@login_required
+def Teacher_add_student(request):
+    user = request.user
+    if user.is_authenticated:
+        if user.groups.filter(name="Teacher").exists():
+         if request.method == 'POST':
+            username = request.POST.get('username')
+            print(username)
+            email = request.POST.get('email')
+            print(email)
+            password = request.POST.get('password')
+            print(password)
+            first_name = request.POST.get('firstname')
+            print(first_name)
+            last_name = request.POST.get('lastname')
+            print(last_name)
+            contact = request.POST.get('contact')
+            print(contact)
+            Class_id = request.POST.get('class')
+            Class = models.Class.objects.get(id=Class_id)
+            print(Class)
+            # Group_id = request.POST.get('group')
+            # GrouP = Group.objects.filter(name="Student")
+            # print(GrouP.group)
+            student_mod = models.StudentInfo(user=username,email=email,first_name=first_name,last_name=last_name,password=password,contact_number=contact,student_class=Class)
+            student_mod.save()
+
+          
+            return HttpResponse("Success")
+         else:
+          teacher = models.Teacher.objects.get(user=user)
+          db = teacher.classs.all()
+          
+          group =Group.objects.all()
+          for grou in group:
+            print(grou)
+          context = {
+              'classes':db,
+              'groups':group,
+          }
+          return render(request, 'home/student_add_test.html',context)
+        else:
+            return redirect('home:home')
+    else:
+        return redirect('home:login')
+        
+
+
+# ~ ~  ~ below here are teacher code ~ ~ ~
+
+
+def Teacher_dashboard(request):
+    if request.user.is_authenticated:
+        user = request.user
+        teacher_data = models.Teacher.objects.get(user=user)
+        teacher_assigned_class = teacher_data.classs.all()
+        Teacher_head = models.Head_teacher.objects.filter(Class__in=teacher_assigned_class)
+        Teacher_Class =[head_teacher.Class for head_teacher in Teacher_head]
+        student_boys = models.StudentInfo.objects.filter(student_class__in=Teacher_Class,student_gender="Male").count()
+        student_girls = models.StudentInfo.objects.filter(student_class__in=Teacher_Class,student_gender="Female").count()
+        print(Teacher_head)
+        context ={
+         'teacher':teacher_data,
+         'boys_count':student_boys,
+         'girls_count':student_girls,
+         'teacher_class':Teacher_head
+     
+        }
+        return render(request,'home/teacher/dashboard.html',context)
+    else:
+        return redirect('home:login') 
+    
+def Teacher_Settings(request):
+    user = request.user
+    teacher_data = models.Teacher.objects.get(user=user)
+    context ={
+        'teacher':teacher_data,
+     
+    }
+    return render(request, 'home/teacher/teacher_settings.html',context)
