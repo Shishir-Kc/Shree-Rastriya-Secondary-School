@@ -1,0 +1,140 @@
+{% extends "home/teacher/teacher_navbar.html" %}
+{% block title %} Settings {% endblock title %}
+{% block Dashboard %} 
+<li>
+  <a href="{% url "home:Teacher_Dashboard" %}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+</li>
+{% endblock Dashboard %}
+{% block settings %}
+    <li class='active'>
+     <a href="settings.html"><i class="fas fa-cogs"></i><span>Settings</span></a>
+    </li>  
+{% endblock settings %}
+
+{% block css %}
+.settings-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  
+  .card {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px var(--shadow-color);
+    transition: transform 0.3s;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .setting-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    background: var(--secondary-color);
+    border-radius: 5px;
+    margin-bottom: 10px;
+  }
+  
+  .btn-save {
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  .btn-save:hover {
+    background: #155bb5;
+  }
+  
+
+{% endblock css %}
+{% block content %}
+<script>
+    const themeToggle = document.getElementById("theme-toggle");
+    if (localStorage.getItem("theme") === "dark") {
+      themeToggle.checked = true;
+    }
+    themeToggle.addEventListener("change", function () {
+      if (this.checked) {
+        document.documentElement.classList.add("dark-theme");
+        localStorage.setItem("theme", "dark");
+      } else {
+        document.documentElement.classList.remove("dark-theme");
+        localStorage.setItem("theme", "light");
+      }
+    });
+  </script>
+
+<section class="settings-section">
+    <!-- Account Settings Card -->
+    <div class="card">
+      <h2>Account Settings</h2>
+      <div class="setting-item">
+        <label for="username">Username:</label>
+        <input type="text" id="username" value="JohnDoe" />
+      </div>
+      <div class="setting-item">
+        <label for="email">Email:</label>
+        <input type="email" id="email" value="john.doe@example.com" />
+      </div>
+      <div class="setting-item">
+        <label for="password">Password:</label>
+        <input type="password" id="password" placeholder="Enter new password" />
+      </div>
+      <button class="btn-save">Save Changes</button>
+    </div>
+
+    <!-- Notification Settings Card -->
+    {% comment %} <div class="card">
+      <h2>Notification Settings</h2>
+      <div class="setting-item">
+        <label for="email-notifications">Email Notifications:</label>
+        <input type="checkbox" id="email-notifications" checked />
+      </div>
+      <div class="setting-item">
+        <label for="sms-notifications">SMS Notifications:</label>
+        <input type="checkbox" id="sms-notifications" />
+      </div>
+      <button class="btn-save">Save Changes</button>
+    </div> {% endcomment %}
+
+    <!-- Privacy Settings Card -->
+    {% comment %} <div class="card">
+      <h2>Privacy Settings</h2>
+      <div class="setting-item">
+        <label for="profile-visibility">Profile Visibility:</label>
+        <select id="profile-visibility">
+          <option value="public">Public</option>
+          <option value="private">Private</option>
+          <option value="friends">Friends Only</option>
+        </select>
+      </div>
+      <div class="setting-item">
+        <label for="data-sharing">Data Sharing:</label>
+        <input type="checkbox" id="data-sharing" />
+      </div>
+      <button class="btn-save">Save Changes</button>
+    </div> {% endcomment %}
+
+    <!-- Theme Settings Card -->
+    <div class="card">
+      <h2>Theme Settings</h2>
+      <div class="setting-item">
+        <label for="theme-toggle">Enable Dark Theme:</label>
+        <button id="theme-toggle-btn" title="Toggle Dark Theme" style="background: none; border: none; color: var(--text-color); font-size: 1.2rem; margin-right: 10px;">
+            <i id="theme-icon" class="fas"></i>
+        </button>
+      </div>
+    </div>
+  </section>
+
+
+
+{% endblock content %}

@@ -1,0 +1,179 @@
+{% extends "home/teacher/teacher_navbar.html" %}
+{% load static %}
+{% block title %}
+  Welcome!
+{% endblock title %}
+
+{% block content %}
+
+  <div class="dashboard-grid">
+    <aside id="student-demographics" class="card">
+      <h2>Student Demographics</h2>
+      
+      <!-- Pie chart with loader -->
+      {% if teacher_class %}
+        <div class="chart-container">
+          <div class="loader" id="loader"></div>
+          <div class="pie-chart" id="pieChart"></div>
+          <div class="chart-label" id="chartLabel">Loading...</div>
+        </div>
+      
+        <!-- Stats Display -->
+        <div id="gender-stats">
+          <div class="stat-item">
+            <span class="label">Boys:</span>
+            <span id="boy-percentage" class="value"></span>
+          </div>
+          <div class="stat-item">
+            <span class="label">Girls:</span>
+            <span id="girl-percentage" class="value"></span>
+          </div>
+          <div class="stat-item total">
+            <span class="label">Total Students:</span>
+            <span id="total-students" class="value"></span>
+          </div>
+        </div>
+      {% endif %}
+    </aside>
+
+    <div class="quick-stats">
+      <div class="stat-card">
+        <i class="fas fa-users"></i>
+        <div class="stat-info">
+          {% if teacher.classs %}
+            <h3>Total Classes</h3>
+            <p>{{ teacher.classs.count }}</p>
+          {% else %}
+            <p> No class </p>
+          {% endif %}
+        </div>
+      </div>
+      <div class="stat-card">
+        <i class="fas fa-clock"></i>
+        <div class="stat-info">
+          <h3>Average Attendance</h3>
+          <p>95%</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <i class="fas fa-chalkboard-teacher"></i>
+          <h3>Classes Taught</h3>
+        </div>
+        <div class="stat-body">
+          {% if teacher.classs.all %}
+            <ul class="class-list">
+              {% for class in teacher.classs.all %}
+                <li>
+                  <span class="class-grade">Grade {{ class.grade }}</span> – 
+                  <span class="class-section">Section {{ class.section }}</span>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p>No classes assigned.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS for Dynamic Pie Chart and Loader -->
+  <script>
+    // Data passed from Django view
+    const boysCount = {{ boys_count }};
+    const girlsCount = {{ girls_count }};
+    
+    // Function to generate the pie chart
+    function generatePieChart(boys, girls) {
+        let total = boys + girls;
+        let boyPercentage = (boys / total) * 100;
+        let girlPercentage = (girls / total) * 100;
+        let pieChart = document.getElementById("pieChart");
+        let loader = document.getElementById("loader");
+        let label = document.getElementById("chartLabel");
+
+        // Simulate loading effect
+        setTimeout(() => {
+            loader.style.display = "none"; // Hide loader
+            pieChart.style.background = `conic-gradient(
+                #3498db ${boyPercentage}%, 
+                rgb(255, 113, 191) ${boyPercentage}% 100%
+            )`;
+            label.textContent = `Stats`;
+            document.getElementById("boy-percentage").textContent = Math.round(boyPercentage);
+            document.getElementById("girl-percentage").textContent = Math.round(girlPercentage);
+            document.getElementById("total-students").textContent = total;
+        }, 2000); // Delay for loading effect
+    }
+
+    // Call the function to generate the pie chart with data from Django
+    generatePieChart(boysCount, girlsCount);
+  </script>
+
+  <!-- CSS for Pie Chart and Loader -->
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    
+    .chart-container {
+        position: relative;
+        width: 250px;
+        height: 250px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .pie-chart {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: conic-gradient(gray 0% 100%);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        transition: background 1s ease-in-out;
+    }
+
+    .chart-label {
+        position: absolute;
+        font-size: 22px;
+        font-weight: bold;
+        transition: opacity 1s ease-in-out;
+        color: #333;
+    }
+
+    .loader {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: 4px solid transparent;
+        border-top: 4px solid #3498db;
+        border-right: 4px solid rgba(255, 255, 255, 0.5);
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    #gender-stats {
+        margin-top: 20px;
+    }
+
+    .stat-item {
+        margin-bottom: 10px;
+    }
+
+    .label {
+        font-weight: bold;
+    }
+
+    .total {
+        font-size: 18px;
+    }
+  </style>
+
+{% endblock content %}

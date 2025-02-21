@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Add Student => </title>
+</head>
+<body>
+    <form method="post" action="{% url "home:Add_Student" %}">
+        {% csrf_token %}
+            <input type="text" name="username" placeholder="Student Name"> <br>
+            <input type="email" name="email" placeholder="Student Email"><br>
+            <input type="password" name="password" placeholder="Student password"><br>
+            <input type="text" name="firstname" placeholder="Student First Name"><br>
+            <input type="text" name="lastname" placeholder="Student Last Name"><br>
+            <input type="number" name="contact" placeholder="Student Number"><br>
+            <!-- <input type="image" name="profilepic" placeholder="Student Profile Pictue "> -->
+            <select  name="class" required>
+                <option value="">Select Class</option>
+                {% for class in classes %}
+                    <option value="{{ class.id }}">{{ class.grade }} - {{ class.section }}</option>
+                {% endfor %}
+            </select> <br>
+            <select  name="Group" required>
+                <option value="">Select Group</option>
+                {% for group in groups %}
+                    <option value="{{group.id}}">{{group.name}}</option>
+                {% endfor %}
+            </select> <br>
+
+            <input type="number" name="ROll" placeholder="ROll.Number"><br>
+            <input type="number" name="Student_id" placeholder="Id > "><br>
+            
+            <button type="submit" > Add Student </button>
+
+        </form>
+    
+</body>
+</html>

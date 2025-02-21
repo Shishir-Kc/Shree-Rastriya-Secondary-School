@@ -216,8 +216,10 @@
     
     <div class="contact-info">
       <p><strong>Name:</strong> {{student.first_name |title}} {{student.last_name}}</p>
+      <p><strong>Gender:</strong> {{student.student_gender |default:'N/A'}}</p>
       <p><strong>Grade:</strong> {{student.student_class.grade}}</p>
       <p><strong>Section:</strong> {{student.student_class.section}}</p>
+      <p><strong>Student-ID:</strong> {{student.student_id}}</p>
       <p><strong>Roll No:</strong> {{student.student_roll_number}}</p>
       <p><strong>Email:</strong> {{student.email}}</p>
       <p><strong>Contact:</strong> {{student.contact_number}}</p>

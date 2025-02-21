@@ -1,0 +1,189 @@
+{% load static %}
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>{% block title %}  {% endblock title %}</title>
+  <link rel="stylesheet" href="{% static 'home/css/teacher/style.css' %}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Early theme load: check localStorage and apply dark theme before content loads -->
+  <script>
+    (function() {
+      if (localStorage.getItem("theme") === "dark") {
+        document.documentElement.classList.add("dark-theme");
+      }
+    })();
+  </script>
+  <!-- Inline CSS variables and styles for theme colors -->
+  <style>
+    /* Light Theme (default) */
+    :root {
+      --primary-color: #1877F2;       /* Professional blue */
+      --secondary-color: #f0f2f5;      /* Light background for sidebars/cards */
+      --text-color: #050505;           /* Dark text */
+      --bg-color: #ffffff;             /* Page background */
+      --card-bg: #ffffff;              /* Card and header background */
+      --shadow-color: rgba(0, 0, 0, 0.1);/* Soft shadow */
+    }
+    /* Dark Theme Overrides */
+    html.dark-theme {
+      --primary-color: #1877F2;         /* Keeping the blue accent */
+      --secondary-color: #242526;       /* Darker background for sidebars/cards */
+      --text-color: #e4e6eb;            /* Light text */
+      --bg-color: #18191a;              /* Near-black page background */
+      --card-bg: #242526;               /* Dark card and header background */
+      --shadow-color: rgba(0, 0, 0, 0.5); /* Stronger shadow in dark mode */
+    }
+    /* Base styles using variables */
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .sidebar, .card, .stat-card {
+      background-color: var(--card-bg);
+      box-shadow: 0 2px 5px var(--shadow-color);
+    }
+    /* Update header style to use the card background variable */
+    header {
+      background-color: var(--card-bg);
+      box-shadow: 0 2px 5px var(--shadow-color);
+      padding: 15px 20px;
+      border-radius: 10px;
+    }
+    
+  </style>
+
+  <style>
+    {% block css %}
+    
+    {% endblock css %}
+
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+      <div class="logo">
+        <i class="fas fa-graduation-cap"></i>
+        <span>TeacherHub</span>
+      </div>
+      <ul>
+        {% block Dashboard %} 
+        <li class="active">
+          <a href="{% url "home:Teacher_Dashboard" %}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+        </li>
+        {% endblock Dashboard %}
+        <li>
+        
+          <a href="#"><i class="fas fa-user-graduate"></i><span>Students</span></a>
+        </li>
+        <li>
+          <a href="#"><i class="fas fa-tasks"></i><span>Assignments</span></a>
+        </li>
+        <li>
+          <a href="#"><i class="fas fa-clipboard-check"></i><span>Grades</span></a>
+        </li>
+        <li>
+          <a href="#"><i class="fas fa-calendar-check"></i><span>Attendance</span></a>
+        </li>
+        <li>
+          <a href="#"><i class="fas fa-book"></i><span>Resources</span></a>
+        </li>
+        <li>
+          <a href="profile.html"><i class="fas fa-user"></i><span>Profile</span></a>
+        </li>
+        {% block settings %}  
+            <li>
+              <a href="{% url "home:Teacher_settings" %}"><i class="fas fa-cogs"></i><span>Settings</span></a>
+            </li>
+            {% endblock settings %}
+
+      </ul>
+    </nav>
+
+    <!-- Main Content Area -->
+
+    <main class="content">
+        <header>
+            <div class="header-left">
+                <button id="sidebar-toggle" class="hamburger" type="button">
+                  
+                    </span>
+                </button>
+                <h1>Dashboard Overview</h1>
+            </div>
+            <div class="header-right">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search...">
+                </div>
+                <!-- Dark Theme Toggle Button -->
+                {% comment %} <button id="theme-toggle-btn" title="Toggle Dark Theme" style="background: none; border: none; color: var(--text-color); font-size: 1.2rem; margin-right: 10px;">
+                    <i id="theme-icon" class="fas"></i>
+                </button> {% endcomment %}
+                <div class="profile">
+                  {% if teacher.teacher_image %} 
+                    <img src="{{teacher.teacher_image.url}}" alt="Profile">
+                    {% else %}
+                    <img src="" alt="Profile">
+                    {% endif %}
+
+                    <span>{{teacher.name}}</span>
+                </div>
+            </div>
+        </header>
+        {% block content %}  
+
+    </main>
+  </div>
+  {% endblock content %}  
+
+  <!-- Floating Menu -->
+  <div class="floating-menu">
+    <button class="floating-btn"><i class="fas fa-plus"></i></button>
+    <div class="floating-options">
+      <a href="#" class="floating-option" title="Upload"><i class="fas fa-upload"></i></a>
+      <a href="{% url "home:Teacher_settings" %}" class="floating-option" title="Settings"><i class="fas fa-cog"></i></a>
+      <a href="teacher.html" class="floating-option" title="Profile"><i class="fas fa-user"></i></a>
+      <a href="#" class="floating-option" title="Info"><i class="fas fa-info-circle"></i></a>
+    </div>
+  </div>
+
+  <script src="{% static 'home/js/teacher/dashboard.js' %}"></script>
+  <!-- Dark Theme Toggle Script -->
+  <script>
+    // Function to update the theme icon based on current theme
+    function updateThemeIcon() {
+      const themeIcon = document.getElementById("theme-icon");
+      if(document.documentElement.classList.contains("dark-theme")){
+        themeIcon.classList.remove("fa-moon");
+        themeIcon.classList.add("fa-sun");
+      } else {
+        themeIcon.classList.remove("fa-sun");
+        themeIcon.classList.add("fa-moon");
+      }
+    }
+    
+    // Initial update of theme icon on page load
+    updateThemeIcon();
+    
+    // Toggle the theme when the button is clicked
+    document.getElementById("theme-toggle-btn").addEventListener("click", function(){
+      if(document.documentElement.classList.contains("dark-theme")){
+        document.documentElement.classList.remove("dark-theme");
+        localStorage.setItem("theme", "light");
+      } else {
+        document.documentElement.classList.add("dark-theme");
+        localStorage.setItem("theme", "dark");
+      }
+      updateThemeIcon();
+    });
+  </script>
+</body>
+</html>
