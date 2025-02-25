@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.contrib.auth.models import Group , User
 import logging
 import random
+from django.db.models import Q
 
 
 
@@ -641,24 +642,58 @@ def teacher_list(request):
 
 
 def teacher_chat(request, teacher_id):
-    if request.method  == "POST":
-        print(" @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@2")
-        print("send ! ")
-        message = request.POST.get('message')
-        chat = models.Message(sender=request.user,receiver=teacher_id,message=message)
-        chat.save()
-        chat = models.Message.objects.get(sender=request.user,receiver=teacher_id)
-        context = {
-            'messages':chat
+   try: 
+    student_name= request.user
+    student_id = student_name.id
+    Student = models.StudentInfo.objects.get(user=student_name)
+    student_class = Student.student_class
+    student_class_id = student_class.id
+    Teacher = models.Teacher.objects.get(id=teacher_id)
+    # print(Teacher)
+    try:
+     Teacher_Class = Teacher.classs.get(id=student_class_id)
+    #  print(Teacher_Class)
+    # print(student_class.id)
+    except models.StudentInfo.DoesNotExist:
+        return HttpResponse("Student information not found.")
+    except models.Teacher.DoesNotExist:
+        return HttpResponse("Teacher not found.")
+    except models.Teacher.classs.RelatedObjectDoesNotExist:
+        return HttpResponse("Can't chat with a teacher beyond your class!")
+
+    if(Teacher_Class == student_class):
+        
+        if request.method  == "POST":
+         message = request.POST.get('message')
+         
+
+         print(f"Message: {message}")
+         print(request.user.id)
+         message_model = models.Message(sender=request.user,message=message,receiver=Teacher.user)
+         message_model.save()
+         teacher = models.Teacher.objects.get(id=teacher_id)
+         messages = models.Message.objects.filter(Q(sender=request.user, receiver=Teacher.user) | Q(sender=Teacher.user, receiver=request.user)).order_by('-sent_at')
+         context = {
+         'teacher': teacher,
+         'messages': messages
         }
-        return redirect('home:teacher-chat',context)
+
+         return redirect("home:teacher-chat",teacher_id=teacher_id)
+        else:
+   
+         print(" NOpe ")
+         teacher = models.Teacher.objects.get(id=teacher_id)
+         messages = models.Message.objects.filter(Q(sender=request.user, receiver=Teacher.user) | Q(sender=Teacher.user, receiver=request.user))
+         context = {
+         'teacher': teacher,
+         'messages': messages
+        }
+
+         return render(request, 'home/teacher_chat.html',context)
     else:
-     print(" @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@2")
-     teacher = models.Teacher.objects.get(id=teacher_id)
-     context = {
-        'teacher': teacher,
-     }
-     return render(request, 'home/teacher_chat.html',context)
+        return HttpResponse("Cant Chat with Other Teacher beyound Your class ! ")
+   except models.Teacher.DoesNotExist:
+    return HttpResponse(" Error Check The Code :) ")
 
 
 #  ~ ~ ~ This code is not comformed To be implemented ~ ~ ~ 
