@@ -146,10 +146,24 @@
 
         <!-- Chat Messages -->
         <div class="chat-messages" id="chatMessages">
-            <div class="message received">Hello! How can I help you?</div>
-            <div class="message sent">I need help with my assignment.</div>
+            {% for message in messages reversed %}
+                <div class="message {% if message.sender == request.user %}sent{% else %}received{% endif %}">
+                    {{ message.message }}
+                </div>
+            {% endfor %}
         </div>
-
+        
+        <!-- Automatically scroll to the bottom on page load -->
+        <script>
+            window.onload = function() {
+                var chatMessages = document.getElementById("chatMessages");
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        </script>
+        
+        
+    <form method="post">
+        {% csrf_token %}
         <!-- Chat Input -->
         <div class="chat-input-container" id="chatInputContainer">
             <!-- File upload icon on the left -->
@@ -158,9 +172,10 @@
             </label>
             <!-- Hidden file input -->
             <input type="file" id="fileInput" class="file-input" accept="image/*,application/pdf">
-            <input type="text" id="chatInput" class='message' placeholder="Type a message...">
+            <input type="text" id="chatInput" class='message' name="message" placeholder="Type a message...">
             <button>Send</button>
         </div>
+    </form>
     </div>
 
     <script>
