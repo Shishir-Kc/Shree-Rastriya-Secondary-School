@@ -111,10 +111,11 @@ class Class(models.Model):
         return self.subjects.filter(is_specialized=True)
 
     def __str__(self):
+        
         return f"Grade {self.grade} - Section {self.section}"
 
 class Teacher(models.Model):
-    user = models.ForeignKey(User,on_delete=models.DO_NOTHING)
+    user = models.OneToOneField(User,on_delete=models.DO_NOTHING)
     name = models.CharField(max_length=20)
     contact = models.IntegerField()
     subject = models.ManyToManyField(Subject)
@@ -143,7 +144,7 @@ class StudentInfo(models.Model):
         ('Male', 'Male'),
         ('Female', 'Female'),
     ]
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Associated User")
+    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name="Associated User")
     first_name = models.CharField(max_length=20, verbose_name="First Name")
     last_name = models.CharField(max_length=20, verbose_name="Last Name")
     contact_number = models.CharField(max_length=15, verbose_name="Contact Number")
@@ -194,19 +195,20 @@ class Notes(models.Model):
     
 
 class Message(models.Model):
-    sender = models.ManyToManyField(User, related_name="sender")
-    receiver = models.ManyToManyField(User, related_name="receiver")
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sender")
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name="receiver")
     message = models.TextField()
+    message_image = models.ImageField(upload_to='message_image',blank=True)
+    message_pdf = models.FileField(upload_to='message_pdf',blank=True)
     sent_at = models.DateTimeField(auto_now_add=True)
 
-    # class Meta:
-        # verbose_name = "Message"
-        # verbose_name_plural = "Messages"
-        # ordering = ['-sent_at']
-        # unique_together = ('sender','receiver')
+    class Meta:
+        verbose_name = "Message"
+        verbose_name_plural = "Messages"
+        ordering = ['-sent_at']
 
     def __str__(self):
-        return f"{self.sender} - {self.receiver}"
+        return f" Sender = > {self.sender.username} Reciver = > {self.receiver.username}"
     
 
 class Books(models.Model):
