@@ -194,8 +194,8 @@ class Notes(models.Model):
     
 
 class Message(models.Model):
-    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sender")
-    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name="receiver")
+    sender = models.ManyToManyField(User, related_name="sender")
+    receiver = models.ManyToManyField(User, related_name="receiver")
     message = models.TextField()
     sent_at = models.DateTimeField(auto_now_add=True)
 

@@ -40,6 +40,8 @@ def user_login(request):
         if user is not None:
             login(request,user)
             return redirect('home:home')
+        else:
+            return HttpResponse(" Noob")
     return render(request,'home/login.html')
 
 def about_us(request):
@@ -773,15 +775,17 @@ def Teacher_dashboard(request):
         teacher_data = models.Teacher.objects.get(user=user)
         teacher_assigned_class = teacher_data.classs.all()
         Teacher_head = models.Head_teacher.objects.filter(Class__in=teacher_assigned_class)
-        Teacher_Class =[head_teacher.Class for head_teacher in Teacher_head]
+        Teacher_Class =[head_teacher.Class.id for head_teacher in Teacher_head]
+        teacher_class = models.Class.objects.filter(id__in=Teacher_Class)
         student_boys = models.StudentInfo.objects.filter(student_class__in=Teacher_Class,student_gender="Male").count()
         student_girls = models.StudentInfo.objects.filter(student_class__in=Teacher_Class,student_gender="Female").count()
-        print(Teacher_head)
+        print(teacher_class)
         context ={
          'teacher':teacher_data,
          'boys_count':student_boys,
          'girls_count':student_girls,
-         'teacher_class':Teacher_head
+         'teacher_class':Teacher_head,
+         'classes':teacher_class
      
         }
         return render(request,'home/teacher/dashboard.html',context)

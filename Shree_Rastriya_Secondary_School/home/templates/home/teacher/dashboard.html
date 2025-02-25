@@ -5,38 +5,53 @@
 {% endblock title %}
 
 {% block content %}
-
   <div class="dashboard-grid">
+    {% if teacher_class %}
     <aside id="student-demographics" class="card">
+      <div class="card-header">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </div>
       <h2>Student Demographics</h2>
       
-      <!-- Pie chart with loader -->
-      {% if teacher_class %}
         <div class="chart-container">
-          <div class="loader" id="loader"></div>
-          <div class="pie-chart" id="pieChart"></div>
-          <div class="chart-label" id="chartLabel">Loading...</div>
+          <div class="loader active"></div>
+          <div class="pie-chart"></div>
         </div>
       
-        <!-- Stats Display -->
-        <div id="gender-stats">
-          <div class="stat-item">
-            <span class="label">Boys:</span>
-            <span id="boy-percentage" class="value"></span>
+        <div class="stats">
+          <div class="stat-row">
+            <div class="stat-label">
+              <div class="color-dot boys"></div>
+              <span class="stat-text">Boys</span>
+            </div>
+            <span class="stat-value" id="boys-percentage">0%</span>
           </div>
-          <div class="stat-item">
-            <span class="label">Girls:</span>
-            <span id="girl-percentage" class="value"></span>
+
+          <div class="stat-row">
+            <div class="stat-label">
+              <div class="color-dot girls"></div>
+              <span class="stat-text">Girls</span>
+            </div>
+            <span class="stat-value" id="girls-percentage">0%</span>
           </div>
-          <div class="stat-item total">
-            <span class="label">Total Students:</span>
-            <span id="total-students" class="value"></span>
+
+          <div class="total-stats">
+            <span class="total-label">Total Students</span>
+            <span class="total-value" id="total-students">0</span>
           </div>
         </div>
+        {% else %}
+         <h1> wait for students </h1>
       {% endif %}
     </aside>
 
     <div class="quick-stats">
+      {% comment %} Class Taught  {% endcomment %}
       <div class="stat-card">
         <i class="fas fa-users"></i>
         <div class="stat-info">
@@ -48,132 +63,519 @@
           {% endif %}
         </div>
       </div>
-      <div class="stat-card">
-        <i class="fas fa-clock"></i>
+      <div class="theme-toggle">
+       
+        <input type="checkbox" id="theme-switch" class="theme-switch-checkbox">
+      </div>
+      
+      <div class="stat-card" id="messages-stat-card">
+        <i class="fas fa-comment"></i>
         <div class="stat-info">
-          <h3>Average Attendance</h3>
-          <p>95%</p>
+          <h3>Messages</h3>
+          <p> View Querries From Students </p>
         </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-header">
-          <i class="fas fa-chalkboard-teacher"></i>
-          <h3>Classes Taught</h3>
-        </div>
-        <div class="stat-body">
-          {% if teacher.classs.all %}
-            <ul class="class-list">
-              {% for class in teacher.classs.all %}
-                <li>
-                  <span class="class-grade">Grade {{ class.grade }}</span> – 
-                  <span class="class-section">Section {{ class.section }}</span>
-                </li>
-              {% endfor %}
-            </ul>
-          {% else %}
-            <p>No classes assigned.</p>
-          {% endif %}
+      
+      <!-- Modal Structure (Student List with Profile Pics and Messages) -->
+      <div id="messages-modal" class="modal">
+        <div class="modal-content">
+          <div class="header">
+            <h3>Messages</h3>
+            <button id="close-modal" class="close-btn">X</button>
+          </div>
+          <div class="students-list">
+            <!-- Student 1 -->
+            <div class="student-item" data-student-id="1">
+              <img src="student1.jpg" alt="Student 1" class="student-pic" />
+              <div class="student-info">
+                <h4>John Doe</h4>
+                <p>Hey, when is the exam?</p>
+              </div>
+            </div>
+            <!-- Student 2 -->
+            <div class="student-item" data-student-id="2">
+              <img src="student2.jpg" alt="Student 2" class="student-pic" />
+              <div class="student-info">
+                <h4>Jane Smith</h4>
+                <p>Can you help me with the homework?</p>
+              </div>
+            </div>
+            <!-- More students here... -->
+          </div>
+      
+          <div class="message-window">
+            <div class="message-container">
+              <!-- Example Message -->
+              <div class="message-item sender">
+                <div class="message-bubble">Hi there, how can I assist you?</div>
+              </div>
+            </div>
+            <div class="message-input">
+              <input type="text" placeholder="Type a message..." id="message-input" />
+              <button id="send-message" class="send-btn">Send</button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
+      
+      <style>
+        /* Default light theme */
+        :root {
+          --bg-color: white;
+          --card-bg: #f9f9f9;
+          --text-color: black;
+          --border-color: #ddd;
+          --button-bg: #007bff;
+          --button-hover-bg: #0056b3;
+        }
+      
+        /* Dark theme */
+        body.dark-theme {
+          --bg-color: #121212;
+          --card-bg: #1e1e1e;
+          --text-color: white;
+          --border-color: #333;
+          --button-bg: #3b82f6;
+          --button-hover-bg: #1e40af;
+        }
+      
+        body {
+          background-color: var(--bg-color);
+          color: var(--text-color);
+          font-family: Arial, sans-serif;
+          margin: 0;
+          padding: 0;
+        }
+      
+        /* Modal Styles */
+        .modal {
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.7);
+          justify-content: center;
+          align-items: center;
+          transition: opacity 0.3s ease;
+        }
+      
+        .modal-content {
+          background-color: var(--card-bg);
+          padding: 20px;
+          border-radius: 10px;
+          width: 400px;
+          max-width: 100%;
+          height: 80%;
+          display: flex;
+          flex-direction: column;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+          position: relative;
+        }
+      
+        .header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 15px;
+        }
+      
+        .close-btn {
+          font-size: 20px;
+          background: none;
+          border: none;
+          color: var(--text-color);
+          cursor: pointer;
+        }
+      
+        .students-list {
+          max-height: 300px;
+          overflow-y: auto;
+          margin-bottom: 15px;
+        }
+      
+        .student-item {
+          display: flex;
+          align-items: center;
+          padding: 10px;
+          cursor: pointer;
+          border-bottom: 1px solid var(--border-color);
+          transition: background-color 0.2s;
+        }
+      
+        .student-item:hover {
+          background-color: rgba(0, 123, 255, 0.1);
+        }
+      
+        .student-pic {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          object-fit: cover;
+          margin-right: 10px;
+        }
+      
+        .student-info h4 {
+          margin: 0;
+          font-size: 16px;
+        }
+      
+        .student-info p {
+          margin: 0;
+          font-size: 14px;
+          color: #555;
+        }
+      
+        /* Message Window Styles */
+        .message-window {
+          display: none;
+          flex-direction: column;
+          height: 100%;
+          flex: 1;
+        }
+      
+        .message-container {
+          flex: 1;
+          overflow-y: auto;
+          margin-bottom: 10px;
+          padding: 10px;
+        }
+      
+        .message-item {
+          display: flex;
+          margin-bottom: 10px;
+        }
+      
+        .message-item .message-bubble {
+          max-width: 70%;
+          padding: 12px;
+          border-radius: 15px;
+          font-size: 14px;
+          line-height: 1.5;
+          position: relative;
+        }
+      
+        .sender .message-bubble {
+          background-color: var(--button-bg);
+          color: var(--bg-color);
+          align-self: flex-start;
+          border-top-right-radius: 0;
+        }
+      
+        .message-input {
+          display: flex;
+          align-items: center;
+          border-top: 1px solid #eee;
+          padding-top: 10px;
+        }
+      
+        .message-input input {
+          width: 85%;
+          padding: 10px;
+          border-radius: 25px;
+          border: 1px solid var(--border-color);
+          font-size: 14px;
+        }
+      
+        .send-btn {
+          background-color: var(--button-bg);
+          color: white;
+          padding: 10px 15px;
+          border-radius: 25px;
+          border: none;
+          cursor: pointer;
+          margin-left: 10px;
+        }
+      
+        .send-btn:hover {
+          background-color: var(--button-hover-bg);
+        }
+      
+        /* Theme Toggle Styles */
+        .theme-toggle {
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          z-index: 1000;
+        }
+      
+        .theme-switch-label {
+          font-size: 24px;
+          cursor: pointer;
+        }
+      
+        .theme-switch-checkbox {
+          display: none;
+        }
+      
+       
+        }
+      </style>
+      
+      <script>
+        // Theme switch functionality
+        const themeSwitch = document.getElementById('theme-switch');
+        const body = document.body;
+      
+        // Check for stored theme preference in localStorage
+        if (localStorage.getItem('theme') === 'dark') {
+          body.classList.add('dark-theme');
+          themeSwitch.checked = true;
+        }
+      
+        // Toggle theme
+        themeSwitch.addEventListener('change', function() {
+          if (this.checked) {
+            body.classList.add('dark-theme');
+            localStorage.setItem('theme', 'dark');
+          } else {
+            body.classList.remove('dark-theme');
+            localStorage.setItem('theme', 'light');
+          }
+        });
+      
+        // Modal elements
+        const modal = document.getElementById('messages-modal');
+        const closeModalBtn = document.getElementById('close-modal');
+        const messagesStatCard = document.getElementById('messages-stat-card');
+        const messageWindow = document.querySelector('.message-window');
+        const studentsList = document.querySelector('.students-list');
+      
+        // Open the modal when the stat card is clicked
+        messagesStatCard.addEventListener('click', function() {
+          modal.style.display = 'flex';
+          modal.style.opacity = 1;
+        });
+      
+        // Close the modal when the close button is clicked
+        closeModalBtn.addEventListener('click', function() {
+          modal.style.opacity = 0;
+          setTimeout(() => modal.style.display = 'none', 300);
+        });
+      
+        // Open the message window when a student is clicked
+        studentsList.addEventListener('click', function(event) {
+          if (event.target.closest('.student-item')) {
+            const studentId = event.target.closest('.student-item').getAttribute('data-student-id');
+            openMessageWindow(studentId);
+          }
+        });
+      
+        function openMessageWindow(studentId) {
+          messageWindow.style.display = 'flex';
+        }
+      
+        // Sending a message
+        document.getElementById('send-message').addEventListener('click', function() {
+          const messageInput = document.getElementById('message-input');
+          const messageText = messageInput.value.trim();
+          if (messageText) {
+            const messageContainer = document.createElement('div');
+            messageContainer.classList.add('message-item', 'sender');
+            const messageBubble = document.createElement('div');
+            messageBubble.classList.add('message-bubble');
+            messageBubble.textContent = messageText;
+            messageContainer.appendChild(messageBubble);
+      
+            document.querySelector('.message-container').appendChild(messageContainer);
+            messageInput.value = ''; 
+            document.querySelector('.message-container').scrollTop = document.querySelector('.message-container').scrollHeight; // Scroll to the bottom
+          }
+        });
+      </script>
+      
+      <div class="stat-card" id="messages-stat-card">
+        {% if classes %} 
+        <i class="fas fa-chalkboard-teacher"></i>
+        <div class="stat-info">
+          <h3> Class Teacher Of</h3>
+          {% for class in classes %} 
+          <p> Grade :{{class.grade}} Sec {{class.section}}</p>
+          {% endfor %}
+        </div>
+        {% else %}
+          <p>Role of Class teacher has not been assigned ! </p>
+        {% endif %}
+      </div>
 
-  <!-- JS for Dynamic Pie Chart and Loader -->
+  <style>
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-header svg {
+      width: 1.5rem;
+      height: 1.5rem;
+      color: rgb(37 99 235);
+    }
+
+    .card-header  {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: rgb(31 41 55);
+    }
+
+    .chart-container {
+      position: relative;
+      width: 12rem;
+      height: 12rem;
+      margin: 0 auto 2rem;
+    }
+
+    .loader {
+      position: absolute;
+      inset: 0;
+      border: 4px solid rgb(229 231 235);
+      border-radius: 50%;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .loader.active {
+      opacity: 1;
+    }
+
+    .loader::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border: 4px solid rgb(59 130 246);
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 1s linear infinite;
+    }
+
+    .pie-chart {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      position: relative;
+      opacity: 0;
+      transition: opacity 1s, background 1s;
+    }
+
+    .pie-chart.active {
+      opacity: 1;
+    }
+
+    .pie-chart::after {
+      content: 'Stats';
+      position: absolute;
+      inset: 0.75rem;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: rgb(55 65 81);
+    }
+
+    .stats {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .stat-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .stat-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .color-dot {
+      width: 0.75rem;
+      height: 0.75rem;
+      border-radius: 50%;
+    }
+
+    .color-dot.boys {
+      background-color: rgb(59 130 246);
+    }
+
+    .color-dot.girls {
+      background-color: rgb(236 72 153);
+    }
+
+    .stat-text {
+      font-size: 0.875rem;
+      color: rgb(75 85 99);
+    }
+
+    .stat-value {
+      font-weight: 600;
+    }
+
+    .total-stats {
+      margin-top: 0.75rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid rgb(229 231 235);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .total-label {
+      font-weight: 500;
+      color: rgb(31 41 55);
+    }
+
+    .total-value {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: rgb(31 41 55);
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+  </style>
+
   <script>
     // Data passed from Django view
     const boysCount = {{ boys_count }};
     const girlsCount = {{ girls_count }};
-    
-    // Function to generate the pie chart
-    function generatePieChart(boys, girls) {
-        let total = boys + girls;
-        let boyPercentage = (boys / total) * 100;
-        let girlPercentage = (girls / total) * 100;
-        let pieChart = document.getElementById("pieChart");
-        let loader = document.getElementById("loader");
-        let label = document.getElementById("chartLabel");
 
-        // Simulate loading effect
-        setTimeout(() => {
-            loader.style.display = "none"; // Hide loader
-            pieChart.style.background = `conic-gradient(
-                #3498db ${boyPercentage}%, 
-                rgb(255, 113, 191) ${boyPercentage}% 100%
-            )`;
-            label.textContent = `Stats`;
-            document.getElementById("boy-percentage").textContent = Math.round(boyPercentage);
-            document.getElementById("girl-percentage").textContent = Math.round(girlPercentage);
-            document.getElementById("total-students").textContent = total;
-        }, 2000); // Delay for loading effect
-    }
+    // Calculate percentages
+    const total = boysCount + girlsCount;
+    const boyPercentage = (boysCount / total) * 100;
+    const girlPercentage = (girlsCount / total) * 100;
 
-    // Call the function to generate the pie chart with data from Django
-    generatePieChart(boysCount, girlsCount);
+    // Get DOM elements
+    const loader = document.querySelector('.loader');
+    const pieChart = document.querySelector('.pie-chart');
+    const boysPercentageEl = document.getElementById('boys-percentage');
+    const girlsPercentageEl = document.getElementById('girls-percentage');
+    const totalStudentsEl = document.getElementById('total-students');
+
+    // Simulate loading and update the chart
+    setTimeout(() => {
+      // Hide loader
+      loader.classList.remove('active');
+
+      // Show and update pie chart
+      pieChart.classList.add('active');
+      pieChart.style.background = `conic-gradient(
+        rgb(59 130 246) ${boyPercentage}%, 
+        rgb(236 72 153) ${boyPercentage}% 100%
+      )`;
+
+      // Update statistics
+      boysPercentageEl.textContent = Math.round(boyPercentage) + '%';
+      girlsPercentageEl.textContent = Math.round(girlPercentage) + '%';
+      totalStudentsEl.textContent = total;
+    }, 1500);
   </script>
-
-  <!-- CSS for Pie Chart and Loader -->
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-    }
-    
-    .chart-container {
-        position: relative;
-        width: 250px;
-        height: 250px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .pie-chart {
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        background: conic-gradient(gray 0% 100%);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-        transition: background 1s ease-in-out;
-    }
-
-    .chart-label {
-        position: absolute;
-        font-size: 22px;
-        font-weight: bold;
-        transition: opacity 1s ease-in-out;
-        color: #333;
-    }
-
-    .loader {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        border: 4px solid transparent;
-        border-top: 4px solid #3498db;
-        border-right: 4px solid rgba(255, 255, 255, 0.5);
-        animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-    }
-
-    #gender-stats {
-        margin-top: 20px;
-    }
-
-    .stat-item {
-        margin-bottom: 10px;
-    }
-
-    .label {
-        font-weight: bold;
-    }
-
-    .total {
-        font-size: 18px;
-    }
-  </style>
-
 {% endblock content %}
