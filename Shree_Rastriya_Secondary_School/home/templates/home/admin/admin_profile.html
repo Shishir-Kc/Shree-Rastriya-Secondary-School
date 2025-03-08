@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Admin Profile</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-dark: #121212;
+            --secondary-dark: #1E1E1E;
+            --accent-white: #FFFFFF;
+            --accent-white-hover: #F0F0F0;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --overlay-color: rgba(255, 255, 255, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-dark), var(--secondary-dark));
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-primary);
+        }
+
+        .profile-container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--secondary-dark);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.1);
+            display: grid;
+            grid-template-columns: 250px 1fr;
+        }
+
+        .profile-sidebar {
+            padding: 30px;
+            text-align: center;
+            border-right: 1px solid rgba(255,255,255,0.1);
+            background: rgba(18, 18, 18, 0.4);
+        }
+
+        .profile-image-container {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 3px solid var(--accent-white);
+            margin: 0 auto 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-upload-overlay {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background: var(--overlay-color);
+            padding: 8px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .profile-image-container:hover .image-upload-overlay {
+            opacity: 1;
+        }
+
+        .profile-name {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--accent-white);
+        }
+
+        .profile-username {
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+
+        .contact-info {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .contact-info div {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            justify-content: center;
+        }
+
+        .profile-main {
+            padding: 30px;
+        }
+
+        .section-header {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--accent-white);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent-white);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            background-color: rgba(255,255,255,0.1);
+            color: var(--accent-white);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .btn-primary {
+            background-color: var(--accent-white);
+            color: var(--primary-dark);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-white-hover);
+        }
+
+        .quick-access {
+            margin-top: 25px;
+        }
+
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .quick-card {
+            background: rgba(0,0,0,0.2);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quick-card:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .quick-card i {
+            font-size: 24px;
+            color: var(--accent-white);
+        }
+
+        .quick-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <div class="profile-sidebar">
+            <div class="profile-image-container">
+                <img src="https://via.placeholder.com/150" alt="Profile" class="profile-image" id="profileImage">
+                <div class="image-upload-overlay" id="profileImageUpload">
+                    <i class="fas fa-camera"></i>
+                </div>
+            </div>
+            
+            <h2 class="profile-name">Sandip Kumar</h2>
+            <p class="profile-username">@system_admin</p>
+            
+            <div class="contact-info">
+                <div><i class="fas fa-envelope"></i> sandip.kumar@gmail.com</div>
+                <div><i class="fas fa-phone"></i> +91 9876543210</div>
+            </div>
+            
+            <button class="btn">
+                <i class="fas fa-edit"></i> Edit Profile
+            </button>
+        </div>
+        
+        <div class="profile-main">
+            <div class="section-header">
+                <i class="fas fa-chart-bar"></i> Stats
+            </div>
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-number">24</div>
+                    <div class="stat-label">Projects</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">156</div>
+                    <div class="stat-label">Students</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">Courses</div>
+                </div>
+            </div>
+            
+            <div class="section-header">
+                <i class="fas fa-tasks"></i> Actions
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add Class
+                </button>
+                <button class="btn">
+                    <i class="fas fa-table"></i> Schedule
+                </button>
+                <button class="btn">
+                    <i class="fas fa-cog"></i> Settings
+                </button>
+            </div>
+            
+            <div class="section-header">
+                <i class="fas fa-th"></i> Quick Access
+            </div>
+            <div class="quick-grid">
+                <div class="quick-card">
+                    <i class="fas fa-chalkboard"></i>
+                    <span class="quick-label">Courses</span>
+                </div>
+                <div class="quick-card">
+                    <i class="fas fa-user-graduate"></i>
+                    <span class="quick-label">Students</span>
+                </div>
+                <div class="quick-card">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span class="quick-label">Timetable</span>
+                </div>
+                <div class="quick-card">
+                    <i class="fas fa-chart-line"></i>
+                    <span class="quick-label">Analytics</span>
+                </div>
+                <div class="quick-card">
+                    <i class="fas fa-file-alt"></i>
+                    <span class="quick-label">Reports</span>
+                </div>
+                <div class="quick-card">
+                    <i class="fas fa-bell"></i>
+                    <span class="quick-label">Notifications</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

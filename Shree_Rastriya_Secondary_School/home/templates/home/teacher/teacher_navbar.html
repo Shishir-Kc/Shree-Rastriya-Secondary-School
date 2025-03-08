@@ -5,10 +5,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js"></script>
 
+  
   <title>{% block title %}  {% endblock title %}</title>
   <link rel="stylesheet" href="{% static 'home/css/teacher/style.css' %}">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="{% static 'home/js/teacher/fire_base.js' %}"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Early theme load: check localStorage and apply dark theme before content loads -->
   <script>
@@ -79,13 +83,19 @@
           <a href="{% url "home:Teacher_Dashboard" %}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
         </li>
         {% endblock Dashboard %}
-        <li>
+        {% block Students %}
         
-          <a href="#"><i class="fas fa-user-graduate"></i><span>Students</span></a>
-        </li>
         <li>
-          <a href="#"><i class="fas fa-tasks"></i><span>Assignments</span></a>
+          
+          <a href=""><i class="fas fa-user-graduate"></i><span>Students</span></a>
         </li>
+        {% endblock Students %}
+        {% block Message %}
+        
+        <li>
+          <a href="{% url "home:Teacher_chat" %}"><i class="fa-solid fa-message"></i><span>Messages </span></a>
+        </li>
+        {% endblock Message %}
         <li>
           <a href="#"><i class="fas fa-clipboard-check"></i><span>Grades</span></a>
         </li>
@@ -110,19 +120,25 @@
     <!-- Main Content Area -->
 
     <main class="content">
+      {% block dashhead %}  
         <header>
-            <div class="header-left">
+                      <div class="header-left">
                 <button id="sidebar-toggle" class="hamburger" type="button">
                   
                     </span>
                 </button>
-                <h1>Dashboard Overview</h1>
+                {% if teacher %} 
+                <h1>| | | Shree Rastriya Mavi  | | | </h1>
+                {% else %}
+                <h1> Nigga  </h1>
+                {% endif %}
             </div>
+
             <div class="header-right">
-                <div class="search-bar">
+                {% comment %} <div class="search-bar">
                     <i class="fas fa-search"></i>
                     <input type="text" placeholder="Search...">
-                </div>
+                </div> {% endcomment %}
                 <!-- Dark Theme Toggle Button -->
                 {% comment %} <button id="theme-toggle-btn" title="Toggle Dark Theme" style="background: none; border: none; color: var(--text-color); font-size: 1.2rem; margin-right: 10px;">
                     <i id="theme-icon" class="fas"></i>
@@ -138,12 +154,18 @@
                 </div>
             </div>
         </header>
+        {% endblock dashhead %}
+
         {% block content %}  
 
     </main>
   </div>
   {% endblock content %}  
 
+
+  
+  {% block floating_menu %}
+  
   <!-- Floating Menu -->
   <div class="floating-menu">
     <button class="floating-btn"><i class="fas fa-plus"></i></button>
@@ -154,8 +176,10 @@
       <a href="#" class="floating-option" title="Info"><i class="fas fa-info-circle"></i></a>
     </div>
   </div>
+  {% endblock floating_menu %}
 
   <script src="{% static 'home/js/teacher/dashboard.js' %}"></script>
+  <script src="{% static 'home/js/teacher/fire_base.js' %}"></script>
   <!-- Dark Theme Toggle Script -->
   <script>
     // Function to update the theme icon based on current theme

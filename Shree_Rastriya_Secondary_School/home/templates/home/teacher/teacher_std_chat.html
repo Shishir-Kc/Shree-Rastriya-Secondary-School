@@ -1,0 +1,434 @@
+{% extends 'home/teacher/teacher_navbar.html' %}
+{% load static %}
+
+{% block Dashboard %}
+<li>
+  <a href="{% url "home:Teacher_Dashboard" %}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+</li>
+{% endblock Dashboard %}
+
+{% block Message %}
+<li class='active'>
+    <a href="{% url "home:Teacher_chat" %}"><i class="fa-solid fa-message"></i><span>Messages </span></a>
+</li>
+{% endblock Message %}
+
+{% block floating_menu %}
+{% endblock floating_menu %}
+
+{% block title %}
+Chatting With {{student.user.username}}
+{% endblock title %}
+
+{% block content %}
+<div class="messenger-container">
+    <div class="messenger-header">
+        <button id="back-button" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <div class="student-info">
+            <img src="{% if student.profile_picture %}{{ student.profile_picture.url }}{% else %}{% static 'home/images/study.png' %}{% endif %}" alt="{{ student.first_name }} {{ student.last_name }}" class="profile-pic">
+            <div class="student-details">
+                <h2>{{ student.first_name|title }} {{ student.last_name|title }}</h2>
+                <p>Grade: {{ student.student_class.grade }}</p>
+            </div>
+        </div>
+        <button id="info-button" class="info-button">
+            <i class="fa-solid fa-circle-info"></i>
+        </button>
+    </div>
+    <div class="messenger-box">
+        <div class="messages" id="messages-container">
+            <!-- Messages will be displayed here -->
+            {% for message in messages reversed %}
+            <div class="message {% if message.sender == request.user %}sent{% else %}received{% endif %}">
+                {% if message.message_image %}
+                <div class="image-message">
+                    <img src="{{ message.message_image.url }}" alt="Uploaded Image" class="chat-image">
+                    <p class="image-name">{{ message.message_image.name }}</p>
+                    {% if message.description %}
+                    <p class="image-description">{{ message.description }}</p>
+                    {% endif %}
+                    <a href="{{ message.message_image.url }}" download class="download-button">Download</a>
+                </div>
+                {% elif message.message %}
+                <p>{{ message.message }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        <form id="chat-form" method="POST" action="{% url 'home:Teacher_std_chat' student_id=student.id %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="input-area">
+                <label for="file-upload" class="upload-icon">
+                    <i class="fas fa-paperclip"></i>
+                </label>
+                <input type="file" id="file-upload" accept=".pdf,.png,.jpg,.jpeg" name="file" style="display:none;">
+                <input type="text" id="message-input" name="context" placeholder="Type your message...">
+                <button id="send-button" type="submit">Send</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Student Info Modal -->
+<div id="student-info-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <div class="student-profile">
+            {% if student.profile_picture %}
+            <img src="{{ student.profile_picture.url }}" alt="{{ student.first_name }} {{ student.last_name }}" class="profile-pic">
+            {% else %}
+            <img src="{% static 'home/images/study.png' %}" alt="{{ student.first_name }} {{ student.last_name }}" class="profile-pic">
+            {% endif %}
+            <h2>{{ student.first_name|title }} {{ student.last_name|title }}</h2>
+            <p>Grade: {{ student.student_class.grade }}</p>
+            <p>Section: {{ student.student_class.section }}</p>
+            <p>Gender: {{ student.student_gender }}</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const chatForm = document.getElementById("chat-form");
+        const messageInput = document.getElementById("message-input");
+        const fileInput = document.getElementById("file-upload");
+
+        chatForm.addEventListener("submit", function(event) {
+            if (!messageInput.value.trim() && !fileInput.files.length) {
+                event.preventDefault();
+                alert("Please enter a message or upload a file.");
+            }
+        });
+
+        // Show image preview before sending
+        fileInput.addEventListener("change", function() {
+            const file = fileInput.files[0];
+            if (file) {
+                if (file.size > 1048576) { // 1MB limit
+                    alert("File size must be 1MB or less.");
+                    fileInput.value = "";
+                    return;
+                }
+
+                if (!file.type.startsWith("image/") && file.type !== "application/pdf") {
+                    alert("Only images or PDFs are allowed.");
+                    fileInput.value = "";
+                    return;
+                }
+
+                if (file.type.startsWith("image/")) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        addMessageToChat(e.target.result, "sent", true, file.name);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
+
+        document.getElementById('back-button').addEventListener('click', function() {
+            window.location.href = "{% url 'home:Teacher_chat' %}"; // Redirect to the teacher's chat page
+        });
+
+        document.getElementById('info-button').addEventListener('click', function() {
+            document.getElementById('student-info-modal').style.display = 'block';
+        });
+
+        document.querySelector('.close-button').addEventListener('click', function() {
+            document.getElementById('student-info-modal').style.display = 'none';
+        });
+
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('student-info-modal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        });
+    });
+
+    function addMessageToChat(content, type, isImage, fileName = "") {
+        const messagesContainer = document.getElementById("messages-container");
+        const messageDiv = document.createElement("div");
+        messageDiv.classList.add("message", type);
+
+        if (isImage) {
+            const img = document.createElement("img");
+            img.src = content;
+            img.alt = "Uploaded Image";
+            img.classList.add("chat-image");
+            messageDiv.appendChild(img);
+
+            const imageName = document.createElement("p");
+            imageName.classList.add("image-name");
+            imageName.textContent = `Selected Image: ${fileName}`;
+            messageDiv.appendChild(imageName);
+
+            const descriptionInput = document.createElement("input");
+            descriptionInput.type = "text";
+            descriptionInput.placeholder = "Add a description...";
+            descriptionInput.classList.add("image-description-input");
+            messageDiv.appendChild(descriptionInput);
+
+            const downloadButton = document.createElement("a");
+            downloadButton.href = content;
+            downloadButton.download = fileName;
+            downloadButton.classList.add("download-button");
+            downloadButton.textContent = "Download";
+            messageDiv.appendChild(downloadButton);
+        } else {
+            messageDiv.innerHTML = `<p>${content}</p>`;
+        }
+
+        messagesContainer.appendChild(messageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+
+    // Apply the theme based on the stored preference
+    document.addEventListener('DOMContentLoaded', function() {
+        const theme = localStorage.getItem('theme');
+        if (theme === 'dark') {
+            document.body.classList.add('dark-theme');
+        } else {
+            document.body.classList.remove('dark-theme');
+        }
+    });
+</script>
+
+<style>
+    .messenger-container {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+    }
+    .messenger-header {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        border-bottom: 1px solid var(--border-color);
+        background-color: var(--header-bg-color);
+    }
+    .back-button, .info-button {
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        color: var(--icon-color);
+        font-size: 24px;
+    }
+    .student-info {
+        display: flex;
+        align-items: center;
+        flex-grow: 1;
+        padding: 0 10px;
+    }
+    .profile-pic {
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        object-fit: cover;
+        margin-right: 10px;
+    }
+    .student-details h2 {
+        font-size: 1.2em;
+        margin: 0.2em 0;
+    }
+    .student-details p {
+        color: var(--text-muted-color);
+        margin: 0.2em 0;
+    }
+    .messenger-box {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        overflow: hidden;
+        background-color: var(--bg-color);
+    }
+    .messages {
+        flex-grow: 1;
+        padding: 15px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
+    .message {
+        margin: 10px 0;
+        padding: 10px;
+        border-radius: 15px;
+        max-width: 70%;
+        word-wrap: break-word;
+    }
+    .message.received {
+        background-color: var(--message-received-bg-color);
+        align-self: flex-start;
+    }
+    .message.sent {
+        background-color: var(--message-sent-bg-color);
+        color: var(--message-sent-text-color);
+        align-self: flex-end;
+    }
+    .chat-image {
+        max-width: 100%;
+        border-radius: 10px;
+    }
+    .image-name {
+        font-size: 0.9em;
+        margin-top: 5px;
+    }
+    .image-description-input {
+        width: 100%;
+        padding: 5px;
+        border: 1px solid var(--border-color);
+        border-radius: 5px;
+        margin-top: 5px;
+    }
+    .download-button {
+        display: inline-block;
+        padding: 5px 10px;
+        background-color: var(--primary-color);
+        color: var(--primary-text-color);
+        border-radius: 5px;
+        text-decoration: none;
+        margin-top: 5px;
+    }
+    .download-button:hover {
+        background-color: var(--primary-hover-color);
+    }
+    .input-area {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        border-top: 1px solid var(--border-color);
+        background-color: var(--input-bg-color);
+    }
+    #message-input {
+        flex-grow: 1;
+        padding: 10px;
+        border: 1px solid var(--border-color);
+        border-radius: 25px;
+        margin-right: 10px;
+        background-color: var(--input-bg-color);
+        color: var(--text-color);
+    }
+    .upload-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 10px;
+        cursor: pointer;
+    }
+    .upload-icon i {
+        font-size: 20px;
+        color: var(--icon-color);
+    }
+    #send-button {
+        padding: 10px 20px;
+        background-color: var(--primary-color);
+        color: var(--primary-text-color);
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    #send-button:hover {
+        background-color: var(--primary-hover-color);
+    }
+
+    /* Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+    .modal-content {
+        background-color: var(--modal-bg-color);
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid var(--border-color);
+        width: 80%;
+        max-width: 300px;
+        border-radius: 8px;
+        text-align: center;
+    }
+    .close-button {
+        color: var(--icon-color);
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+    .close-button:hover,
+    .close-button:focus {
+        color: var(--primary-color);
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .student-profile .profile-pic {
+        border-radius: 50%;
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        margin-bottom: 10px;
+    }
+
+    /* Mobile Responsive Styles */
+    @media (max-width: 600px) {
+        .messenger-container {
+            padding: 10px;
+        }
+        .messenger-box {
+            height: calc(100vh - 80px); /* Adjust height for mobile view */
+        }
+        .input-area {
+            padding: 8px;
+        }
+        #message-input {
+            border-radius: 15px;
+        }
+        #send-button {
+            padding: 8px 16px;
+            border-radius: 15px;
+        }
+    }
+
+    /* Dark Theme Variables */
+    :root {
+        --bg-color: #ffffff;
+        --header-bg-color: #f9f9f9;
+        --border-color: #ddd;
+        --text-color: #333333;
+        --text-muted-color: #555;
+        --primary-color: #007bff;
+        --primary-text-color: #ffffff;
+        --primary-hover-color: #0056b3;
+        --icon-color: #007bff;
+        --message-received-bg-color: #f1f1f1;
+        --message-sent-bg-color: #007bff;
+        --message-sent-text-color: #ffffff;
+        --input-bg-color: #ffffff;
+        --modal-bg-color: #fefefe;
+    }
+
+    /* Dark Theme Styles */
+    body.dark-theme {
+        --bg-color: #2c2c2c;
+        --header-bg-color: #3a3a3a;
+        --border-color: #555;
+        --text-color: #e0e0e0;
+        --text-muted-color: #aaa;
+        --primary-color: #0056b3;
+        --primary-hover-color: #004085;
+        --icon-color: #0056b3;
+        --message-received-bg-color: #3a3a3a;
+        --message-sent-bg-color: #0056b3;
+        --input-bg-color: #3a3a3a;
+        --modal-bg-color: #3a3a3a;
+    }
+</style>
+{% endblock %}

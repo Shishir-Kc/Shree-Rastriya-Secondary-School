@@ -63,9 +63,25 @@ urlpatterns = [
     path('student/',views.student_profile,name='student_profile'),
 
 
-# ~ ~ ~ form here there are links for Teachers only ! ~ ~ ~ 
+# ~ ~ ~ form here there are links for Teachers only ! ~ ~ ~
     path('add/student/',views.Teacher_add_student,name='Add_Student'),
     path('dashboard/',views.Teacher_dashboard,name='Teacher_Dashboard'),
     path('Teacher/settings/',views.Teacher_Settings,name='Teacher_settings'),
-    
+    path('teacher/msg/',views.teacher_chat_std,name='Teacher_chat'),
+    path('teacher/msg/student/<int:student_id>/',views.teacher_std_chat,name='Teacher_std_chat'),
+
+
+
+# ~ ~ ~   Admin Page code ~ ~ ~
+# 
+    path('staff/admin/home',views.admin_home,name='admin_home'),
+    path('staff/setting/',views.admin_setings,name="admin_setting"),
+    path('staff/admin/profile/',views.admin_profile,name="admin_profile"),
+
+# ~ ~  ~ Fire BAse ~ ~ ~ 
+
+    path('save_fcm_token/', views.save_fcm_token, name='save_fcm_token'),
+    path('send_notification/', views.send_notification, name='send_notification'),
+
+
 ]  

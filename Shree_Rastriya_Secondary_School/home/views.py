@@ -8,6 +8,66 @@ from django.contrib.auth.models import Group , User
 import logging
 import random
 from django.db.models import Q
+from pyfcm import FCMNotification
+from django.conf import settings
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+from firebase_admin import messaging
+
+
+
+user_tokens = []  # Store tokens temporarily (use a database in production)
+
+@csrf_exempt
+def save_fcm_token(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        token = data.get("token")
+        if token and token not in user_tokens:
+            user_tokens.append(token)  # Save token
+            return JsonResponse({"message": "Token saved successfully"})
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
+
+# ~ ~  ~ Notification ~ ~ ~ 
+def send_push_notification(device_token, title, message):
+    push_service = FCMNotification(api_key=settings.FCM_SERVER_KEY)
+
+    try:
+        result = push_service.notify_single_device(
+            registration_id=device_token,
+            message_title=title,
+            message_body=message
+        )
+        logger.info(f"FCM Notification Sent: {result}")
+        return result
+    except Exception as e:
+        logger.error(f"Failed to send FCM Notification: {e}")
+        return None
+
+def send_notification(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        title = data.get("title", "Default Title")
+        body = data.get("body", "Default Body")
+        token = data.get("token")  # Token should be passed from the frontend
+
+        if not token:
+            return JsonResponse({"error": "No FCM token provided"}, status=400)
+
+        message = messaging.Message(
+            notification=messaging.Notification(title=title, body=body),
+            token=token,
+        )
+
+        try:
+            response = messaging.send(message)
+            return JsonResponse({"message": "Notification sent!", "response": response})
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
 
 
 
@@ -640,61 +700,51 @@ def teacher_list(request):
 
 
 
-
 def teacher_chat(request, teacher_id):
-   try: 
-    student_name= request.user
-    student_id = student_name.id
-    Student = models.StudentInfo.objects.get(user=student_name)
-    student_class = Student.student_class
-    student_class_id = student_class.id
-    Teacher = models.Teacher.objects.get(id=teacher_id)
-    # print(Teacher)
     try:
-     Teacher_Class = Teacher.classs.get(id=student_class_id)
-    #  print(Teacher_Class)
-    # print(student_class.id)
+        student = request.user
+        student_info = models.StudentInfo.objects.get(user=student)
+        student_class = student_info.student_class
+
+        try:
+            teacher = models.Teacher.objects.get(id=teacher_id)
+            if student_class in teacher.classs.all():
+                if request.method == "POST":
+                    message_text = request.POST.get('message')
+
+                   
+                    message_model = models.Message(
+                        sender=request.user,
+                        message=message_text,
+                        receiver=teacher.user
+                    )
+                    message_model.save()
+
+                    # fb Notification
+                    if teacher.fcm_token:
+                        send_push_notification(
+                            device_token=teacher.fcm_token,
+                            title=f"New Message from {request.user.username}",
+                            message=message_text
+                        )
+
+                    return redirect("home:teacher-chat", teacher_id=teacher_id)
+
+                messages = models.Message.objects.filter(
+                    Q(sender=request.user, receiver=teacher.user) |
+                    Q(sender=teacher.user, receiver=request.user)
+                ).order_by('-sent_at')
+
+                return render(request, 'home/teacher_chat.html', {'teacher': teacher, 'messages': messages})
+
+            else:
+                return HttpResponse("Can't chat with a teacher beyond your class!")
+
+        except models.Teacher.DoesNotExist:
+            return HttpResponse("Teacher not found.")
+
     except models.StudentInfo.DoesNotExist:
         return HttpResponse("Student information not found.")
-    except models.Teacher.DoesNotExist:
-        return HttpResponse("Teacher not found.")
-    except models.Teacher.classs.RelatedObjectDoesNotExist:
-        return HttpResponse("Can't chat with a teacher beyond your class!")
-
-    if(Teacher_Class == student_class):
-        
-        if request.method  == "POST":
-         message = request.POST.get('message')
-         
-
-         print(f"Message: {message}")
-         print(request.user.id)
-         message_model = models.Message(sender=request.user,message=message,receiver=Teacher.user)
-         message_model.save()
-         teacher = models.Teacher.objects.get(id=teacher_id)
-         messages = models.Message.objects.filter(Q(sender=request.user, receiver=Teacher.user) | Q(sender=Teacher.user, receiver=request.user)).order_by('-sent_at')
-         context = {
-         'teacher': teacher,
-         'messages': messages
-        }
-
-         return redirect("home:teacher-chat",teacher_id=teacher_id)
-        else:
-   
-         print(" NOpe ")
-         teacher = models.Teacher.objects.get(id=teacher_id)
-         messages = models.Message.objects.filter(Q(sender=request.user, receiver=Teacher.user) | Q(sender=Teacher.user, receiver=request.user))
-         context = {
-         'teacher': teacher,
-         'messages': messages
-        }
-
-         return render(request, 'home/teacher_chat.html',context)
-    else:
-        return HttpResponse("Cant Chat with Other Teacher beyound Your class ! ")
-   except models.Teacher.DoesNotExist:
-    return HttpResponse(" Error Check The Code :) ")
-
 
 #  ~ ~ ~ This code is not comformed To be implemented ~ ~ ~ 
 @login_required
@@ -835,3 +885,100 @@ def Teacher_Settings(request):
      
     }
     return render(request, 'home/teacher/teacher_settings.html',context)
+
+
+def teacher_chat_std(request):
+    teacher_data =  models.Teacher.objects.get(user=request.user)
+
+    if request.method == "POST":
+        print("POST request received")
+        # Process the POST request if needed
+        return render(request, 'home/teacher/teacher_message.html')  
+
+    print("GET request received")
+    
+    # Fetch the teacher object for the logged-in user
+    try:
+        teacher = models.Teacher.objects.get(user=request.user)
+    except models.Teacher.DoesNotExist:
+        return render(request, 'home/teacher/teacher_message.html', {'error': "Teacher not found"})
+
+    # Dictionary to store students categorized by their classes
+    students_by_class = {}
+
+    for class_instance in teacher.classs.all():
+        students = models.StudentInfo.objects.filter(student_class=class_instance)
+        students_by_class[class_instance] = students  # Store class object as key for better template handling
+
+        print(f"Class: {class_instance} | Students: {students}")
+
+    # Pass data to the template
+    context = {
+        'teacher': teacher_data,
+        'students_by_class': students_by_class  # Updated context variable
+    }
+    print(students_by_class)
+
+    return render(request, 'home/teacher/teacher_message.html', context)
+
+
+def teacher_std_chat(request,student_id):
+    teacher_data = models.Teacher.objects.get(user=request.user)
+    if request.method == 'POST':
+         student = models.StudentInfo.objects.get(id=student_id)
+         context = request.POST.get('context')
+         image = None
+         pdf = None
+         file = request.FILES.get("file")
+         if file:  
+          if file.content_type.startswith("image/"):  # If file is an image
+                image = file
+
+          elif file.content_type == "application/pdf":  # If file is a PDF
+                pdf = file
+         else:
+             print("nooooo")
+       
+       
+
+         print(context)
+         message_model = models.Message(sender=request.user,message=context,message_image=image,message_pdf=pdf,receiver=student.user)
+         message_model.save()
+         student = models.StudentInfo.objects.get(id=student_id)
+         messages = models.Message.objects.filter(Q(sender=request.user, receiver=student.user) | Q(sender=student.user, receiver=request.user)).order_by('-sent_at')
+         context = {
+         'teacher':teacher_data,
+         'messages': messages
+        }
+
+        #  return redirect("home:teacher-chat",teacher_id=teacher_id)
+        
+         return redirect("home:Teacher_std_chat",student_id=student_id)
+
+    else:
+        # print(" NOpe ")
+        student = models.StudentInfo.objects.get(id=student_id)
+        messages = models.Message.objects.filter(Q(sender=request.user, receiver=student.user) | Q(sender=student.user, receiver=request.user))
+     
+        student_data = models.StudentInfo.objects.get(id=student_id)
+        context = {
+           'student':student_data,
+           'messages': messages,
+           'teacher': teacher_data
+        }
+        return render(request, 'home/teacher/teacher_std_chat.html',context)
+
+
+
+# ~ ~ ~  below here are admin code ! ~ ~ ~ 
+def admin_home(request):
+   
+   return render(request,'home/admin/admin.html')   
+
+def admin_setings(request):
+   
+   return render(request,'home/admin/setting.html')   
+
+
+def admin_profile(request):
+    return render(request,'home/admin/admin_profile.html')

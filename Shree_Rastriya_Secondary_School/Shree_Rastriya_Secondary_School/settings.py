@@ -80,6 +80,8 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+key = "AIzaSyCQ77BihzcZ9RjcyKa4IqdE-BJ4OlHUzcs"
+FCM_SERVER_KEY = key
 
 
 # Password validation

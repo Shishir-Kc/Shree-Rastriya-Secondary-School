@@ -120,6 +120,7 @@ class Teacher(models.Model):
     contact = models.IntegerField()
     subject = models.ManyToManyField(Subject)
     classs = models.ManyToManyField(Class)
+    fcm_token = models.CharField(max_length=255, blank=True, null=True) 
     email = models.EmailField(("Email Address"), max_length=254,  default="Teacher@gmail.com" )
     
   

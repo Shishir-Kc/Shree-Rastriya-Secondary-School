@@ -1,0 +1,199 @@
+{% extends 'home/teacher/teacher_navbar.html' %}
+{% load static %}
+{% block Dashboard %}
+
+
+<li>
+    <a href="{% url "home:Teacher_Dashboard" %}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+  </li>
+  {% endblock Dashboard %}
+  
+  {% block Message %}
+      <li class='active'>
+          <a href="{% url "home:Teacher_chat" %}"><i class="fa-solid fa-message"></i><span>Messages </span></a>
+      </li>  
+  {% endblock Message %}
+
+{% block content %}
+
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-analytics.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+  
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+      apiKey: "AIzaSyCQ77BihzcZ9RjcyKa4IqdE-BJ4OlHUzcs",
+      authDomain: "shree-rastriya-mavi.firebaseapp.com",
+      projectId: "shree-rastriya-mavi",
+      storageBucket: "shree-rastriya-mavi.firebasestorage.app",
+      messagingSenderId: "161582133675",
+      appId: "1:161582133675:web:455bbd5e17e99d9b39a2ee",
+      measurementId: "G-5J28NL8QM5"
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+  </script>
+<style>
+    .lk{
+        text-decoration: none;
+    }
+</style>
+    <div class="container">
+    <h1>Students List</h1> <br>
+    <div class="student-list">
+        {% for class_instance, students in students_by_class.items %}
+            {% for student in students %}
+                <div class="student-item">
+                    <div class="profile-section">
+                        {% if student.profile_picture %}
+                            <img src="{{ student.profile_picture.url }}" alt="{{ student.first_name }} {{ student.last_name }}" class="profile-pic">
+                        {% else %}
+                        <img src="{% static 'home/images/study.png' %}" alt="{{ student.first_name }} {{ student.last_name }}" class="profile-pic">
+                        {% endif %}
+                    </div>
+                    <div class="student-info">
+                        <h2>{{ student.first_name|title }} {{ student.last_name|title }}</h2>
+                        <p>Class: {{ student.student_class.grade }}</p>
+                        <p>Section: {{ student.student_class.section }}</p>
+                       
+
+                    </div>
+                     <a href="{% url "home:Teacher_std_chat" student.id %}"  class= "lk" > 
+                     <button class="chat-button" onclick="startChat('{{ student.id }}')">
+                         <i class="fas fa-comments"></i>
+                     </button>
+                    </a>
+                     
+                    </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    function startChat(studentId) {
+        // Implement your chat functionality here
+        console.log('Starting chat with student ID:', studentId);
+    }
+
+    // Apply the theme based on the stored preference
+    document.addEventListener('DOMContentLoaded', function() {
+        const theme = localStorage.getItem('theme');
+        if (theme === 'dark') {
+            document.body.classList.add('dark-theme');
+        } else {
+            document.body.classList.remove('dark-theme');
+        }
+    });
+</script>
+
+<style>
+    body {
+        background-color: #ffffff;
+        color: #333333;
+        transition: background-color 0.3s, color 0.3s;
+    }
+    .container {
+        padding: 20px;
+        font-family: 'Helvetica Neue', Arial, sans-serif;
+    }
+    .student-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    .student-item {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+        transition: box-shadow 0.3s, background-color 0.3s;
+    }
+    .student-item:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background-color: #f0f0f0;
+    }
+    .profile-section {
+        flex-shrink: 0;
+    }
+    .profile-pic {
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+    }
+    .student-info {
+        flex-grow: 1;
+        margin-left: 20px;
+    }
+    .student-info h2 {
+        font-size: 1.2em;
+        margin: 0.2em 0;
+    }
+    .student-info p {
+        color: #555;
+        margin: 0.2em 0;
+    }
+    .chat-button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 45px;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        margin-left: auto;
+    }
+    .chat-button:hover {
+        background-color: #0056b3;
+    }
+    .chat-button i {
+        font-size: 18px;
+    }
+
+    /* Dark Theme Styles */
+    body.dark-theme {
+        background-color: #1e1e1e;
+        color: #e0e0e0;
+    }
+    .dark-theme .student-item {
+        border: 1px solid #333;
+        background-color: #2c2c2c;
+    }
+    .dark-theme .student-item:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+        background-color: #3a3a3a;
+    }
+    .dark-theme .student-info h2 {
+        color: #ffffff;
+    }
+    .dark-theme .student-info p {
+        color: #aaaaaa;
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+        .student-item {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .student-info {
+            margin-left: 0;
+            margin-top: 10px;
+        }
+    }
+</style>
+
+{% endblock %}
