@@ -1,0 +1,372 @@
+{% extends 'home/teacher/teacher_navbar.html' %}
+{% load static %}
+
+{% block title %}
+  Teacher Profile - {{ teacher.first_name }} {{ teacher.last_name }}
+{% endblock title %}
+
+{% block profile %}
+  <li class='active'>
+    <a href="{% url 'home:teacher_profile' %}"><i class="fas fa-user"></i><span>Profile</span></a>
+  </li>
+{% endblock profile %}
+
+{% block css %}
+  <style>
+    :root {
+      --primary-color: #4F46E5;
+      --secondary-color: #818CF8;
+      --success-color: #34D399;
+      --background-color: #F3F4F6;
+      --card-background: #FFFFFF;
+      --text-primary: #111827;
+      --text-secondary: #4B5563;
+      --border-color: #E5E7EB;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-container {
+      width: 100%;
+      min-height: 100vh;
+      background-color: var(--background-color);
+    }
+
+    .profile-header {
+      position: relative;
+      min-height: 50vh;
+      padding: 4rem 2rem;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .profile-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url('{% static 'home/images/banner.png' %}');
+      background-size: cover;
+      background-position: center;
+      filter: brightness(0.7);
+      z-index: 0;
+    }
+
+    .profile-header-content {
+      max-width: 1400px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 3rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .profile-image {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      border: 6px solid white;
+      box-shadow: var(--shadow-md);
+      object-fit: cover;
+    }
+
+    .profile-info {
+      flex: 1;
+    }
+
+    .profile-name {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .profile-role {
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+
+    .stats-container {
+      max-width: 1400px;
+      width: 100%;
+      margin: -3rem auto 0;
+      padding: 0 2rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    .stat-card {
+      background: var(--card-background);
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: var(--shadow-lg);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg), 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-label {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.75rem;
+    }
+
+    .stat-value {
+      color: var(--text-primary);
+      font-size: 2rem;
+      font-weight: 600;
+    }
+
+    .details-grid {
+      max-width: 1400px;
+      width: 100%;
+      margin: 2rem auto;
+      padding: 0 2rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 2rem;
+    }
+
+    .detail-card {
+      background: var(--card-background);
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: var(--shadow-md);
+      height: 100%;
+    }
+
+    .detail-card h3 {
+      color: var(--primary-color);
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .detail-card h3 i {
+      font-size: 1.3rem;
+    }
+
+    .detail-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .detail-item {
+      display: flex;
+      align-items: center;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .detail-item:last-child {
+      border-bottom: none;
+    }
+
+    .detail-label {
+      color: var(--text-secondary);
+      font-weight: 500;
+      width: 40%;
+      font-size: 1.1rem;
+    }
+
+    .detail-value {
+      color: var(--text-primary);
+      font-weight: 400;
+      flex: 1;
+      font-size: 1.1rem;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      font-size: 1rem;
+      font-weight: 500;
+      background: var(--success-color);
+      color: white;
+      margin: 0.25rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    @media (max-width: 768px) {
+      .profile-header {
+        padding: 2rem 1rem;
+        min-height: 40vh;
+      }
+
+      .profile-header-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 1.5rem;
+      }
+
+      .profile-image {
+        width: 150px;
+        height: 150px;
+      }
+
+      .profile-name {
+        font-size: 2rem;
+      }
+
+      .stats-container {
+        grid-template-columns: 1fr;
+        margin-top: -2rem;
+        padding: 0 1rem;
+      }
+
+      .details-grid {
+        grid-template-columns: 1fr;
+        padding: 0 1rem;
+      }
+
+      .detail-card {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+{% endblock css %}
+
+{% block content %}
+<title> Profile  </title>
+  <div class="profile-container">
+    <div class="profile-header">
+      <div class="profile-header-content">
+        <img src="{% if teacher.teacher_image %}{{ teacher.teacher_image.url }}{% else %}{% static 'path/to/default/image.jpg' %}{% endif %}"
+             alt="{{ teacher.first_name }}'s profile" class="profile-image">
+        <div class="profile-info">
+          <h1 class="profile-name">{{ teacher.first_name }} {{ teacher.last_name }}</h1>
+          <div class="profile-role">
+            {% if classes %}
+              {% for class in classes %}
+                <span class="badge">Grade {{ class.grade }} | Section {{ class.section }}</span>
+              {% endfor %}
+            {% else %}
+              <span class="badge" style="background: #F59E0B;">Unassigned</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-container">
+      <div class="stat-card">
+        <div class="stat-label">Teacher ID</div>
+        <div class="stat-value">{{ teacher.id }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Experience</div>
+        <div class="stat-value">
+          {% if teacher.experience < 1 %}
+            Fresher
+          {% else %}
+            {{ teacher.experience }}+ years
+          {% endif %}
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Subjects</div>
+        <div class="stat-value">
+          {{ teacher.subject.all|length }}
+        </div>
+      </div>
+    </div>
+
+    <div class="details-grid">
+      <div class="detail-card">
+        <h3><i class="fas fa-info-circle"></i> Basic Information</h3>
+        <div class="detail-list">
+          <div class="detail-item">
+            <div class="detail-label">Email</div>
+            <div class="detail-value">{{ teacher.email }}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Contact</div>
+            <div class="detail-value">{{ teacher.contact }}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Subjects</div>
+            <div class="detail-value">
+              {% for subject in teacher.subject.all %}
+                {{ subject.name }}{% if not forloop.last %}, {% endif %}
+              {% empty %}
+                No subjects assigned
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-card">
+        <h3><i class="fas fa-chalkboard-teacher"></i> Teaching Details</h3>
+        <div class="detail-list">
+          <div class="detail-item">
+            <div class="detail-label">Classes</div>
+            <div class="detail-value">
+              {% for class in teacher.classs.all %}
+                Grade {{ class.grade }} - Section {{ class.section }}{% if not forloop.last %}, {% endif %}
+              {% empty %}
+                No classes assigned
+              {% endfor %}
+            </div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Schedule</div>
+            <div class="detail-value">Regular (Sun-Fri)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
+
+{% block js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Animate stats on scroll
+    const stats = document.querySelectorAll('.stat-card');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.transform = 'translateY(0)';
+          entry.target.style.opacity = '1';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    stats.forEach(stat => {
+      stat.style.transform = 'translateY(20px)';
+      stat.style.opacity = '0';
+      stat.style.transition = 'all 0.6s ease-out';
+      observer.observe(stat);
+    });
+
+    // Theme handling
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      document.body.classList.add('theme-dark');
+    }
+  });
+</script>
+{% endblock js %}

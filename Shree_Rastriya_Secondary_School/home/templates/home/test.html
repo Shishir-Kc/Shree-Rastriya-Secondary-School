@@ -1,4 +1,4 @@
-{% if messages %}
+{% comment %} {% if messages %}
 <div id="message-box">
     {% for message in messages %}
     <div class="message {{ message.tags }}">
@@ -58,4 +58,197 @@
         }
     }, 3000);
 </script>
+ {% endcomment %}
 
+
+
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Card</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+    
+    .card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        width: 100%;
+        max-width: 400px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    }
+    
+    .profile-header {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .profile-img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 4px solid #f8f9fa;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .profile-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .profile-info .name {
+        color: #2d3436;
+        font-size: 1.5rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .profile-info .title {
+        color: #636e72;
+        font-size: 1rem;
+    }
+    
+    .description {
+        color: #636e72;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+    
+    .upload-date {
+        color: #b2bec3;
+        font-size: 0.875rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .actions {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+    
+    .btn {
+        flex: 1;
+        padding: 0.75rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+    
+    .download {
+        background: #4834d4;
+        color: white;
+    }
+    
+    .download:hover {
+        background: #686de0;
+    }
+    
+    .view {
+        background: #00b894;
+        color: white;
+    }
+    
+    .view:hover {
+        background: #00cec9;
+    }
+    
+    .edit {
+        background: #ff7675;
+        color: white;
+    }
+    
+    .edit:hover {
+        background: #fab1a0;
+    }
+
+</style>
+
+
+<script>
+
+
+    function handleAction(action) {
+        switch(action) {
+            case 'download':
+                alert('Starting download...');
+                break;
+            case 'view':
+                alert('Opening viewer...');
+                break;
+            case 'edit':
+                alert('Opening editor...');
+                break;
+        }
+    }
+
+</script>
+
+
+<body>
+    <div class="card">
+        <div class="profile-header">
+            <div class="profile-img">
+                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=faces" alt="Profile Picture">
+            </div>
+            <div class="profile-info">
+                <h2 class="name">Sarah Anderson</h2>
+                <p class="title">Senior Product Designer</p>
+            </div>
+        </div>
+        
+        <div class="description">
+            Passionate designer with expertise in user-centered design and creative problem-solving. 
+            Specializing in creating intuitive and engaging digital experiences.
+        </div>
+        
+        <div class="upload-date">
+            <span>Uploaded on March 15, 2024</span>
+        </div>
+        
+        <div class="actions">
+            <button class="btn download" onclick="handleAction('download')">
+                Download
+            </button>
+            <button class="btn view" onclick="handleAction('view')">
+                View
+            </button>
+            <button class="btn edit" onclick="handleAction('edit')">
+                Edit
+            </button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

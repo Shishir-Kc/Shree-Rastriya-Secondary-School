@@ -1,0 +1,427 @@
+{% extends 'home/teacher/teacher_navbar.html' %}
+
+
+
+
+{% block upload %}
+        
+<li class="active">
+    
+ <a href="{% url 'home:upload_notes' %}"><i class="fa-solid fa-file-arrow-up"></i><span>Upload</span></a>
+ </li>
+  
+{% endblock upload %}
+{% block css %}
+<style>
+    .container {
+        max-width: 600px;
+        margin: 30px auto;
+        background: var(--card-bg);
+        border-radius: 10px;
+        box-shadow: 0 4px 8px var(--shadow-color);
+        padding: 20px;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+    }
+
+    label {
+        margin-bottom: 5px;
+        color: var(--text-color);
+        font-weight: bold;
+    }
+
+    input[type="text"], textarea, select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid var(--secondary-color);
+        border-radius: 5px;
+        font-size: 14px;
+        background-color: var(--secondary-color);
+        color: var(--text-color);
+    }
+
+    textarea {
+        resize: vertical;
+    }
+
+    .input {
+        max-width: 190px;
+        display: none;
+    }
+
+    .labelFile {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 100%;
+        height: 190px;
+        border: 2px dashed var(--secondary-color);
+        align-items: center;
+        text-align: center;
+        padding: 5px;
+        color: var(--text-color);
+        cursor: pointer;
+        margin-bottom: 15px;
+        position: relative;
+    }
+
+    .labelFile:hover {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+    }
+
+    .button {
+        padding: 10px 20px;
+        background-color: var(--primary-color);
+        color: var(--text-color);
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 10px;
+    }
+
+    .button:hover {
+        background-color: #1e88e5;
+    }
+
+    .file-name {
+        margin-top: 10px;
+        font-size: 14px;
+        color: var(--text-color);
+    }
+
+    .drop-zone {
+        border: 2px dashed var(--secondary-color);
+        border-radius: 5px;
+        width: 100%;
+        height: 150px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: var(--text-color);
+        cursor: pointer;
+        margin-bottom: 15px;
+        position: relative;
+    }
+
+    .drop-zone.dragover {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+    }
+
+    .drop-zone i {
+        font-size: 60px;
+        margin-bottom: 10px;
+    }
+
+    .error-modal, .success-modal {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: var(--secondary-color);
+        color: var(--text-color);
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px var(--shadow-color);
+        opacity: 0;
+        animation: fadeIn 0.5s forwards, fadeOut 0.5s 2.5s forwards;
+    }
+
+    @keyframes fadeIn {
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes fadeOut {
+        to {
+            opacity: 0;
+        }
+    }
+
+    .success-modal a {
+        color: var(--primary-color);
+        text-decoration: underline;
+    }
+
+    .message-box {
+      display: none;
+      position: fixed;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      min-width: 300px;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      text-align: center;
+      z-index: 1000;
+      opacity: 0;
+      animation: slideIn 0.5s ease-out forwards, fadeOut 0.5s 3s forwards;
+  }
+
+  .success-box {
+      background: #28a745;
+      border-left: 5px solid #218838;
+  }
+
+  .error-box {
+      background: #dc3545;
+      border-left: 5px solid #b02a37;
+  }
+
+  .message-box i {
+      margin-right: 8px;
+      font-size: 18px;
+  }
+
+  @keyframes slideIn {
+      from {
+          transform: translate(-50%, -30%);
+          opacity: 0;
+      }
+      to {
+          transform: translate(-50%, 0);
+          opacity: 1;
+      }
+  }
+
+  @keyframes fadeOut {
+      to {
+          opacity: 0;
+      }
+  }
+/* Style for the popup box */
+.popup-box {
+  position: fixed;
+  top: 50%;
+  right: -300px; /* Initially hide it off-screen */
+  transform: translateY(-50%);
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  transition: right 0.5s ease-in-out; /* Smooth slide-in effect */
+  z-index: 1000; /* Ensure it's above other elements */
+  width: 250px;
+}
+
+/* Dark theme */
+.popup-box.dark {
+  background-color: #333;
+  color: white;
+}
+
+/* Light theme */
+.popup-box.light {
+  background-color: #fff;
+  color: black;
+}
+
+/* Style for the link */
+#viewNoteLink {
+  color:rgb(91, 201, 128);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+#viewNoteLink:hover {
+  color:rgb(42, 250, 0);
+}
+
+/* Trigger the pop-up box to slide in */
+.popup-box.show {
+  right: 0; /* Move it into view */
+}
+
+</style>
+{% endblock css %}
+
+{% block content %}
+<title> Upload Notes </title>
+<div class="container">
+    <div class="error-modal" id="fileError">The selected file type is not supported.</div>
+    {% if error %}
+        <p class="error">{{ error }}</p>
+    {% endif %}
+    <form id="uploadForm" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" required>
+
+        <label for="content">Content:</label>
+        <textarea id="content" name="content" rows="5" required></textarea>
+
+        <label for="class">Class:</label>
+        <select id="class" name="class" required>
+            <option value="">Select Class</option>
+            {% for class in classes %}
+                <option value="{{ class.id }}">{{ class.grade }} - {{ class.section }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="subject">Subject:</label>
+        <select id="subject" name="subject" required>
+            <option value="">Select Subject</option>
+            {% for subject in subjects %}
+                <option value="{{ subject.id }}">{{ subject }}</option>
+            {% endfor %}
+        </select>
+
+        <div class="drop-zone" id="dropZone">
+            <i class="fas fa-upload"></i>
+            Drag & drop a file here or click to select a file!
+            <input class="input" name="pdf" id="file" type="file" accept="application/pdf">
+        </div>
+
+        <span class="file-name" id="fileNameDisplay"></span>
+
+        <button type="submit" class="button">Upload</button>
+    </form>
+    <div class="message-box success-box" id="successMessage">
+      <i class="fas fa-check-circle"></i> Note uploaded successfully!
+  </div>
+  <div class="message-box error-box" id="fileError">
+      <i class="fas fa-exclamation-triangle"></i> The selected file type is not supported.
+  </div>
+</div>
+<div id="popupBox" class="popup-box">
+    <a href="{% url 'home:notes_list' %}" target="_blank" id="viewNoteLink">View Notes </a>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('file');
+    const fileNameDisplay = document.getElementById('fileNameDisplay');
+    const fileError = document.getElementById('fileError');
+    const successMessage = document.getElementById('successMessage');
+    const uploadForm = document.getElementById('uploadForm');
+  
+    const popupBox = document.getElementById('popupBox');
+    
+    // Set default theme (light or dark)
+    let isDarkTheme = false; // Change this to `true` for dark theme by default
+  
+    // Drag and drop file selection
+    dropZone.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+    });
+  
+    dropZone.addEventListener('dragleave', function (e) {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+    });
+  
+    dropZone.addEventListener('drop', function (e) {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            handleFileSelection(files[0]);
+        }
+    });
+  
+    // Click to open file dialog
+    dropZone.addEventListener('click', function () {
+        fileInput.click();
+    });
+  
+    // File selection from input
+    fileInput.addEventListener('change', function () {
+        if (fileInput.files.length > 0) {
+            handleFileSelection(fileInput.files[0]);
+        }
+    });
+  
+    function handleFileSelection(file) {
+        if (file.type === 'application/pdf') {
+            updateFileNameDisplay(file.name);
+            fileError.style.display = 'none';
+        } else {
+            fileInput.value = ''; // Clear the file input
+            updateFileNameDisplay('');
+            fileError.style.display = 'block';
+            fileError.textContent = "Only PDF files are allowed!";
+            setTimeout(() => {
+                fileError.style.display = 'none';
+            }, 3000);
+        }
+    }
+  
+    function updateFileNameDisplay(name) {
+        fileNameDisplay.textContent = name ? `Selected file: ${name}` : '';
+    }
+  
+    // Form submission using AJAX
+    uploadForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+  
+        if (!fileInput.files.length) {
+            fileError.style.display = 'block';
+            fileError.textContent = "Please select a PDF file before uploading.";
+            setTimeout(() => {
+                fileError.style.display = 'none';
+            }, 3000);
+            return;
+        }
+  
+        const formData = new FormData(uploadForm);
+  
+        try {
+            const response = await fetch(uploadForm.action, {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value
+                }
+            });
+  
+            if (response.ok) {
+                successMessage.style.display = 'block';
+                successMessage.textContent = "File uploaded successfully!";
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                    showPopup(); // Show the pop-up after a successful upload
+                }, 3000);
+  
+                // Refresh the page after 6 seconds
+                setTimeout(() => {
+                    window.location.reload();
+                }, 8000);
+  
+            } else {
+                fileError.style.display = 'block';
+                fileError.textContent = "Upload failed. Please try again.";
+            }
+        } catch (error) {
+            console.error("Upload failed", error);
+            fileError.style.display = 'block';
+            fileError.textContent = "An error occurred while uploading.";
+        }
+    });
+  
+    // Show the pop-up box after upload success and toggle theme
+    function showPopup() {
+        popupBox.classList.add('show'); // Slide in the pop-up box
+        popupBox.classList.toggle(isDarkTheme ? 'dark' : 'light'); // Toggle theme on pop-up
+        
+        // Optionally toggle the theme for future pop-ups
+        isDarkTheme = !isDarkTheme; // Flip the theme flag
+    }
+  });
+  
+</script>
+
+{% endblock content %}

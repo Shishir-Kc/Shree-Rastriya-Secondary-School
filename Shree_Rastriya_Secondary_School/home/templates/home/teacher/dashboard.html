@@ -1,10 +1,13 @@
 {% extends "home/teacher/teacher_navbar.html" %}
 {% load static %}
-{% block title %}
-  Welcome!
-{% endblock title %}
 
+{% block Dashboard %} 
+<li class="active">
+  <a href="{% url "home:Teacher_Dashboard" %}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+</li>
+{% endblock Dashboard %}
 {% block content %}
+<title> Welcome ! </title>
   <div class="dashboard-grid">
     {% if teacher_class %}
     <aside id="student-demographics" class="card">
@@ -46,7 +49,49 @@
           </div>
         </div>
         {% else %}
-         <h1> wait for students </h1>
+        <!-- Replace the inspiration container with a date/time card -->
+        <aside id="datetime-container" class="card">
+          <div class="card-header">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+          </div>
+          <h2>Today's Overview</h2>
+          
+          <div class="datetime-animation">
+            <div class="datetime-display">
+              <div class="date-container">
+                <div class="date" id="current-date">Loading date...</div>
+                <div class="day" id="current-day">Loading day...</div>
+              </div>
+              <div class="time-container">
+                <div class="time" id="current-time">00:00:00</div>
+                <div class="time-label">Current Time</div>
+              </div>
+            </div>
+            
+            <div class="calendar-decoration">
+              <div class="calendar-icon">
+                <i class="fas fa-calendar-alt"></i>
+              </div>
+              <div class="calendar-details">
+                <div class="calendar-month" id="current-month">Month</div>
+                <div class="calendar-year" id="current-year">Year</div>
+              </div>
+            </div>
+            
+            <div class="weather-decoration">
+              <div class="weather-icon">
+                <i class="fas fa-sun pulse"></i>
+              </div>
+              <div class="weather-details">
+                <div class="weather-temp">Have a great day!</div>
+                <div class="weather-desc">Make it count</div>
+              </div>
+            </div>
+          </div>
+        </aside>
       {% endif %}
     </aside>
 
@@ -67,53 +112,30 @@
        
         <input type="checkbox" id="theme-switch" class="theme-switch-checkbox">
       </div>
+     
       
-      <div class="stat-card" id="messages-stat-card">
-        <i class="fas fa-comment"></i>
-        <div class="stat-info">
-          <h3>Messages</h3>
-          <p> View Querries From Students </p>
-        </div>
-      </div>
-      
-      <!-- Modal Structure (Student List with Profile Pics and Messages) -->
-      <div id="messages-modal" class="modal">
-        <div class="modal-content">
-          <div class="header">
-            <h3>Messages</h3>
-            <button id="close-modal" class="close-btn">X</button>
+      <!-- Add the popup notification -->
+      <div id="welcome-popup" class="welcome-popup">
+        <div class="popup-content">
+          <div class="popup-header">
+            <div class="popup-icon">
+              <i class="fas fa-hand-sparkles"></i>
+            </div>
+            <button id="close-popup" class="close-popup-btn">
+              <i class="fas fa-times"></i>
+            </button>
           </div>
-          <div class="students-list">
-            <!-- Student 1 -->
-            <div class="student-item" data-student-id="1">
-              <img src="student1.jpg" alt="Student 1" class="student-pic" />
-              <div class="student-info">
-                <h4>John Doe</h4>
-                <p>Hey, when is the exam?</p>
-              </div>
+          <div class="popup-body">
+            <h3 class="popup-title">Hey there!</h3>
+            <p class="popup-message">How's your day going?</p>
+            <div class="popup-options">
+              <button class="popup-option-btn great">Great!</button>
+              <button class="popup-option-btn good">Good</button>
+              <button class="popup-option-btn okay">Okay</button>
             </div>
-            <!-- Student 2 -->
-            <div class="student-item" data-student-id="2">
-              <img src="student2.jpg" alt="Student 2" class="student-pic" />
-              <div class="student-info">
-                <h4>Jane Smith</h4>
-                <p>Can you help me with the homework?</p>
-              </div>
-            </div>
-            <!-- More students here... -->
-          </div>
-      
-          <div class="message-window">
-            <div class="message-container">
-              <!-- Example Message -->
-              <div class="message-item sender">
-                <div class="message-bubble">Hi there, how can I assist you?</div>
-              </div>
-            </div>
-            <div class="message-input">
-              <input type="text" placeholder="Type a message..." id="message-input" />
-              <button id="send-message" class="send-btn">Send</button>
-            </div>
+            <p class="popup-question">What's up for today?</p>
+            <textarea class="popup-textarea" placeholder="Share your plans..."></textarea>
+            <button class="popup-submit-btn">Submit</button>
           </div>
         </div>
       </div>
@@ -127,6 +149,18 @@
           --border-color: #ddd;
           --button-bg: #007bff;
           --button-hover-bg: #0056b3;
+          --accent-color-1: #4f46e5;
+          --accent-color-2: #ec4899;
+          --accent-color-3: #10b981;
+          --quote-text-color: #1f2937;
+          --quote-author-color: #6b7280;
+          --stat-title-color: #4b5563;
+          --stat-value-color: #111827;
+          --element-shadow: rgba(0, 0, 0, 0.1);
+          --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+          --popup-bg: #ffffff;
+          --popup-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+          --popup-border: rgba(0, 0, 0, 0.05);
         }
       
         /* Dark theme */
@@ -137,6 +171,18 @@
           --border-color: #333;
           --button-bg: #3b82f6;
           --button-hover-bg: #1e40af;
+          --accent-color-1: #6366f1;
+          --accent-color-2: #f472b6;
+          --accent-color-3: #34d399;
+          --quote-text-color: #f3f4f6;
+          --quote-author-color: #d1d5db;
+          --stat-title-color: #9ca3af;
+          --stat-value-color: #f9fafb;
+          --element-shadow: rgba(0, 0, 0, 0.3);
+          --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+          --popup-bg: #2d2d2d;
+          --popup-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+          --popup-border: rgba(255, 255, 255, 0.1);
         }
       
         body {
@@ -308,8 +354,469 @@
         .theme-switch-checkbox {
           display: none;
         }
-      
-       
+        
+        /* Date Time Card Styles */
+        #datetime-container {
+          background: var(--card-bg);
+          border-radius: 1rem;
+          box-shadow: var(--card-shadow);
+          padding: 2rem;
+          position: relative;
+          overflow: hidden;
+          transition: all 0.3s ease;
+        }
+
+        #datetime-container h2 {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: var(--text-color);
+          margin-bottom: 1.5rem;
+          position: relative;
+          z-index: 2;
+        }
+
+        .datetime-animation {
+          position: relative;
+          min-height: 300px;
+          z-index: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 2rem;
+        }
+
+        .datetime-display {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 1.5rem;
+          padding: 1.5rem;
+          background: rgba(var(--accent-color-1-rgb, 79, 70, 229), 0.05);
+          border-radius: 1rem;
+          border: 1px solid rgba(var(--accent-color-1-rgb, 79, 70, 229), 0.1);
+        }
+
+        .date-container {
+          text-align: center;
+        }
+
+        .date {
+          font-size: 1.75rem;
+          font-weight: 700;
+          color: var(--accent-color-1);
+          margin-bottom: 0.25rem;
+        }
+
+        .day {
+          font-size: 1.25rem;
+          color: var(--text-color);
+          font-weight: 500;
+        }
+
+        .time-container {
+          text-align: center;
+          padding: 1rem;
+          background: var(--accent-color-1);
+          color: white;
+          border-radius: 0.75rem;
+          min-width: 200px;
+        }
+
+        .time {
+          font-size: 2rem;
+          font-weight: 700;
+          font-variant-numeric: tabular-nums;
+          letter-spacing: 0.05em;
+        }
+
+        .time-label {
+          font-size: 0.875rem;
+          opacity: 0.9;
+          margin-top: 0.25rem;
+        }
+
+        .calendar-decoration, .weather-decoration {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          padding: 1rem;
+          border-radius: 0.75rem;
+          background: rgba(255, 255, 255, 0.05);
+          backdrop-filter: blur(5px);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          transition: transform 0.3s ease;
+        }
+
+        .calendar-decoration:hover, .weather-decoration:hover {
+          transform: translateY(-5px);
+        }
+
+        .calendar-icon, .weather-icon {
+          width: 3rem;
+          height: 3rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.5rem;
+          color: var(--accent-color-2);
+          background: rgba(var(--accent-color-2-rgb, 236, 72, 153), 0.1);
+          border-radius: 0.75rem;
+        }
+
+        .weather-icon {
+          color: var(--accent-color-3);
+          background: rgba(var(--accent-color-3-rgb, 16, 185, 129), 0.1);
+        }
+
+        .calendar-details, .weather-details {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .calendar-month, .weather-temp {
+          font-size: 1.125rem;
+          font-weight: 600;
+          color: var(--stat-value-color);
+        }
+
+        .calendar-year, .weather-desc {
+          font-size: 0.875rem;
+          color: var(--stat-title-color);
+        }
+
+        /* Welcome Popup Styles */
+        .welcome-popup {
+          position: fixed;
+          top: 80px;
+          right: -400px;
+          width: 350px;
+          background: var(--popup-bg);
+          border-radius: 12px;
+          box-shadow: var(--popup-shadow);
+          border: 1px solid var(--popup-border);
+          z-index: 9999;
+          overflow: hidden;
+          transition: right 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .welcome-popup.show {
+          right: 20px;
+        }
+
+        .popup-content {
+          padding: 0;
+        }
+
+        .popup-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 15px 20px;
+          background: var(--accent-color-1);
+          color: white;
+        }
+
+        .popup-icon {
+          font-size: 24px;
+          animation: pulse 2s infinite;
+        }
+
+        .close-popup-btn {
+          background: none;
+          border: none;
+          color: white;
+          font-size: 18px;
+          cursor: pointer;
+          opacity: 0.8;
+          transition: opacity 0.2s;
+        }
+
+        .close-popup-btn:hover {
+          opacity: 1;
+        }
+
+        .popup-body {
+          padding: 20px;
+        }
+
+        .popup-title {
+          margin: 0 0 10px 0;
+          font-size: 20px;
+          color: var(--text-color);
+        }
+
+        .popup-message {
+          margin: 0 0 15px 0;
+          font-size: 16px;
+          color: var(--text-color);
+        }
+
+        .popup-options {
+          display: flex;
+          gap: 10px;
+          margin-bottom: 20px;
+        }
+
+        .popup-option-btn {
+          flex: 1;
+          padding: 8px;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+          font-weight: 500;
+          transition: all 0.2s;
+        }
+
+        .popup-option-btn.great {
+          background: var(--accent-color-3);
+          color: white;
+        }
+
+        .popup-option-btn.good {
+          background: var(--accent-color-1);
+          color: white;
+        }
+
+        .popup-option-btn.okay {
+          background: var(--accent-color-2);
+          color: white;
+        }
+
+        .popup-option-btn:hover {
+          transform: translateY(-2px);
+          filter: brightness(1.1);
+        }
+
+        .popup-question {
+          margin: 0 0 10px 0;
+          font-size: 16px;
+          color: var(--text-color);
+        }
+
+        .popup-textarea {
+          width: 100%;
+          padding: 10px;
+          border-radius: 6px;
+          border: 1px solid var(--border-color);
+          background: var(--bg-color);
+          color: var(--text-color);
+          min-height: 80px;
+          margin-bottom: 15px;
+          resize: none;
+        }
+
+        .popup-submit-btn {
+          width: 100%;
+          padding: 10px;
+          background: var(--button-bg);
+          color: white;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+          font-weight: 500;
+          transition: background 0.2s;
+        }
+
+        .popup-submit-btn:hover {
+          background: var(--button-hover-bg);
+        }
+
+        /* Animations */
+        @keyframes float {
+          0% {
+            transform: translateY(0) rotate(0deg);
+          }
+          50% {
+            transform: translateY(-15px) rotate(5deg);
+          }
+          100% {
+            transform: translateY(0) rotate(0deg);
+          }
+        }
+
+        @keyframes pulse {
+          0% {
+            transform: scale(1);
+            opacity: 1;
+          }
+          50% {
+            transform: scale(1.2);
+            opacity: 0.8;
+          }
+          100% {
+            transform: scale(1);
+            opacity: 1;
+          }
+        }
+
+        @keyframes spin {
+          0% {
+            transform: rotate(0deg);
+          }
+          100% {
+            transform: rotate(360deg);
+          }
+        }
+
+        @keyframes fadeIn {
+          0% {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .pulse {
+          animation: pulse 2s ease-in-out infinite;
+        }
+
+        .spin {
+          animation: spin 8s linear infinite;
+        }
+
+        .fade-in {
+          animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        /* Existing styles */
+        .card-header {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          margin-bottom: 1.5rem;
+        }
+
+        .card-header svg {
+          width: 1.5rem;
+          height: 1.5rem;
+          color: var(--accent-color-1);
+        }
+
+        .card-header  {
+          font-size: 1.25rem;
+          font-weight: 600;
+          color: var(--text-color);
+        }
+
+        .chart-container {
+          position: relative;
+          width: 12rem;
+          height: 12rem;
+          margin: 0 auto 2rem;
+        }
+
+        .loader {
+          position: absolute;
+          inset: 0;
+          border: 4px solid rgb(229 231 235);
+          border-radius: 50%;
+          opacity: 0;
+          transition: opacity 0.3s;
+        }
+
+        .loader.active {
+          opacity: 1;
+        }
+
+        .loader::after {
+          content: '';
+          position: absolute;
+          inset: -4px;
+          border: 4px solid rgb(59 130 246);
+          border-radius: 50%;
+          border-top-color: transparent;
+          animation: spin 1s linear infinite;
+        }
+
+        .pie-chart {
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+          position: relative;
+          opacity: 0;
+          transition: opacity 1s, background 1s;
+        }
+
+        .pie-chart.active {
+          opacity: 1;
+        }
+
+        .pie-chart::after {
+          content: 'Stats';
+          position: absolute;
+          inset: 0.75rem;
+          background: var(--card-bg);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.125rem;
+          font-weight: 600;
+          color: var(--text-color);
+        }
+
+        .stats {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+
+        .stat-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .stat-label {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .color-dot {
+          width: 0.75rem;
+          height: 0.75rem;
+          border-radius: 50%;
+        }
+
+        .color-dot.boys {
+          background-color: rgb(59 130 246);
+        }
+
+        .color-dot.girls {
+          background-color: rgb(236 72 153);
+        }
+
+        .stat-text {
+          font-size: 0.875rem;
+          color: var(--stat-title-color);
+        }
+
+        .stat-value {
+          font-weight: 600;
+          color: var(--stat-value-color);
+        }
+
+        .total-stats {
+          margin-top: 0.75rem;
+          padding-top: 0.75rem;
+          border-top: 1px solid var(--border-color);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .total-label {
+          font-weight: 500;
+          color: var(--text-color);
+        }
+
+        .total-value {
+          font-size: 1.125rem;
+          font-weight: 600;
+          color: var(--text-color);
         }
       </style>
       
@@ -367,7 +874,7 @@
         }
       
         // Sending a message
-        document.getElementById('send-message').addEventListener('click', function() {
+        document.getElementById('send-message')?.addEventListener('click', function() {
           const messageInput = document.getElementById('message-input');
           const messageText = messageInput.value.trim();
           if (messageText) {
@@ -383,6 +890,109 @@
             document.querySelector('.message-container').scrollTop = document.querySelector('.message-container').scrollHeight; // Scroll to the bottom
           }
         });
+
+        // Date and Time functionality
+        function updateDateTime() {
+          const now = new Date();
+          
+          // Update date elements
+          const dateElement = document.getElementById('current-date');
+          const dayElement = document.getElementById('current-day');
+          const monthElement = document.getElementById('current-month');
+          const yearElement = document.getElementById('current-year');
+          
+          if (dateElement) {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            dateElement.textContent = now.toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
+          }
+          
+          if (dayElement) {
+            dayElement.textContent = now.toLocaleDateString(undefined, { weekday: 'long' });
+          }
+          
+          if (monthElement) {
+            monthElement.textContent = now.toLocaleDateString(undefined, { month: 'long' });
+          }
+          
+          if (yearElement) {
+            yearElement.textContent = now.getFullYear();
+          }
+          
+          // Update time element
+          const timeElement = document.getElementById('current-time');
+          if (timeElement) {
+            timeElement.textContent = now.toLocaleTimeString(undefined, { 
+              hour: '2-digit', 
+              minute: '2-digit', 
+              second: '2-digit',
+              hour12: true 
+            });
+          }
+        }
+        
+        // Update date and time every second
+        if (document.getElementById('current-time')) {
+          updateDateTime();
+          setInterval(updateDateTime, 1000);
+        }
+        
+        // Welcome popup functionality
+        const welcomePopup = document.getElementById('welcome-popup');
+        const closePopupBtn = document.getElementById('close-popup');
+        
+        // Show popup with delay after page load
+        if (welcomePopup) {
+          setTimeout(() => {
+            welcomePopup.classList.add('show');
+          }, 1500);
+          
+          // Close popup when close button is clicked
+          closePopupBtn.addEventListener('click', function() {
+            welcomePopup.classList.remove('show');
+          });
+          
+          // Handle mood selection
+          const moodButtons = document.querySelectorAll('.popup-option-btn');
+          moodButtons.forEach(button => {
+            button.addEventListener('click', function() {
+              // Reset all buttons
+              moodButtons.forEach(btn => btn.style.transform = '');
+              
+              // Highlight selected button
+              this.style.transform = 'scale(1.1) translateY(-5px)';
+              
+              // You could save the mood selection here
+              console.log('Mood selected:', this.textContent);
+            });
+          });
+          
+          // Handle form submission
+          const submitBtn = document.querySelector('.popup-submit-btn');
+          submitBtn.addEventListener('click', function() {
+            const textarea = document.querySelector('.popup-textarea');
+            const plans = textarea.value.trim();
+            
+            if (plans) {
+              console.log('Plans submitted:', plans);
+              // You could save the plans here
+              
+              // Show thank you message
+              const popupBody = document.querySelector('.popup-body');
+              popupBody.innerHTML = `
+                <div class="popup-thank-you">
+                  <i class="fas fa-check-circle" style="font-size: 48px; color: var(--accent-color-3); margin-bottom: 15px;"></i>
+                  <h3 class="popup-title">Thank you!</h3>
+                  <p class="popup-message">Have a wonderful day ahead!</p>
+                </div>
+              `;
+              
+              // Close popup after delay
+              setTimeout(() => {
+                welcomePopup.classList.remove('show');
+              }, 2000);
+            }
+          });
+        }
       </script>
       
       <div class="stat-card" id="messages-stat-card">
@@ -391,157 +1001,14 @@
         <div class="stat-info">
           <h3> Class Teacher Of</h3>
           {% for class in classes %} 
-          <p> Grade :{{class.grade}} Sec {{class.section}}</p>
+          <p> <strong> Grade </strong> :{{class.grade}} </p>
+          <p> <strong> Sec  </strong>:{{class.section}}</p>
           {% endfor %}
         </div>
         {% else %}
           <p>Role of Class teacher has not been assigned ! </p>
         {% endif %}
       </div>
-
-  <style>
-    .card-header {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .card-header svg {
-      width: 1.5rem;
-      height: 1.5rem;
-      color: rgb(37 99 235);
-    }
-
-    .card-header  {
-      font-size: 1.25rem;
-      font-weight: 600;
-      color: rgb(31 41 55);
-    }
-
-    .chart-container {
-      position: relative;
-      width: 12rem;
-      height: 12rem;
-      margin: 0 auto 2rem;
-    }
-
-    .loader {
-      position: absolute;
-      inset: 0;
-      border: 4px solid rgb(229 231 235);
-      border-radius: 50%;
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-
-    .loader.active {
-      opacity: 1;
-    }
-
-    .loader::after {
-      content: '';
-      position: absolute;
-      inset: -4px;
-      border: 4px solid rgb(59 130 246);
-      border-radius: 50%;
-      border-top-color: transparent;
-      animation: spin 1s linear infinite;
-    }
-
-    .pie-chart {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      position: relative;
-      opacity: 0;
-      transition: opacity 1s, background 1s;
-    }
-
-    .pie-chart.active {
-      opacity: 1;
-    }
-
-    .pie-chart::after {
-      content: 'Stats';
-      position: absolute;
-      inset: 0.75rem;
-      background: white;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.125rem;
-      font-weight: 600;
-      color: rgb(55 65 81);
-    }
-
-    .stats {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    .stat-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .stat-label {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .color-dot {
-      width: 0.75rem;
-      height: 0.75rem;
-      border-radius: 50%;
-    }
-
-    .color-dot.boys {
-      background-color: rgb(59 130 246);
-    }
-
-    .color-dot.girls {
-      background-color: rgb(236 72 153);
-    }
-
-    .stat-text {
-      font-size: 0.875rem;
-      color: rgb(75 85 99);
-    }
-
-    .stat-value {
-      font-weight: 600;
-    }
-
-    .total-stats {
-      margin-top: 0.75rem;
-      padding-top: 0.75rem;
-      border-top: 1px solid rgb(229 231 235);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .total-label {
-      font-weight: 500;
-      color: rgb(31 41 55);
-    }
-
-    .total-value {
-      font-size: 1.125rem;
-      font-weight: 600;
-      color: rgb(31 41 55);
-    }
-
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-  </style>
 
   <script>
     // Data passed from Django view
@@ -563,19 +1030,23 @@
     // Simulate loading and update the chart
     setTimeout(() => {
       // Hide loader
-      loader.classList.remove('active');
+      if (loader) {
+        loader.classList.remove('active');
+      }
 
       // Show and update pie chart
-      pieChart.classList.add('active');
-      pieChart.style.background = `conic-gradient(
-        rgb(59 130 246) ${boyPercentage}%, 
-        rgb(236 72 153) ${boyPercentage}% 100%
-      )`;
+      if (pieChart) {
+        pieChart.classList.add('active');
+        pieChart.style.background = `conic-gradient(
+          rgb(59 130 246) ${boyPercentage}%, 
+          rgb(236 72 153) ${boyPercentage}% 100%
+        )`;
+      }
 
       // Update statistics
-      boysPercentageEl.textContent = Math.round(boyPercentage) + '%';
-      girlsPercentageEl.textContent = Math.round(girlPercentage) + '%';
-      totalStudentsEl.textContent = total;
+      if (boysPercentageEl) boysPercentageEl.textContent = Math.round(boyPercentage) + '%';
+      if (girlsPercentageEl) girlsPercentageEl.textContent = Math.round(girlPercentage) + '%';
+      if (totalStudentsEl) totalStudentsEl.textContent = total;
     }, 1500);
   </script>
 {% endblock content %}

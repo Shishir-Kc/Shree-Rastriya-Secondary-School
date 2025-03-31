@@ -1,0 +1,342 @@
+{% extends 'home/teacher/teacher_navbar.html' %}
+{% load static %}
+
+
+{% block Dashboard %} 
+<li>
+  <a href="{% url "home:Teacher_Dashboard" %}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
+</li>
+{% endblock Dashboard %}
+
+{% block Students %}
+    <li class='active'>
+        <a href="{% url "home:student_list" %}"><i class="fas fa-user-graduate"></i><span>Students</span></a>
+    </li>  
+{% endblock Students %}
+{% block content %}
+<title> Students List </title>
+<div class="student-list-container">
+  
+  {% if students_by_class %}  
+  <h2 style="margin-bottom: 20px;">Total Student Under Your Vision ! !</h2>
+    {% for class_instance, students in students_by_class.items %}
+      <ul class="student-list">
+        
+        {% for student in students %}
+         
+          <li class="student-item">
+            {% if student.profile_picture %}
+              <img src="{{ student.profile_picture.url }}" alt="{{ student.first_name }}'s profile picture" class="student-profile-pic">
+            {% else %}
+              <img src="path/to/default/profile_picture.png" alt="Default profile picture" class="student-profile-pic">
+            {% endif %}
+            <span class="student-name">
+              <strong>{{ student.first_name }} {{ student.last_name }} | Grade: {{ student.student_class.grade }} | Section: {{ student.student_class.section }} |</strong>
+            </span>
+            <a href="{% url 'home:student_profile' student.id %}">
+              <button class="view-more-btn">View Profile</button>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endfor %}
+  {% else %}
+    <!-- Empty state animation -->
+    <div class="empty-state-container">
+      <div class="animation-wrapper">
+        <!-- Main icon with bounce animation -->
+        <div class="main-icon">
+          <i class="fas fa-user-slash"></i>
+        </div>
+        
+        <!-- Floating elements -->
+        <div class="floating-element element-1">
+          <i class="fas fa-book-open"></i>
+        </div>
+        <div class="floating-element element-2">
+          <i class="fas fa-users"></i>
+        </div>
+      </div>
+      
+      <h3 class="empty-state-title">Looks like your class is empty</h3>
+      <p class="empty-state-message">No students found in this class.</p>
+    </div>
+  {% endif %} 
+</div>
+
+
+
+
+<style>
+  :root {
+    --bg-color: white;
+    --card-bg: #f9f9f9;
+    --text-color: black;
+    --border-color: #ddd;
+    --primary-color: #007bff;
+    --primary-hover: #0056b3;
+  }
+  body.dark-theme {
+    --bg-color: #18191a; 
+    --card-bg: #1e1e1e;
+    --text-color: white;
+    --border-color: #333;
+  }
+  .student-list-container {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    max-width: 100%;
+    overflow-y: auto;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.5s ease-out forwards;
+  }
+  .student-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 0;
+    list-style: none;
+  }
+  .student-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 20px;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--card-bg);
+    border-radius: 8px;
+    transition: background 0.3s, transform 0.3s;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeInUp 0.5s ease-out forwards 0.2s;
+  }
+  .student-item:hover {
+    background-color: rgba(0, 123, 255, 0.1);
+    transform: scale(1.02);
+  }
+  .student-profile-pic {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+  }
+  .student-name {
+    flex-grow: 1;
+    {% comment %} text-align: center; {% endcomment %}
+  }
+  .view-more-btn {
+    padding: 8px 16px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  .view-more-btn:hover {
+    background-color: var(--primary-hover);
+  }
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 1000;
+  }
+  .modal.show {
+    display: flex;
+    opacity: 1;
+    transform: scale(1);
+  }
+  .modal-content {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    max-width: 90%;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+  .centered-text {
+    text-align: center;
+    width: 100%;
+  }
+  
+  /* Empty state styles */
+  .empty-state-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    margin: 20px auto;
+    max-width: 500px;
+    background: var(--card-bg);
+    border: 1px dashed var(--border-color);
+    border-radius: 8px;
+    color: var(--text-color);
+    text-align: center;
+    opacity: 0;
+    animation: fadeInUp 0.8s ease-out forwards;
+  }
+  
+  .animation-wrapper {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin-bottom: 20px;
+  }
+  
+  .main-icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 123, 255, 0.1);
+    border-radius: 50%;
+    animation: bounce 2s infinite ease-in-out;
+  }
+  
+  .main-icon i {
+    font-size: 40px;
+    color: var(--primary-color);
+  }
+  
+  .floating-element {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background-color: rgba(0, 123, 255, 0.15);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+  }
+  
+  .floating-element i {
+    font-size: 18px;
+    color: var(--primary-color);
+  }
+  
+  .element-1 {
+    top: -10px;
+    right: -10px;
+    animation: float 3s infinite ease-in-out;
+  }
+  
+  .element-2 {
+    bottom: -5px;
+    left: -15px;
+    animation: float 3s infinite ease-in-out 1.5s;
+  }
+  
+  .empty-state-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--text-color);
+  }
+  
+  .empty-state-message {
+    font-size: 16px;
+    margin-bottom: 20px;
+    color: var(--text-color);
+    opacity: 0.7;
+  }
+  
+  .add-student-btn {
+    margin-top: 10px;
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-15px);
+    }
+  }
+  
+  @keyframes float {
+    0%, 100% {
+      opacity: 0;
+      transform: translateY(5px);
+    }
+    50% {
+      opacity: 1;
+      transform: translateY(-5px);
+    }
+  }
+</style>
+
+<script>
+  function openPopup(name, profilePic, age, className) {
+    console.log('Opening popup for:', name); // Debugging line
+    document.getElementById('popup-name').textContent = name;
+    document.getElementById('popup-profile-pic').src = profilePic;
+    document.getElementById('popup-age').textContent = age;
+    document.getElementById('popup-class').textContent = className;
+    
+    const popup = document.getElementById('popup');
+    popup.style.display = 'flex';
+    setTimeout(() => {
+      popup.classList.add('show');
+    }, 10);
+  }
+
+  function closePopup() {
+    const popup = document.getElementById('popup');
+    popup.classList.remove('show');
+    setTimeout(() => {
+      popup.style.display = 'none';
+    }, 300);
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    if (localStorage.getItem('theme') === 'dark') {
+      document.body.classList.add('dark-theme');
+    }
+    
+    // Add click handler for the "Add Students" button in empty state
+  
+  });
+</script>
+{% endblock content %}

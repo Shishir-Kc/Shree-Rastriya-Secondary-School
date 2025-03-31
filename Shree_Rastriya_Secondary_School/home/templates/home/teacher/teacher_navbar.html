@@ -9,7 +9,6 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js"></script>
 
   
-  <title>{% block title %}  {% endblock title %}</title>
   <link rel="stylesheet" href="{% static 'home/css/teacher/style.css' %}">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="{% static 'home/js/teacher/fire_base.js' %}"></script>
@@ -79,7 +78,7 @@
       </div>
       <ul>
         {% block Dashboard %} 
-        <li class="active">
+        <li>
           <a href="{% url "home:Teacher_Dashboard" %}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
         </li>
         {% endblock Dashboard %}
@@ -87,7 +86,7 @@
         
         <li>
           
-          <a href=""><i class="fas fa-user-graduate"></i><span>Students</span></a>
+          <a href="{% url "home:student_list" %}"><i class="fas fa-user-graduate"></i><span>Students</span></a>
         </li>
         {% endblock Students %}
         {% block Message %}
@@ -96,24 +95,38 @@
           <a href="{% url "home:Teacher_chat" %}"><i class="fa-solid fa-message"></i><span>Messages </span></a>
         </li>
         {% endblock Message %}
+        
+        {% block notes %}
+          
+        
         <li>
-          <a href="#"><i class="fas fa-clipboard-check"></i><span>Grades</span></a>
+          <a href="{% url 'home:notes_list' %}"><i class="fa-solid fa-note-sticky"></i><span> Notes </span></a>
         </li>
+        {% endblock notes %}  
+        
+        {% block upload %}
+        
         <li>
-          <a href="#"><i class="fas fa-calendar-check"></i><span>Attendance</span></a>
-        </li>
-        <li>
-          <a href="#"><i class="fas fa-book"></i><span>Resources</span></a>
-        </li>
-        <li>
-          <a href="profile.html"><i class="fas fa-user"></i><span>Profile</span></a>
-        </li>
+         <a href="{% url 'home:upload_notes' %}"><i class="fa-solid fa-file-arrow-up"></i><span>Upload</span></a>
+         </li>
+          
+        {% endblock upload %}
+        
+        {% block profile %}
+        
+         <li>
+         <a href="{% url 'home:teacher_profile' %}"><i class="fas fa-user"></i><span>Profile</span></a>
+         </li>
+          
+        {% endblock profile %}
         {% block settings %}  
             <li>
               <a href="{% url "home:Teacher_settings" %}"><i class="fas fa-cogs"></i><span>Settings</span></a>
             </li>
             {% endblock settings %}
 
+
+            
       </ul>
     </nav>
 
@@ -130,7 +143,7 @@
                 {% if teacher %} 
                 <h1>| | | Shree Rastriya Mavi  | | | </h1>
                 {% else %}
-                <h1> Nigga  </h1>
+                <h1> Testing Page  </h1>
                 {% endif %}
             </div>
 
@@ -147,7 +160,7 @@
                   {% if teacher.teacher_image %} 
                     <img src="{{teacher.teacher_image.url}}" alt="Profile">
                     {% else %}
-                    <img src="" alt="Profile">
+                    <img src="{% static 'home/images/default.png' %}" alt="Profile">
                     {% endif %}
 
                     <span>{{teacher.name}}</span>
@@ -170,9 +183,9 @@
   <div class="floating-menu">
     <button class="floating-btn"><i class="fas fa-plus"></i></button>
     <div class="floating-options">
-      <a href="#" class="floating-option" title="Upload"><i class="fas fa-upload"></i></a>
+      <a href="{% url 'home:upload_notes' %}" class="floating-option" title="Upload"><i class="fas fa-upload"></i></a>
       <a href="{% url "home:Teacher_settings" %}" class="floating-option" title="Settings"><i class="fas fa-cog"></i></a>
-      <a href="teacher.html" class="floating-option" title="Profile"><i class="fas fa-user"></i></a>
+      <a href="{% url 'home:teacher_profile' %}" class="floating-option" title="Profile"><i class="fas fa-user"></i></a>
       <a href="#" class="floating-option" title="Info"><i class="fas fa-info-circle"></i></a>
     </div>
   </div>

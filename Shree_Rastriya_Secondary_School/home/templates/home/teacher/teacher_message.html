@@ -3,6 +3,8 @@
 {% block Dashboard %}
 
 
+    
+
 <li>
     <a href="{% url "home:Teacher_Dashboard" %}"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a>
   </li>
@@ -15,39 +17,22 @@
   {% endblock Message %}
 
 {% block content %}
-
-<script type="module">
-    // Import the functions you need from the SDKs you need
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-analytics.js";
-    // TODO: Add SDKs for Firebase products that you want to use
-    // https://firebase.google.com/docs/web/setup#available-libraries
-  
-    // Your web app's Firebase configuration
-    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-    const firebaseConfig = {
-      apiKey: "AIzaSyCQ77BihzcZ9RjcyKa4IqdE-BJ4OlHUzcs",
-      authDomain: "shree-rastriya-mavi.firebaseapp.com",
-      projectId: "shree-rastriya-mavi",
-      storageBucket: "shree-rastriya-mavi.firebasestorage.app",
-      messagingSenderId: "161582133675",
-      appId: "1:161582133675:web:455bbd5e17e99d9b39a2ee",
-      measurementId: "G-5J28NL8QM5"
-    };
-  
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-  </script>
+<head> 
+    <title>Teacher Chat</title>
+</head>
+<body>
 <style>
     .lk{
         text-decoration: none;
     }
 </style>
+
+   
     <div class="container">
-    <h1>Students List</h1> <br>
+
     <div class="student-list">
         {% for class_instance, students in students_by_class.items %}
+       
             {% for student in students %}
                 <div class="student-item">
                     <div class="profile-section">
@@ -72,6 +57,7 @@
                      
                     </div>
             {% endfor %}
+
         {% endfor %}
     </div>
 </div>
@@ -163,6 +149,208 @@
         font-size: 18px;
     }
 
+    /* Empty Chat Animation Styles */
+    .empty-chat-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 1rem;
+        position: relative;
+        overflow: hidden;
+        min-height: 400px;
+        border-radius: 12px;
+        background: linear-gradient(145deg, #f8f9fa, #e9ecef);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        margin: 2rem 0;
+    }
+
+    .empty-chat-animation {
+        position: relative;
+        width: 200px;
+        height: 200px;
+        margin-bottom: 2rem;
+    }
+
+    .message-bubble-container {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+
+    .message-bubble {
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        background-color: #4f46e5;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 8px rgba(79, 70, 229, 0.3);
+        opacity: 0;
+    }
+
+    .message-bubble-1 {
+        top: 20%;
+        left: 10%;
+        animation: floatBubble 4s ease-in-out infinite, fadeInOut 4s ease-in-out infinite;
+        animation-delay: 0s;
+    }
+
+    .message-bubble-2 {
+        top: 10%;
+        right: 20%;
+        animation: floatBubble 4s ease-in-out infinite, fadeInOut 4s ease-in-out infinite;
+        animation-delay: 1s;
+    }
+
+    .message-bubble-3 {
+        bottom: 30%;
+        right: 10%;
+        animation: floatBubble 4s ease-in-out infinite, fadeInOut 4s ease-in-out infinite;
+        animation-delay: 2s;
+    }
+
+    .character-container {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .character {
+        width: 80px;
+        height: 80px;
+        background-color: #f97316;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        box-shadow: 0 8px 16px rgba(249, 115, 22, 0.3);
+        animation: bounce 2s ease-in-out infinite;
+    }
+
+    .empty-chat-text {
+        text-align: center;
+        max-width: 500px;
+        z-index: 2;
+    }
+
+    .empty-chat-text h3 {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: #1e293b;
+        font-weight: 600;
+    }
+
+    .empty-chat-text p {
+        color: #64748b;
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+
+    .particles-container {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+    .particle {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        opacity: 0.6;
+    }
+
+    .particle-1 {
+        top: 20%;
+        left: 10%;
+        background-color: #4f46e5;
+        animation: floatParticle 7s linear infinite;
+    }
+
+    .particle-2 {
+        top: 70%;
+        left: 20%;
+        background-color: #f97316;
+        animation: floatParticle 9s linear infinite;
+    }
+
+    .particle-3 {
+        top: 30%;
+        right: 15%;
+        background-color: #4f46e5;
+        animation: floatParticle 8s linear infinite;
+    }
+
+    .particle-4 {
+        bottom: 20%;
+        right: 10%;
+        background-color: #f97316;
+        animation: floatParticle 10s linear infinite;
+    }
+
+    .particle-5 {
+        top: 50%;
+        left: 50%;
+        background-color: #4f46e5;
+        animation: floatParticle 6s linear infinite;
+    }
+
+    @keyframes floatBubble {
+        0%, 100% {
+            transform: translateY(0) scale(1);
+        }
+        50% {
+            transform: translateY(-20px) scale(1.1);
+        }
+    }
+
+    @keyframes fadeInOut {
+        0%, 100% {
+            opacity: 0;
+        }
+        25%, 75% {
+            opacity: 1;
+        }
+    }
+
+    @keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-15px);
+        }
+    }
+
+    @keyframes floatParticle {
+        0% {
+            transform: translate(0, 0) rotate(0deg);
+        }
+        25% {
+            transform: translate(30px, 30px) rotate(90deg);
+        }
+        50% {
+            transform: translate(0, 60px) rotate(180deg);
+        }
+        75% {
+            transform: translate(-30px, 30px) rotate(270deg);
+        }
+        100% {
+            transform: translate(0, 0) rotate(360deg);
+        }
+    }
+
     /* Dark Theme Styles */
     body.dark-theme {
         background-color: #1e1e1e;
@@ -183,6 +371,36 @@
         color: #aaaaaa;
     }
 
+    /* Dark theme for empty chat */
+    .dark-theme .empty-chat-container {
+        background: linear-gradient(145deg, #2d3748, #1a202c);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .dark-theme .empty-chat-text h3 {
+        color: #e2e8f0;
+    }
+
+    .dark-theme .empty-chat-text p {
+        color: #a0aec0;
+    }
+
+    .dark-theme .message-bubble {
+        background-color: #6366f1;
+        box-shadow: 0 4px 8px rgba(99, 102, 241, 0.3);
+    }
+
+    .dark-theme .character {
+        background-color: #f97316;
+        box-shadow: 0 8px 16px rgba(249, 115, 22, 0.3);
+    }
+
+    .dark-theme .particle-1,
+    .dark-theme .particle-3,
+    .dark-theme .particle-5 {
+        background-color: #6366f1;
+    }
+
     /* Mobile responsiveness */
     @media (max-width: 768px) {
         .student-item {
@@ -193,7 +411,17 @@
             margin-left: 0;
             margin-top: 10px;
         }
+        .chat-button {
+            margin-top: 15px;
+            margin-left: 0;
+        }
+        .empty-chat-text h3 {
+            font-size: 1.2rem;
+        }
+        .empty-chat-text p {
+            font-size: 0.9rem;
+        }
     }
 </style>
-
+</body>
 {% endblock %}

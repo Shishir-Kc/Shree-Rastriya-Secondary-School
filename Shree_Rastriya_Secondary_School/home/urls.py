@@ -54,7 +54,6 @@ urlpatterns = [
    #
     path('std/<int:std_id>/',views.student_profile,name="profile"),
     path('std/',views.student_list,name="std-list"),
-    path('upload/',views.upload_notes,name='upload'),
     path('Student/dashboard/', views.student_dashboard, name='student_dashboard'),
     path('teacher/',views.teacher_list, name='teacher-list'),
     path('teacher/chat/<int:teacher_id>/',views.teacher_chat, name='teacher-chat'),
@@ -64,24 +63,23 @@ urlpatterns = [
 
 
 # ~ ~ ~ form here there are links for Teachers only ! ~ ~ ~
+    path('upload/',views.upload_notes,name='upload'),
     path('add/student/',views.Teacher_add_student,name='Add_Student'),
     path('dashboard/',views.Teacher_dashboard,name='Teacher_Dashboard'),
     path('Teacher/settings/',views.Teacher_Settings,name='Teacher_settings'),
     path('teacher/msg/',views.teacher_chat_std,name='Teacher_chat'),
     path('teacher/msg/student/<int:student_id>/',views.teacher_std_chat,name='Teacher_std_chat'),
-
-
-
+    path('teacher/student/list/',views.student_list,name='student_list'),
+    path('teacher/student/<int:student_id>/',views.student_profile_view,name='student_profile'),
+    path('teacher/profile/',views.teacher_profile,name='teacher_profile'),
+    path('teacher/notes/upload/',views.upload_notes,name='upload_notes'),
+    path('teacher/notes/list/',views.Teacher_uploaded_notes,name='notes_list'),
+    path('teacher/notes/delete/<int:note_id>/',views.Delete_uploaded_notes,name='note_delete'),
+    path('teacher/notes/list/<int:note_id>/',views.Edit_notes,name='notes_detail'),
 # ~ ~ ~   Admin Page code ~ ~ ~
-# 
     path('staff/admin/home',views.admin_home,name='admin_home'),
     path('staff/setting/',views.admin_setings,name="admin_setting"),
     path('staff/admin/profile/',views.admin_profile,name="admin_profile"),
-
-# ~ ~  ~ Fire BAse ~ ~ ~ 
-
-    path('save_fcm_token/', views.save_fcm_token, name='save_fcm_token'),
-    path('send_notification/', views.send_notification, name='send_notification'),
 
 
 ]  

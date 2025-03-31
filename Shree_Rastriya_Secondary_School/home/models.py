@@ -114,15 +114,19 @@ class Class(models.Model):
         
         return f"Grade {self.grade} - Section {self.section}"
 
+
+            
+        
 class Teacher(models.Model):
     user = models.OneToOneField(User,on_delete=models.DO_NOTHING)
     name = models.CharField(max_length=20)
+    first_name = models.CharField(max_length=20,default='N/A')
+    last_name = models.CharField(max_length=20,default='N/A')
     contact = models.IntegerField()
     subject = models.ManyToManyField(Subject)
     classs = models.ManyToManyField(Class)
-    fcm_token = models.CharField(max_length=255, blank=True, null=True) 
     email = models.EmailField(("Email Address"), max_length=254,  default="Teacher@gmail.com" )
-    
+    experience = models.IntegerField(default=0)
   
     teacher_image = models.ImageField(upload_to='teacher_image',blank=True)
 
@@ -155,6 +159,9 @@ class StudentInfo(models.Model):
     student_roll_number = models.CharField(max_length=20,verbose_name='Roll Number',default='N/A')
     student_id = models.CharField(max_length=20,verbose_name='Student ID',default='N/A')
     student_gender = models.CharField(max_length=7, choices=student_Gender, verbose_name='Gender',default='Null')
+    student_guardian = models.CharField(max_length=50,verbose_name='Guardian Name',default='N/A')
+    student_guardian_contact = models.CharField(max_length=15,verbose_name='Guardian Contact',default='N/A')
+    
     class Meta:
         verbose_name = "Student Info"
         verbose_name_plural = "Student Infos"

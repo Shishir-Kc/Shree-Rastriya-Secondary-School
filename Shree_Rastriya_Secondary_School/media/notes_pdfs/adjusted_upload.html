@@ -1,0 +1,207 @@
+{% extends 'home/teacher/teacher_navbar.html' %}
+{% load static %}
+
+{% block title %}
+  Upload Notes
+{% endblock title %}
+
+{% block css %}
+  
+<style>
+  :root {
+    /* Light Theme Variables (consistent with teacher_navbar.html) */
+    --primary-color: #1877F2;
+    --secondary-color: #f0f2f5;
+    --text-color: #050505;
+    --bg-color: #ffffff;
+    --card-bg: #ffffff;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+
+    /* Dark Theme Variables */
+    --primary-color-dark: #1877F2;
+    --secondary-color-dark: #18191A;
+    --text-color-dark: #E4E6EB;
+    --bg-color-dark: #050505;
+    --card-bg-dark: #18191A;
+    --shadow-color-dark: rgba(255, 255, 255, 0.1);
+  }
+
+  /* Light Theme (default) */
+  body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+  }
+
+  .card {
+    background-color: var(--card-bg);
+    box-shadow: 0 4px 6px var(--shadow-color);
+  }
+
+  /* Dark Theme Overrides */
+  html.dark-theme {
+    --primary-color: var(--primary-color-dark);
+    --secondary-color: var(--secondary-color-dark);
+    --text-color: var(--text-color-dark);
+    --bg-color: var(--bg-color-dark);
+    --card-bg: var(--card-bg-dark);
+    --shadow-color: var(--shadow-color-dark);
+  }
+
+  html.dark-theme body {
+    background-color: var(--bg-color-dark);
+    color: var(--text-color-dark);
+  }
+
+  html.dark-theme .card {
+    background-color: var(--card-bg-dark);
+    box-shadow: 0 4px 6px var(--shadow-color-dark);
+  }
+</style>
+
+{% endblock css %}
+
+{% block content %}
+<div class="upload-container">
+  <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle Theme">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </button>
+
+  <div class="upload-header">
+    <h2>Upload Notes</h2>
+    <p>Share your educational materials securely</p>
+  </div>
+
+  <form id="uploadForm" class="upload-form" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="title">Title</label>
+      <input type="text" id="title" name="title" class="form-control" placeholder="Enter notes title" required>
+    </div>
+
+    <div class="form-group">
+      <label for="description">Description</label>
+      <textarea id="description" name="description" class="form-control" rows="4" placeholder="Provide a brief description" required></textarea>
+    </div>
+
+    <div class="file-input-container">
+      <label>Upload File</label>
+      <div class="file-input-wrapper">
+        <input type="file" id="fileInput" name="file" class="file-input-hidden" accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png" onchange="handleFileSelect(event)">
+        <button type="button" class="file-input-btn" onclick="document.getElementById('fileInput').click()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.2 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"></path>
+          </svg>
+          Choose File
+        </button>
+      </div>
+      
+      <div class="file-details">
+        <span id="fileName" class="file-name"></span>
+        <span id="fileSize" class="file-size"></span>
+      </div>
+
+      <img id="filePreview" class="file-preview" src="" alt="File Preview">
+    </div>
+
+    <button type="submit" class="upload-btn" onclick="startUpload(event)">
+      Upload Notes
+    </button>
+  </form>
+
+  <div id="uploadProgress" class="upload-progress">
+    <div class="spinner"></div>
+    <p>Uploading your file...</p>
+    <div class="progress-bar">
+      <div id="progressBarFill" class="progress-bar-fill"></div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+
+{% block js %}
+<script>
+  // Theme Toggle Functionality
+  function toggleTheme() {
+    document.body.classList.toggle('dark-mode');
+    
+    // Save theme preference in localStorage
+    const isDarkMode = document.body.classList.contains('dark-mode');
+    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+  }
+
+  // Load saved theme on page load
+  document.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      document.body.classList.add('dark-mode');
+    }
+  });
+
+  // File Selection Handler
+  function handleFileSelect(event) {
+    const fileInput = event.target;
+    const file = fileInput.files[0];
+    const fileNameElement = document.getElementById('fileName');
+    const fileSizeElement = document.getElementById('fileSize');
+    const filePreview = document.getElementById('filePreview');
+
+    if (file) {
+      // Display file name
+      fileNameElement.textContent = file.name;
+
+      // Display file size
+      const fileSize = (file.size / 1024).toFixed(2);
+      fileSizeElement.textContent = `${fileSize} KB`;
+
+      // Preview image files
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          filePreview.src = e.target.result;
+          filePreview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      } else {
+        filePreview.style.display = 'none';
+      }
+    }
+  }
+
+  // Upload Simulation
+  function startUpload(event) {
+    event.preventDefault();
+    const uploadForm = document.getElementById('uploadForm');
+    const uploadProgress = document.getElementById('uploadProgress');
+    const progressBarFill = document.getElementById('progressBarFill');
+
+    // Show upload progress
+    uploadProgress.style.display = 'block';
+
+    // Simulate upload progress
+    let progress = 0;
+    const progressInterval = setInterval(() => {
+      progress += 10;
+      progressBarFill.style.width = `${progress}%`;
+
+      if (progress >= 100) {
+        clearInterval(progressInterval);
+        setTimeout(() => {
+          uploadProgress.style.display = 'none';
+          // Here you would typically submit the form
+          uploadForm.submit();
+        }, 500);
+      }
+    }, 200);
+  }
+</script>
+{% endblock js %}

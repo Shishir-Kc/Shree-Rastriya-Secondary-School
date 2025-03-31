@@ -8,68 +8,10 @@ from django.contrib.auth.models import Group , User
 import logging
 import random
 from django.db.models import Q
-from pyfcm import FCMNotification
-from django.conf import settings
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-import json
-from firebase_admin import messaging
 
+global Teacher
 
-
-user_tokens = []  # Store tokens temporarily (use a database in production)
-
-@csrf_exempt
-def save_fcm_token(request):
-    if request.method == "POST":
-        data = json.loads(request.body)
-        token = data.get("token")
-        if token and token not in user_tokens:
-            user_tokens.append(token)  # Save token
-            return JsonResponse({"message": "Token saved successfully"})
-    return JsonResponse({"error": "Invalid request"}, status=400)
-
-
-# ~ ~  ~ Notification ~ ~ ~ 
-def send_push_notification(device_token, title, message):
-    push_service = FCMNotification(api_key=settings.FCM_SERVER_KEY)
-
-    try:
-        result = push_service.notify_single_device(
-            registration_id=device_token,
-            message_title=title,
-            message_body=message
-        )
-        logger.info(f"FCM Notification Sent: {result}")
-        return result
-    except Exception as e:
-        logger.error(f"Failed to send FCM Notification: {e}")
-        return None
-
-def send_notification(request):
-    if request.method == "POST":
-        data = json.loads(request.body)
-        title = data.get("title", "Default Title")
-        body = data.get("body", "Default Body")
-        token = data.get("token")  # Token should be passed from the frontend
-
-        if not token:
-            return JsonResponse({"error": "No FCM token provided"}, status=400)
-
-        message = messaging.Message(
-            notification=messaging.Notification(title=title, body=body),
-            token=token,
-        )
-
-        try:
-            response = messaging.send(message)
-            return JsonResponse({"message": "Notification sent!", "response": response})
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
-
-    return JsonResponse({"error": "Invalid request"}, status=400)
-
-
+Teacher = " "
 
 logger = logging.getLogger(__name__)
 
@@ -602,50 +544,6 @@ def student_list(request):
 
 
 
-def upload_notes(request):
-    user = request.user
-    print(user)
-    if user.is_authenticated: 
-     if user.groups.filter(name="Teacher").exists():
-      if request.method == 'POST':
-          teacher = models.Teacher.objects.get(user=user)
-          subject_str = request.POST.get('subject') 
-          subject = models.Subject.objects.get(id=subject_str)  
-          Class_str = request.POST.get('class')
-          Class = models.Class.objects.get(id=Class_str)
-          title = request.POST.get('title')
-          content = request.POST.get('content')
-          pdf= request.FILES.get('pdf')
-          if pdf is None:
-            pdf = None
-
-          db = models.Notes(user=user,teacher=teacher,title=title, content=content, pdf_file=pdf,classs=Class,subject=subject)
-          db.save()
-          return redirect('home:upload')
-          
-           
-
-
-
-     
-      else:
-         teacher = models.Teacher.objects.get(user=request.user)
-         Classes = teacher.classs.all()
-         subjects = teacher.subject.all()
-         context = {
-             'classes':Classes,
-             'subjects':subjects,
-         }
-
-         return render(request, 'home/upload.html',context)
-     else:
-        logger.warning(f"User {user.username} tried to access upload without being a Teacher.")
-        return redirect('home:home')
-    else:
-        return redirect('home:login')
-
-
-
 # ~ ~ ~ ~  below here are the code for sudent dashboard ~ ~ ~ ~
 
 def student_id():
@@ -720,13 +618,6 @@ def teacher_chat(request, teacher_id):
                     )
                     message_model.save()
 
-                    # fb Notification
-                    if teacher.fcm_token:
-                        send_push_notification(
-                            device_token=teacher.fcm_token,
-                            title=f"New Message from {request.user.username}",
-                            message=message_text
-                        )
 
                     return redirect("home:teacher-chat", teacher_id=teacher_id)
 
@@ -854,6 +745,8 @@ def Teacher_add_student(request):
 # ~ ~  ~ below here are teacher code ~ ~ ~
 
 
+
+@login_required
 def Teacher_dashboard(request):
     if request.user.is_authenticated:
         user = request.user
@@ -865,6 +758,7 @@ def Teacher_dashboard(request):
         student_boys = models.StudentInfo.objects.filter(student_class__in=Teacher_Class,student_gender="Male").count()
         student_girls = models.StudentInfo.objects.filter(student_class__in=Teacher_Class,student_gender="Female").count()
         print(teacher_class)
+    
         context ={
          'teacher':teacher_data,
          'boys_count':student_boys,
@@ -876,8 +770,28 @@ def Teacher_dashboard(request):
         return render(request,'home/teacher/dashboard.html',context)
     else:
         return redirect('home:login') 
-    
+@login_required   
 def Teacher_Settings(request):
+    if not request.user.is_authenticated:
+        return redirect('home:login')
+    if request.method == "POST":
+        curerent_pass = request.POST.get('currentpass')
+        if request.user.check_password(curerent_pass):
+            new_pass = request.POST.get('newpass')
+            comform_pass = request.POST.get('comformpass')
+            if new_pass != comform_pass:
+                messages.error(request,'Password not matched !')
+                return redirect('home:Teacher_settings')
+            
+            user = request.user
+            user.set_password(new_pass)
+            user.save()
+            messages.success(request,'Password Changed Successfully !')
+            return redirect('home:Teacher_settings')
+        else:
+            print(" Wrong Cred ! ")
+            messages.error(request,'Current Password is not correct !')
+            return redirect('home:Teacher_settings')
     user = request.user
     teacher_data = models.Teacher.objects.get(user=user)
     context ={
@@ -886,42 +800,41 @@ def Teacher_Settings(request):
     }
     return render(request, 'home/teacher/teacher_settings.html',context)
 
-
+@login_required
 def teacher_chat_std(request):
     teacher_data =  models.Teacher.objects.get(user=request.user)
 
     if request.method == "POST":
         print("POST request received")
-        # Process the POST request if needed
+       
         return render(request, 'home/teacher/teacher_message.html')  
 
     print("GET request received")
     
-    # Fetch the teacher object for the logged-in user
     try:
         teacher = models.Teacher.objects.get(user=request.user)
     except models.Teacher.DoesNotExist:
         return render(request, 'home/teacher/teacher_message.html', {'error': "Teacher not found"})
 
-    # Dictionary to store students categorized by their classes
+  
     students_by_class = {}
 
     for class_instance in teacher.classs.all():
         students = models.StudentInfo.objects.filter(student_class=class_instance)
-        students_by_class[class_instance] = students  # Store class object as key for better template handling
+        students_by_class[class_instance] = students 
 
         print(f"Class: {class_instance} | Students: {students}")
 
-    # Pass data to the template
+  
     context = {
         'teacher': teacher_data,
-        'students_by_class': students_by_class  # Updated context variable
+        'students_by_class': students_by_class  
     }
     print(students_by_class)
 
     return render(request, 'home/teacher/teacher_message.html', context)
 
-
+@login_required
 def teacher_std_chat(request,student_id):
     teacher_data = models.Teacher.objects.get(user=request.user)
     if request.method == 'POST':
@@ -931,13 +844,14 @@ def teacher_std_chat(request,student_id):
          pdf = None
          file = request.FILES.get("file")
          if file:  
-          if file.content_type.startswith("image/"):  # If file is an image
+          if file.content_type.startswith("image/"): 
                 image = file
 
-          elif file.content_type == "application/pdf":  # If file is a PDF
+          elif file.content_type == "application/pdf":  
                 pdf = file
          else:
-             print("nooooo")
+            pdf = None
+            image = None
        
        
 
@@ -969,6 +883,243 @@ def teacher_std_chat(request,student_id):
         return render(request, 'home/teacher/teacher_std_chat.html',context)
 
 
+@login_required
+def student_list(request):
+
+    teacher_data =  models.Teacher.objects.get(user=request.user)
+
+    if request.method == "POST":
+        print("POST request received")
+       
+        return render(request, 'home/teacher/student_list.html')  
+
+    # print("GET request received")
+    
+    try:
+        teacher = models.Teacher.objects.get(user=request.user)
+    except models.Teacher.DoesNotExist:
+        return render(request, 'home/teacher/student_list.html')
+
+  
+    students_by_class = {}
+
+    for class_instance in teacher.classs.all():
+        students = models.StudentInfo.objects.filter(student_class=class_instance)
+        students_by_class[class_instance] = students 
+
+        # print(f"Class: {class_instance} | Students: {students}")
+
+  
+    context = {
+        'teacher': teacher_data,
+        'students_by_class': students_by_class  
+    }
+    # print(students_by_class)
+
+    return render(request, 'home/teacher/student_list.html', context)
+
+    # return render(request,'home/teacher/student_list.html')
+
+@login_required
+def student_profile_view(request,student_id):
+    
+    teacher_data = models.Teacher.objects.get(user=request.user)
+    student = models.StudentInfo.objects.get(id=student_id)
+    context = {
+        'student':student,
+        'teacher':teacher_data
+    }
+    return render(request,'home/teacher/student_profile.html',context)
+
+@login_required
+def teacher_profile(request):
+    try:
+        teacher = models.Teacher.objects.get(user=request.user)
+    except models.Teacher.DoesNotExist:
+        return render(request, 'home/teacher/student_list.html')
+
+  
+    students_by_class = {}
+
+    for class_instance in teacher.classs.all():
+        students = models.StudentInfo.objects.filter(student_class=class_instance)
+        students_by_class[class_instance] = students 
+
+        # print(f"Class: {class_instance} | Students: {students}")
+
+  
+    teacher_data = models.Teacher.objects.get(user=request.user)
+    user = request.user
+    teacher_data = models.Teacher.objects.get(user=user)
+    teacher_assigned_class = teacher_data.classs.all()
+    Teacher_head = models.Head_teacher.objects.filter(Class__in=teacher_assigned_class)
+    Teacher_Class =[head_teacher.Class.id for head_teacher in Teacher_head]
+    teacher_class = models.Class.objects.filter(id__in=Teacher_Class)
+    context = {
+        'teacher':teacher_data,
+         'classes':teacher_class,
+         'students_by_class': students_by_class  
+    }
+    print(students_by_class)
+    return render(request,'home/teacher/Profile.html',context)
+
+
+@login_required
+def upload_notes(request):
+    user = request.user
+    print(user)
+    if user.is_authenticated: 
+     if user.groups.filter(name="Teacher").exists():
+      if request.method == 'POST':
+          teacher = models.Teacher.objects.get(user=user)
+          subject_str = request.POST.get('subject') 
+          subject = models.Subject.objects.get(id=subject_str)  
+          Class_str = request.POST.get('class')
+          Class = models.Class.objects.get(id=Class_str)
+          title = request.POST.get('title')
+          content = request.POST.get('content')
+          pdf= request.FILES.get('pdf')
+          if pdf is None:
+            pdf = None
+
+          db = models.Notes(user=user,teacher=teacher,title=title, content=content, pdf_file=pdf,classs=Class,subject=subject)
+          db.save()
+          return redirect('home:upload')
+          
+           
+
+
+
+     
+      else:
+         teacher = models.Teacher.objects.get(user=request.user)
+         Classes = teacher.classs.all()
+         subjects = teacher.subject.all()
+         context = {
+             'classes':Classes,
+             'subjects':subjects,
+             'teacher':teacher
+         }
+
+         return render(request, 'home/teacher/upload.html',context)
+     else:
+        logger.warning(f"User {user.username} tried to access upload without being a Teacher.")
+        return redirect('home:home')
+    else:
+        return redirect('home:login')
+
+
+
+@login_required
+def Teacher_uploaded_notes(request):
+    user = request.user
+    teacher = models.Teacher.objects.get(user=user)
+    note = models.Notes.objects.filter(teacher=teacher).order_by('-uploaded_at')
+    # print(note)
+
+    context = { 
+        'teacher':teacher,
+        'notes':note	
+    }
+    return render (request,'home/teacher/teacher_notes.html',context)
+
+
+@login_required
+def Delete_uploaded_notes(request,note_id):
+    user = request.user
+    print(" Deleting  . . . . . . . . . . ")
+    if user.is_authenticated:
+      
+     if user.groups.filter(name="Teacher").exists():
+     
+        db = models.Notes.objects.get(id=note_id)
+        db.delete()
+        return redirect('home:notes_list')
+     
+        #   return redirect('home:notes_list')
+     else:
+        logger.warning(f"User {user.username} tried to access upload without being a Teacher.")
+        return redirect('home:home')
+    else:
+        return redirect('home:login')
+
+@login_required
+def Edit_notes(request,note_id):
+    user = request.user
+    print(user)
+    if user.is_authenticated: 
+     if user.groups.filter(name="Teacher").exists():
+      if request.method == 'POST':
+          teacher = models.Teacher.objects.get(user=user)
+          subject_str = request.POST.get('subject') 
+        #   print( " hahahahhahahahaah auauauau !!! ! ! 1 ! 1! 11 = >", subject_str)
+          subject = models.Subject.objects.get(id=subject_str)  
+          Class_str = request.POST.get('class')
+          Class = models.Class.objects.get(id=Class_str)
+          title = request.POST.get('title')
+          content = request.POST.get('content')
+        #   print(content)
+          pdf= request.FILES.get('pdf')
+          if pdf is None:
+            pdf = None
+
+            db = models.Notes.objects.get(id=note_id)
+            db.user = user
+            db.teacher = teacher
+            db.subject = subject
+            db.classs = Class
+            db.title = title
+            db.content = content
+            db.pdf_file = pdf
+            db.save()
+          return redirect('home:notes_list')
+          
+           
+
+
+
+     
+      else:
+         note = models.Notes.objects.get(id=note_id)
+         teacher = models.Teacher.objects.get(user=request.user)
+         Classes = teacher.classs.all()
+         subjects = teacher.subject.all()
+         context = {
+             'classes':Classes,
+             'subject':subjects,
+             'teacher':teacher,
+    	     'note':note             
+         }
+        #  print(note)
+         return render(request, 'home/teacher/edit_notes.html',context)
+     else:
+        logger.warning(f"User {user.username} tried to access upload without being a Teacher.")
+        return redirect('home:home')
+    else:
+        return redirect('home:login')
+
+
+
+    # teacher = models.Teacher.objects.get(user=request.user)
+    # if request.method == 'POST':
+    #     db = models.Notes.objects.get(id=note_id)
+    #     title = request.POST.get('title')
+    #     content = request.POST.get('content')
+    #     pdf= request.FILES.get('pdf')
+    #     if pdf is None:
+    #         pdf = db.pdf_file
+    #     db.title = title
+    #     db.content = content
+    #     db.pdf_file = pdf
+    #     db.save()
+    #     return redirect('home:teacher-uploaded-notes')
+    # else:
+    #  data = models.Notes.objects.get(id=note_id)
+    #  context = {
+    #      'notes':data,
+    #      'teacher':teacher,	
+    #  }
+    #  return render(request,'home/teacher/edit_notes.html',context)
 
 # ~ ~ ~  below here are admin code ! ~ ~ ~ 
 def admin_home(request):

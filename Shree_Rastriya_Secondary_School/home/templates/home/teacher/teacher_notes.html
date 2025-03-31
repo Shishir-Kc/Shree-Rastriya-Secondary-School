@@ -1,0 +1,651 @@
+{% extends 'home/teacher/teacher_navbar.html' %}
+{% load static %}
+
+{% block title %}Uploaded Notes{% endblock %}
+
+{% block notes %}
+<li class="active">
+  <a href="{% url 'home:notes_list' %}"><i class="fa-solid fa-note-sticky"></i><span> Notes </span></a>
+</li>
+{% endblock notes %}
+
+{% block css %}
+<style>
+/* Existing CSS variables */
+:root {
+  --primary-bg-color-light: #f9f9f9;
+  --primary-bg-color-dark: #121212;
+  --text-color-light: #333;
+  --text-color-dark: #f9f9f9;
+  --button-bg-color-light: #007bff;
+  --button-bg-color-dark: #3700b3;
+  --button-hover-bg-color-light: #0056b3;
+  --button-hover-bg-color-dark: #bb86fc;
+  --card-bg-color-light: #ffffff;
+  --card-bg-color-dark: #333333;
+  
+  /* Card component variables */
+  --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  --card-border: #f8f9fa;
+  --card-text-primary: #2d3436;
+  --card-text-secondary: #636e72;
+  --card-text-tertiary: #b2bec3;
+  
+  /* Additional needed variables */
+  --danger-red: #e53e3e;
+  --danger-hover: #c53030;
+  --neutral-gray: #4b5563;
+  --card-bg: #ffffff;
+  --text-color: #333333;
+  
+  /* Modal theme variables - Enhanced Light Theme */
+  --modal-bg: linear-gradient(145deg, #ffffff, #f8fafc);
+  --modal-border: rgba(226, 232, 240, 0.8);
+  --modal-shadow: rgba(0, 0, 0, 0.1);
+  --modal-title-color: #2d3748;
+  --modal-text-color: #4a5568;
+  --modal-icon-color: #e53e3e;
+  
+  --modal-btn-cancel-bg: linear-gradient(to bottom, #f1f5f9, #e2e8f0);
+  --modal-btn-cancel-color: #475569;
+  --modal-btn-cancel-hover-bg: linear-gradient(to bottom, #e2e8f0, #cbd5e1);
+  --modal-btn-cancel-border: #cbd5e1;
+  
+  --modal-btn-delete-bg: linear-gradient(to bottom, #f87171, #ef4444);
+  --modal-btn-delete-color: white;
+  --modal-btn-delete-hover-bg: linear-gradient(to bottom, #ef4444, #dc2626);
+  --modal-btn-delete-border: #dc2626;
+  
+  /* Empty state variables - Light Theme */
+  --empty-text-color: #4a5568;
+  --empty-icon-color: #a0aec0;
+  --empty-accent-color: #4834d4;
+}
+
+/* Dark theme variables */
+html.dark-theme {
+  --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  --card-border: #4a4a4a;
+  --card-text-primary: #f5f7fa;
+  --card-text-secondary: #a0a0a0;
+  --card-text-tertiary: #718093;
+  --card-bg: #333333;
+  --text-color: #f5f7fa;
+  
+  /* Modal dark theme variables */
+  --modal-bg: linear-gradient(145deg, #2a2a2a, #1f1f1f);
+  --modal-border: rgba(255, 255, 255, 0.1);
+  --modal-shadow: rgba(0, 0, 0, 0.3);
+  --modal-title-color: #ffffff;
+  --modal-text-color: #e0e0e0;
+  --modal-icon-color: #f87171;
+  
+  --modal-btn-cancel-bg: linear-gradient(to bottom, #6b7280, #4b5563);
+  --modal-btn-cancel-color: white;
+  --modal-btn-cancel-hover-bg: linear-gradient(to bottom, #4b5563, #374151);
+  --modal-btn-cancel-border: #374151;
+  
+  --modal-btn-delete-bg: linear-gradient(to bottom, #f87171, #ef4444);
+  --modal-btn-delete-color: white;
+  --modal-btn-delete-hover-bg: linear-gradient(to bottom, #ef4444, #dc2626);
+  --modal-btn-delete-border: #dc2626;
+  
+  /* Empty state variables - Dark Theme */
+  --empty-text-color: #e2e8f0;
+  --empty-icon-color: #718096;
+  --empty-accent-color: #7c5dfa;
+}
+
+.notes-container {
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  gap: 2rem;
+  background-color: var(--primary-bg-color-light);
+  min-height: 70vh;
+}
+
+html.dark-theme .notes-container {
+  background-color: var(--primary-bg-color-dark);
+}
+
+.note-card {
+  background: var(--card-bg-color-light);
+  border-radius: 20px;
+  box-shadow: var(--card-shadow);
+  padding: 2rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+html.dark-theme .note-card {
+  background: var(--card-bg-color-dark);
+}
+
+.note-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.note-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px var(--card-shadow);
+}
+
+.note-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.author-img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid var(--card-border);
+  box-shadow: 0 4px 12px var(--card-shadow);
+}
+
+.author-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.note-info .title {
+  color: var(--card-text-primary);
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.note-info .subject {
+  color: var(--card-text-secondary);
+  font-size: 1rem;
+}
+
+.note-content {
+  color: var(--card-text-secondary);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.upload-info {
+  color: var(--card-text-tertiary);
+  font-size: 0.875rem;
+  margin-bottom: 1.5rem;
+}
+
+.note-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.btn {
+  flex: 1;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  text-decoration: none;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn-download {
+  background: #4834d4;
+  color: white;
+}
+
+.btn-download:hover {
+  background: #686de0;
+}
+
+.btn-view {
+  background: #00b894;
+  color: white;
+}
+
+.btn-view:hover {
+  background: #00cec9;
+}
+
+.btn-edit {
+  background: #ff7675;
+  color: white;
+}
+
+.btn-edit:hover {
+  background: #fab1a0;
+}
+
+/* Animation classes */
+.fade-in {
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+.fade-in.visible {
+  opacity: 1;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.note-card {
+  animation: fadeInUp 0.6s ease-out forwards;
+  animation-play-state: paused;
+}
+
+/* Enhanced Modal styles with improved theme support */
+.modal-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  z-index: 50;
+  transition: all 0.3s ease;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--modal-bg);
+  border-radius: 1rem;
+  padding: 2.5rem;
+  max-width: 28rem;
+  width: 90%;
+  z-index: 51;
+  box-shadow: 0 20px 25px -5px var(--modal-shadow);
+  text-align: center;
+  transition: all 0.3s ease;
+  border: 1px solid var(--modal-border);
+}
+
+.modal-icon {
+  font-size: 3.5rem;
+  color: var(--modal-icon-color);
+  margin-bottom: 1.5rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--modal-title-color);
+  margin-bottom: 0.75rem;
+}
+
+.modal-text {
+  color: var(--modal-text-color);
+  font-size: 1.1rem;
+  line-height: 1.5;
+  margin-top: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.modal-btn-container {
+  flex: 1;
+  display: flex;
+}
+
+.modal-buttons form {
+  flex: 1;
+  display: flex;
+}
+
+.modal-btn {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  border: 1px solid transparent;
+  text-decoration: none;
+  box-shadow: 0 4px 6px var(--modal-shadow);
+}
+
+.modal-btn-cancel {
+  background: var(--modal-btn-cancel-bg);
+  color: var(--modal-btn-cancel-color) !important;
+  border-color: var(--modal-btn-cancel-border);
+}
+
+.modal-btn-cancel:hover {
+  background: var(--modal-btn-cancel-hover-bg);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px var(--modal-shadow);
+}
+
+.modal-btn-delete {
+  background: var(--modal-btn-delete-bg);
+  color: var(--modal-btn-delete-color) !important;
+  border-color: var(--modal-btn-delete-border);
+}
+
+.modal-btn-delete:hover {
+  background: var(--modal-btn-delete-hover-bg);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px var(--modal-shadow);
+}
+
+.show {
+  display: block;
+}
+
+/* Animation for modal */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { transform: translate(-50%, -50%) scale(0.9); opacity: 0; }
+  to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+.modal-backdrop.show {
+  animation: fadeIn 0.3s forwards;
+}
+
+.modal.show {
+  animation: scaleIn 0.3s forwards;
+}
+
+/* Empty state styles */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem;
+  grid-column: 1 / -1;
+  min-height: 50vh;
+}
+
+.empty-state-icon {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.empty-state-icon i {
+  font-size: 5rem;
+  color: var(--empty-icon-color);
+}
+
+.empty-state-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--empty-text-color);
+  margin-bottom: 1rem;
+}
+
+.empty-state-subtext {
+  font-size: 1.1rem;
+  color: var(--empty-text-color);
+  opacity: 0.8;
+}
+
+/* Empty state animations */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.floating {
+  animation: float 3s ease-in-out infinite;
+}
+
+.pulsing {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.rotating {
+  animation: rotate 10s linear infinite;
+}
+
+.empty-state-icon::after {
+  content: "";
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--empty-accent-color);
+  opacity: 0.2;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  filter: blur(10px);
+  animation: pulse 3s ease-in-out infinite;
+}
+
+.empty-state-icon::before {
+  content: "";
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--empty-accent-color);
+  top: 0;
+  right: 0;
+  animation: float 2s ease-in-out infinite;
+}
+
+.empty-state-particles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--empty-accent-color);
+  opacity: 0.3;
+}
+
+.particle:nth-child(1) {
+  top: 20%;
+  left: 20%;
+  animation: float 4s ease-in-out infinite;
+}
+
+.particle:nth-child(2) {
+  top: 70%;
+  left: 30%;
+  animation: float 5s ease-in-out infinite;
+}
+
+.particle:nth-child(3) {
+  top: 40%;
+  left: 70%;
+  animation: float 3.5s ease-in-out infinite;
+}
+
+.particle:nth-child(4) {
+  top: 60%;
+  left: 80%;
+  animation: float 4.5s ease-in-out infinite;
+}
+
+.particle:nth-child(5) {
+  top: 30%;
+  left: 50%;
+  animation: float 5.5s ease-in-out infinite;
+}
+</style>
+{% endblock css %}
+
+{% block content %}
+<title> Notes </title>
+<div class="notes-container fade-in" id="fade-element">
+
+  {% if notes %}
+    {% for note in notes %}
+      <div class="note-card" >
+        <div class="note-header">
+          <div class="author-img">
+            {% if teacher.teacher_image %}
+              <img src="{{ teacher.teacher_image.url }}" alt="Teacher">
+            {% else %}
+              <img src="{% static 'home/images/default.png' %}" alt="Default Teacher"> 
+            {% endif %}
+          </div>
+          <div class="note-info">
+            <h3 class="title">{{ note.title }}</h3>
+            <p class="subject">{{ note.subject }}</p>
+          </div>
+        </div>
+        
+        <div class="note-content">
+          {{ note.content }}
+        </div>
+        
+        <div class="upload-info">
+          <span>Uploaded on: {{ note.uploaded_at|date:"F j, Y, g:i a" }}</span>
+        </div>
+        
+        <div class="note-actions">
+          <a href="{{ note.file.url }}" class="btn btn-download" download>Download</a>
+          <a href="{% url 'home:notes_detail' note.id %}" class="btn btn-view">Edit</a>
+          <button type="button" class="btn btn-edit" onclick="showDeleteModal({{ note.id }})">Delete</button>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-state-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+      </div>
+      <div class="empty-state-icon">
+        <i class="fa-solid fa-file-circle-question floating"></i>
+      </div>
+      <h2 class="empty-state-text">Aah snap! Looks like you have not uploaded any Notes</h2>
+      <p class="empty-state-subtext">Start by creating your first note to share with your students</p>
+    </div>
+  {% endif %}
+</div>
+
+<!-- Delete Modal -->
+<div id="modalBackdrop" class="modal-backdrop"></div>
+<div id="deleteModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-icon">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+    </div>
+    <h3 class="modal-title">Delete Note</h3>
+    <p class="modal-text">Are you sure you want to delete this note? This action cannot be undone.</p>
+    <div class="modal-buttons">
+      <div class="modal-btn-container">
+        <button class="modal-btn modal-btn-cancel" onclick="hideDeleteModal()">Cancel</button>
+      </div>
+      <form id="deleteForm" method="post" action="">
+        {% csrf_token %}
+        <button type="submit" class="modal-btn modal-btn-delete">Delete</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Fade in container
+  document.getElementById('fade-element').classList.add('visible');
+  
+  // Start card animations
+  const cards = document.querySelectorAll('.note-card');
+  cards.forEach(card => {
+    card.style.animationPlayState = 'running';
+  });
+});
+
+// Show delete confirmation modal
+function showDeleteModal(noteId) {
+  // Set the correct delete URL for the form action
+  const deleteForm = document.getElementById('deleteForm');
+  deleteForm.action = `/teacher/notes/delete/${noteId}/`;  // Update this path to match your URL pattern
+  
+  // Show the modal and backdrop
+  document.getElementById('modalBackdrop').classList.add('show');
+  document.getElementById('deleteModal').classList.add('show');
+}
+
+// Hide delete confirmation modal
+function hideDeleteModal() {
+  document.getElementById('modalBackdrop').classList.remove('show');
+  document.getElementById('deleteModal').classList.remove('show');
+}
+</script>
+{% endblock content %}
+
